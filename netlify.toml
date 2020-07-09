@@ -6,3 +6,9 @@ command = "hugo --gc --minify"
 HUGO_VERSION = "0.73.0"
 HUGO_ENV = "production"
 HUGO_ENABLEGITINFO = "true"
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
