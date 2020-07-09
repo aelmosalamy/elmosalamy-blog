@@ -4,13 +4,13 @@
 
 # theme = 'cupper-hugo-theme'
 
-baseURL: "https://admiring-mahavira-5e9fa1.netlify.app"
+baseURL: "https://elmosalamy.netlify.app"
 languageCode: en-us
 defaultContentLanguage: en
 title: Adham Elmosalamy's Blog
 theme: cupper-hugo-theme
 # googleAnalytics: UA-123456789-1
-disqusShortname: yourdiscussshortname
+# disqusShortname: yourdiscussshortname
 # enableGitInfo: true
 enableEmoji: true
 
