@@ -1,0 +1,15 @@
+/* Custom CSS overrides for my blog */
+
+.cta {
+	
+	padding: 0.5em 3em;
+	background-color: black;
+	color: white;
+	
+}
+
+.date-faded {
+	color: #555;
+	/* margin-top: -10px; */
+	margin-left: 2em;
+}
