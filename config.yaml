@@ -4,7 +4,7 @@
 
 # theme = 'cupper-hugo-theme'
 
-baseURL: "https://elmosalamy.com"
+baseURL: "https://elmosalamy.com/"
 languageCode: en-us
 defaultContentLanguage: en
 title: Adham Elmosalamy's Blog
