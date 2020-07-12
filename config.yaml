@@ -10,7 +10,7 @@ defaultContentLanguage: en
 title: Adham Elmosalamy's Blog
 theme: cupper-hugo-theme
 # googleAnalytics: UA-123456789-1
-# disqusShortname: yourdiscussshortname
+disqusShortname: elmosalamy
 # enableGitInfo: true
 enableEmoji: true
 
