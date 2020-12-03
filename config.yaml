@@ -1,10 +1,10 @@
-  # baseURL = "http://example.org/"
+# baseURL = "http://example.org/"
 # languageCode = "en-us"
 # title = "Adham Elmosalamy"
 
 # theme = 'cupper-hugo-theme'
 
-baseURL: "https://elmosalamy.com/"
+baseURL: 'https://elmosalamy.com/'
 languageCode: en-us
 defaultContentLanguage: en
 title: Adham Elmosalamy's Blog
@@ -29,7 +29,7 @@ params:
   footer: © 2020 Adham Elmosalamy All Rights Reserved # Made with [Hugo](https://gohugo.io/). Themed by [Cupper](https://github.com/zwbetz-gh/cupper-hugo-theme). Deployed to [Netlify](https://www.netlify.com/).
   # For more date formats see https://gohugo.io/functions/format/
   dateFormat: Jan 2, 2006
-  codePenUser: someUser
+  codePenUser: aelmosalamy
   katex: true
   darkThemeAsDefault: false
   hideHeaderLinks: false
@@ -78,7 +78,7 @@ markup:
       xHTML: false
   highlight:
     codeFences: false
-    hl_Lines: ""
+    hl_Lines: ''
     lineNoStart: 1
     lineNos: false
     lineNumbersInTable: true
