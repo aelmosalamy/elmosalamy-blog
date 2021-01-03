@@ -6,7 +6,6 @@ paginate: 5
 # EXTRA START
 defaultContentLanguage: en
 title: Adham Elmosalamy's Blog
-theme: terminal
 # googleAnalytics: UA-123456789-1
 disqusShortname: elmosalamy
 # enableGitInfo: true
@@ -24,7 +23,7 @@ params:
   # dir name of your blog content (default is `content/posts`)
   contentTypeName: posts
   # ["orange", "blue", "red", "green", "pink"]
-  themeColor: orange
+  themeColor: green
   # if you set this to 0, only submenu trigger will be visible
   showMenuItems: 3
   # show selector to switch language
@@ -32,13 +31,13 @@ params:
   # set theme to full screen width
   fullWidthTheme: false
   # center theme with default width
-  centerTheme: false
+  centerTheme: true
 
 languages:
   en:
     languageName: English
-    title: Your site title
-    subtitle: Your site subtitle
+    title: elmosalamy - a web developement blog.
+    subtitle: elmosalamy
     keywords: ''
     menuMore: Show more
     readMore: Read more
@@ -46,7 +45,7 @@ languages:
 
     params:
       logo:
-        logoText: Terminal
+        logoText: elmosalamy
         logoHomeLink: /
 
     menu:
