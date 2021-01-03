@@ -5,13 +5,9 @@ title: "Home"
 
 Hey:wave:, It's a pleasure seeing you here! My name is **Adham Elmosalamy**, I am a Full Stack Developer 👨‍💻, and you've just stumbled upon my blog! I write on:
 
-{{< ticks >}}
-
 * Full Stack Web Development
 * Freelancing *- from a web developer perspective.*
 * UI and UX Design
 * And much more!
-
-{{< /ticks >}}
 
 <a class='cta' href="/posts">Have a look!</a>
