@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>experience on elmosalamy - a web developement blog.</title>
+    <link>/tags/experience/</link>
+    <description>Recent content in experience on elmosalamy - a web developement blog.</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 06 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/experience/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tribute to freeCodeCamp!</title>
+      <link>/posts/tribute-for-freecodecamp/</link>
+      <pubDate>Mon, 06 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/tribute-for-freecodecamp/</guid>
+      <description>I started on the 21st of August 2019, It took me 321 days which is equivalent to 10 month and 16 days to run through the whole freeCodeCamp curriculum, It was a great journey, well worth it, it&amp;rsquo;s kinda longer than it should&amp;rsquo;ve been, but I had some obstacles i.e. examinations along the way and I followed a strategy of intermittent learning, where I would do challenges for a couple of days then stop and follow a tutorial/build a project on the same topic for another couple of days, so I was actually learning a lot outside FCC, now a couple of you people on track or coming recently to FCC might be wondering: &amp;ldquo;How exactly did freeCodeCamp help you?</description>
+    </item>
+    
+  </channel>
+</rss>

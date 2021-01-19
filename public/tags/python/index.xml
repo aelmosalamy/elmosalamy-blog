@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>python on elmosalamy - a web developement blog.</title>
+    <link>/tags/python/</link>
+    <description>Recent content in python on elmosalamy - a web developement blog.</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 01 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Say Hello with Flask!</title>
+      <link>/posts/say-hello-with-flask/</link>
+      <pubDate>Fri, 01 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/say-hello-with-flask/</guid>
+      <description>In this post, I am going to introduce you to an interesting Python framework&amp;hellip;
+The popular web development microframework: Flask.
+A framework basically controls how your code is built and deployed. A framework isn&amp;rsquo;t a library. Your code calls library functions and methods; on the other hand, A framework calls your code and deploys it.
+Flask is called a microframework because it is considered low-level compared to other web frameworks like Django; Flask provides you with the core functions and its up to you how you combine them together to create larger applications, This makes Flask very versatile and extensible.</description>
+    </item>
+    
+    <item>
+      <title>Python List Comprehensions!</title>
+      <link>/posts/python-list-comprehensions/</link>
+      <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/python-list-comprehensions/</guid>
+      <description>What&amp;rsquo;s up everybody! In this post I am going to show you an interesting tip which I rarely see young Pythonistas use, it&amp;rsquo;s List Comprehensions. If you dabbled a little with Python you probably had some problems where you had to iterate over a list and perform functions to its elements on-the-run, I know. I make no sense. To clear things up let me start with a simple task. Given a list of numbers, return a list containing the squares of the original list&amp;rsquo;s numbers, You might think: &amp;ldquo;Well, That&amp;rsquo;s easy!</description>
+    </item>
+    
+  </channel>
+</rss>

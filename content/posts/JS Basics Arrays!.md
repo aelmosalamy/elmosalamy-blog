@@ -1,5 +1,6 @@
 ---
 title: "Javascript Basics: Arrays!"
+author: aelmosalamy
 date: 2020-07-13
 tags: ["javascript"]
 ---

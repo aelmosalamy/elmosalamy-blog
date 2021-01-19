@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Say Hello with Flask! :: elmosalamy - a web developement blog.</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="In this post, I am going to introduce you to an interesting Python framework&amp;hellip;
+The popular web development microframework: Flask.
+A framework basically controls how your code is built and deployed. A framework isn&amp;rsquo;t a library. Your code calls library functions and methods; on the other hand, A framework calls your code and deploys it.
+Flask is called a microframework because it is considered low-level compared to other web frameworks like Django; Flask provides you with the core functions and its up to you how you combine them together to create larger applications, This makes Flask very versatile and extensible." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/say-hello-with-flask/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+  <link rel="stylesheet" href="/assets/green.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Say Hello with Flask!">
+<meta property="og:description" content="In this post, I am going to introduce you to an interesting Python framework&amp;hellip;
+The popular web development microframework: Flask.
+A framework basically controls how your code is built and deployed. A framework isn&amp;rsquo;t a library. Your code calls library functions and methods; on the other hand, A framework calls your code and deploys it.
+Flask is called a microframework because it is considered low-level compared to other web frameworks like Django; Flask provides you with the core functions and its up to you how you combine them together to create larger applications, This makes Flask very versatile and extensible." />
+<meta property="og:url" content="/posts/say-hello-with-flask/" />
+<meta property="og:site_name" content="elmosalamy - a web developement blog." />
+
+  
+    <meta property="og:image" content="/img/favicon/green.png">
+  
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2019-03-01 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="green">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    elmosalamy
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/showcase">Showcase</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/showcase">Showcase</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/say-hello-with-flask/">Say Hello with Flask!</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2019-03-01 
+      </span>
+    
+    
+    <span class="post-author">:: aelmosalamy</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/python/">python</a>&nbsp;
+    
+    #<a href="/tags/flask/">flask</a>&nbsp;
+    
+    #<a href="/tags/back-end/">back-end</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  
+
+  <div class="post-content"><div>
+        <p>In this post, I am going to introduce you to an interesting Python framework&hellip;</p>
+<p>The popular web development microframework: Flask.</p>
+<p>A framework basically controls how your code is built and deployed. A framework isn&rsquo;t a library. Your code calls library functions and methods; on the other hand, A framework calls your code and deploys it.</p>
+<p>Flask is called a <strong>microframework</strong> because it is considered low-level compared to other web frameworks like Django; Flask provides you with the core functions and its up to you how you combine them together to create larger applications, This makes Flask very versatile and extensible.</p>
+<p>A web framework is a framework used for web-based projects. Later, you will see how we can write our application, and then run it using Flask, which will build our application and deploy it to a local web server.</p>
+<p>We are going to write a simple <code>Hello, world!</code> web application and gradually add features to it, as we cover the core principles of Flask in the process.</p>
+<p>First let&rsquo;s install Flask; In a new terminal window, type the following:</p>
+<pre><code class="language-console" data-lang="console">$ pip install flask
+</code></pre><p>Now check if everything is fine and working as expected:</p>
+<pre><code class="language-console" data-lang="console">$ flask --version
+Flask 1.0.2
+Python 3.6.6 (v3.6.6:4cf1f54eb7, Jun 27 2018, 03:37:03) [MSC v.1900 64 bit (AMD64)]
+</code></pre><p>You should see a message like the one shown above.
+Now I will create a new Python file, I will call it <code>my-app.py</code> and I will add the following code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask
+
+app <span style="color:#f92672">=</span> Flask(__name__)
+
+<span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">index</span>():
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Hello, world!&#34;</span>
+</code></pre></div><p>This might look quite unusual, so let&rsquo;s break this down:</p>
+<ul>
+<li>At line 1 we imported the flask module, specifically a class called <code>Flask</code>.</li>
+<li>At line 3 we instantiated that class passing the <code>__name__</code> constant which refers to the module name, creating an object called <code>app</code>.</li>
+<li>At line 6 we defined a simple function, <code>index</code>, that takes no arguments and returns a typical &ldquo;Hello, world!&rdquo; string.</li>
+<li>At line 5 we have what we call a <strong>function decorator</strong>, decorators modify and extend their underlying functions, in this case our <code>@app.route(&quot;/&quot;)</code> decorator causes our <code>index</code> function to be called when the &ldquo;/&rdquo; route is viewed, &ldquo;/&rdquo; in any filesystem resembles the root; we are going to see this in action soon.</li>
+</ul>
+<p> Now I will switch back my terminal and type the following:</p>
+<blockquote>
+<p><strong>Note:</strong> Make sure you are in the same directory where your app resides while executing all terminal commands.</p>
+</blockquote>
+<pre><code class="language-console" data-lang="console">$ export FLASK_APP=my-app.py
+$ flask run
+ * Serving Flask app &quot;my-app.py&quot;
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+</code></pre><p>We used <code>export</code> to set the environmental variable <code>FLASK_APP</code> to our application&rsquo;s name, <code>my-app.py</code>, now when we use <code>flask run</code>, Flask looks at the <code>FLASK_APP</code> environmental variable and runs our app.</p>
+<p>You should see a line saying that our app is running at <code>http://127.0.0.1:5000/</code>.
+<code>127.0.0.1</code> is the <code>localhost</code> which refers to my own computer - since the web server is running on my computer - and 5000 is the port on which my app is running at; Now open your browser and type in &ldquo;127.0.0.1:5000&rdquo; and you should see it, beautiful and neatly printed: Hello, world!
+Notice that Flask works with pure HTML code, so instead of returning <code>Hello, world!</code> in our index function, we can return <code>&lt;h1&gt;Hello, world!&lt;/h1&gt;</code>, now restart the server, reload the page and you should see Hello, world! as a nice HTML headline.</p>
+<blockquote>
+<!-- raw HTML omitted -->
+</blockquote>
+<p>Additionally, Flask is serving our application at hostname <code>127.0.0.1:5000</code>, Flask works by returning different HTML pages to the viewer based on the route its on, for simplicity, let say you are visiting a webpages &ldquo;<a href="http://foo.com/bar%22,">http://foo.com/bar&quot;,</a> behind the scenes you are sending a <strong>request</strong> to the server, demanding <code>/bar</code>, the server looks at their files and returns <code>/bar</code> to you, Flask - client-side framework - does the same, it executes Python functions based on whatever route you are visiting, then it returns a pure static HTML document to the user.</p>
+<p>To further illustrate the idea of routes, try to open <code>127.0.0.1:5000/blah</code> and you will be stopped by a <strong>Not Found</strong> error message, this is because Flask returns Hello, world! only at route &ldquo;/&rdquo; not &ldquo;/blah&rdquo;.</p>
+<p>Let&rsquo;s create another route to clarify that concept. In your <code>my-app.py</code> file add the following code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/&lt;name&gt;&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello</span>(name):
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&lt;h1&gt;Hello, {}!&lt;/h1&gt;&#34;</span><span style="color:#f92672">.</span>format(name<span style="color:#f92672">.</span>capitalize())
+</code></pre></div><p>This technique is called a <strong>Dynamic URL</strong>, at Line 1 we specified a variable, <code>name</code>, between angle brackets, this variable which is a part of the URL address is then passed to our <code>hello</code> function and returned as a capitalized word inside a HTML tag, how simple!</p>
+<p>Now restart the server and add <code>/pop</code> to your URL, you should see a <code>Hello, Pop!</code> headline, experiment with different names and notice how the page&rsquo;s content changes based on the route, this is especially useful when you want to create a customized experience for each user, you might have <code>/login/Adham</code> that displays <code>Adham</code>&rsquo;s profile based on the route your using.</p>
+<p>I will be writing a second post about Flask soon, It would be really appreciated if you leave me a reaction or a comment below, Thanks for sticking around. Stay tuned!</p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/tribute-for-freecodecamp/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Tribute to freeCodeCamp!</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/python-list-comprehensions/">
+                <span class="button__text">Python List Comprehensions!</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "elmosalamy" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

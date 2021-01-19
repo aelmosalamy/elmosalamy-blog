@@ -1,2 +1,63 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Home on Adham Elmosalamy's Blog</title><link>https://elmosalamy.com/</link><description>Recent content in Home on Adham Elmosalamy's Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 26 Jun 2017 18:27:58 +0100</lastBuildDate><atom:link href="https://elmosalamy.com/index.xml" rel="self" type="application/rss+xml"/><item><title>Javascript Basics: Arrays!</title><link>https://elmosalamy.com/posts/js-basics-arrays/</link><pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate><guid>https://elmosalamy.com/posts/js-basics-arrays/</guid><description>Hey👋 there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more! Stay tuned!
-I highly advise you to follow along, Javascript is a browser language, and you can follow along right here! In your browser! To do that: Right click anywhere on this page, then click "</description></item><item><title>Tribute to freeCodeCamp!</title><link>https://elmosalamy.com/posts/tribute-for-freecodecamp/</link><pubDate>Mon, 06 Jul 2020 00:00:00 +0000</pubDate><guid>https://elmosalamy.com/posts/tribute-for-freecodecamp/</guid><description>I started on the 21st of August 2019, It took me 321 days which is equivalent to 10 month and 16 days to run through the whole freeCodeCamp curriculum, It was a great journey, well worth it, it&amp;rsquo;s kinda longer than it should&amp;rsquo;ve been, but I had some obstacles i.e. examinations along the way and I followed a strategy of intermittent learning, where I would do challenges for a couple of days then stop and follow a tutorial/build a project on the same topic for another couple of days, so I was actually learning a lot outside FCC, now a couple of you people on track or coming recently to FCC might be wondering: &amp;ldquo;How exactly did freeCodeCamp help you?</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home on elmosalamy - a web developement blog.</title>
+    <link>/</link>
+    <description>Recent content in Home on elmosalamy - a web developement blog.</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 26 Jun 2017 18:27:58 +0100</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Javascript Basics: Arrays!</title>
+      <link>/posts/js-basics-arrays/</link>
+      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/js-basics-arrays/</guid>
+      <description>Hey👋 there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more! Stay tuned!
+I highly advise you to follow along, Javascript is a browser language, and you can follow along right here! In your browser! To do that: Right click anywhere on this page, then click &amp;ldquo;Inspect&amp;rdquo;, on the side panel that appears, find the &amp;ldquo;&amp;raquo;&amp;rdquo; arrow icon, then click &amp;ldquo;Console&amp;rdquo;, this is where you can type Javascript code!</description>
+    </item>
+    
+    <item>
+      <title>Tribute to freeCodeCamp!</title>
+      <link>/posts/tribute-for-freecodecamp/</link>
+      <pubDate>Mon, 06 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/tribute-for-freecodecamp/</guid>
+      <description>I started on the 21st of August 2019, It took me 321 days which is equivalent to 10 month and 16 days to run through the whole freeCodeCamp curriculum, It was a great journey, well worth it, it&amp;rsquo;s kinda longer than it should&amp;rsquo;ve been, but I had some obstacles i.e. examinations along the way and I followed a strategy of intermittent learning, where I would do challenges for a couple of days then stop and follow a tutorial/build a project on the same topic for another couple of days, so I was actually learning a lot outside FCC, now a couple of you people on track or coming recently to FCC might be wondering: &amp;ldquo;How exactly did freeCodeCamp help you?</description>
+    </item>
+    
+    <item>
+      <title>Say Hello with Flask!</title>
+      <link>/posts/say-hello-with-flask/</link>
+      <pubDate>Fri, 01 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/say-hello-with-flask/</guid>
+      <description>In this post, I am going to introduce you to an interesting Python framework&amp;hellip;
+The popular web development microframework: Flask.
+A framework basically controls how your code is built and deployed. A framework isn&amp;rsquo;t a library. Your code calls library functions and methods; on the other hand, A framework calls your code and deploys it.
+Flask is called a microframework because it is considered low-level compared to other web frameworks like Django; Flask provides you with the core functions and its up to you how you combine them together to create larger applications, This makes Flask very versatile and extensible.</description>
+    </item>
+    
+    <item>
+      <title>Python List Comprehensions!</title>
+      <link>/posts/python-list-comprehensions/</link>
+      <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/python-list-comprehensions/</guid>
+      <description>What&amp;rsquo;s up everybody! In this post I am going to show you an interesting tip which I rarely see young Pythonistas use, it&amp;rsquo;s List Comprehensions. If you dabbled a little with Python you probably had some problems where you had to iterate over a list and perform functions to its elements on-the-run, I know. I make no sense. To clear things up let me start with a simple task. Given a list of numbers, return a list containing the squares of the original list&amp;rsquo;s numbers, You might think: &amp;ldquo;Well, That&amp;rsquo;s easy!</description>
+    </item>
+    
+    <item>
+      <title>Linux into the scene!</title>
+      <link>/posts/linux-into-scene/</link>
+      <pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/linux-into-scene/</guid>
+      <description>Hello everyone,
+Recently, while watching a video, I came across a guy using Linux on his machine, It looked really clean and neat and I wanted to try it!
+At the start it just looked cool and I thought why not download it? It is free and open-source. I looked up for Linux and found it have what is known as &amp;ldquo;distros&amp;rdquo;.
+Basically distros or distributions are a different variations of Linux, with every distro having its own look and settings - think of it as ice cream flavours - It can be different File manager or different interface, terminal and so on.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -5,7 +5,6 @@ paginate: 5
 
 # EXTRA START
 defaultContentLanguage: en
-title: Adham Elmosalamy's Blog
 # googleAnalytics: UA-123456789-1
 disqusShortname: elmosalamy
 # enableGitInfo: true
