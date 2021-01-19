@@ -5,6 +5,13 @@ paginate: 5
 
 # EXTRA START
 defaultContentLanguage: en
+<<<<<<< HEAD
+||||||| merged common ancestors
+title: Adham Elmosalamy's Blog
+theme: terminal
+=======
+title: Adham Elmosalamy's Blog
+>>>>>>> a10be3464271ad37a114412bbead1d1c79aa9270
 # googleAnalytics: UA-123456789-1
 disqusShortname: elmosalamy
 # enableGitInfo: true
