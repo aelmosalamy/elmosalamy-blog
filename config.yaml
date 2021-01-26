@@ -51,7 +51,7 @@ languages:
     menu:
       main:
       - identifier: posts
-        name: Posts
+        name: "📄 Posts"
         url: /posts
       - identifier: random
         name: "🔗 Random stuff"
