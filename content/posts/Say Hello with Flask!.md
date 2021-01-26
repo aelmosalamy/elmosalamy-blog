@@ -2,8 +2,8 @@
 title: Say Hello with Flask!
 author: aelmosalamy
 date: 2019-03-01
-tags: ["python", "flask", "back-end"]
-cover: /posts/images/cover-flask.png
+tags: [python, flask, back-end]
+cover: /images/cover-flask.png
 ---
 
 In this post, I am going to introduce you to an interesting Python framework...
@@ -72,7 +72,7 @@ You should see a line saying that our app is running at `http://127.0.0.1:5000/`
 `127.0.0.1` is the `localhost` which refers to my own computer - since the web server is running on my computer - and 5000 is the port on which my app is running at; Now open your browser and type in "127.0.0.1:5000" and you should see it, beautiful and neatly printed: Hello, world!
 Notice that Flask works with pure HTML code, so instead of returning `Hello, world!` in our index function, we can return `<h1>Hello, world!</h1>`, now restart the server, reload the page and you should see Hello, world! as a nice HTML headline.
 
-{{<figure src="/posts/images/flask-hello-world.png">}}
+{{<figure src="/images/flask-hello-world.png">}}
 
 Additionally, Flask is serving our application at hostname `127.0.0.1:5000`, Flask works by returning different HTML pages to the viewer based on the route its on, for simplicity, let say you are visiting a webpages "http://foo.com/bar", behind the scenes you are sending a **request** to the server, demanding `/bar`, the server looks at their files and returns `/bar` to you, Flask - client-side framework - does the same, it executes Python functions based on whatever route you are visiting, then it returns a pure static HTML document to the user.
 

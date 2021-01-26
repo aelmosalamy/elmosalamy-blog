@@ -3,7 +3,7 @@ title: Linux into the scene!
 author: aelmosalamy
 date: 2018-11-30
 author: aelmosalamy
-tags: ["linux", "ubuntu", "foss"]
+tags: [linux, ubuntu, foss]
 ---
 
 Hello everyone,
@@ -14,7 +14,7 @@ At the start it just looked cool and I thought why not download it? It is free a
 
 Basically distros or distributions are a different variations of Linux, with every distro having its own look and settings - think of it as ice cream flavours - It can be different File manager or different interface, terminal and so on. I searched for the most popular distros - I wanted something solid with a big community - and I came across Ubuntu, a quick glance at its interface and I loved it instantly!
 
-{{<figure src="/posts/images/ubuntu-logo.png" title="Ubuntu Logo">}}
+{{<figure src="/images/ubuntu-logo.png" title="Ubuntu Logo">}}
 
 So I went to the Ubuntu website and downloaded the latest LTS release, then...
 
@@ -36,7 +36,7 @@ Anyway, I decided to try and do it anyway, It changed from being just a personal
 
 Note: You can access your Windows file from Ubuntu and not vice versa, Ubuntu supports the NTFS filesystem (The one Window's use) while Windows need some special software so it can read the exFAT filesystem Ubuntu use (Another try by Microsoft to stay dominating I guess).
 
-{{<figure src="/posts/images/ubuntu-desktop.png" caption="Ubuntu's desktop">}}
+{{<figure src="/images/ubuntu-desktop.png" caption="Ubuntu's desktop">}}
 
 **Customizing Ubuntu:**
 

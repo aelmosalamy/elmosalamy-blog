@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   
-    <title>Say Hello with Flask! :: elmosalamy - a web developement blog.</title>
+    <title>Say Hello with Flask! :: elmosalamy: web dev blog</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,11 +44,9 @@ The popular web development microframework: Flask.
 A framework basically controls how your code is built and deployed. A framework isn&amp;rsquo;t a library. Your code calls library functions and methods; on the other hand, A framework calls your code and deploys it.
 Flask is called a microframework because it is considered low-level compared to other web frameworks like Django; Flask provides you with the core functions and its up to you how you combine them together to create larger applications, This makes Flask very versatile and extensible." />
 <meta property="og:url" content="/posts/say-hello-with-flask/" />
-<meta property="og:site_name" content="elmosalamy - a web developement blog." />
+<meta property="og:site_name" content="elmosalamy: web dev blog" />
 
-  
-    <meta property="og:image" content="/img/favicon/green.png">
-  
+  <meta property="og:image" content="/images/cover-flask.png">
 
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
@@ -93,11 +91,11 @@ Flask is called a microframework because it is considered low-level compared to 
     
       
         
-          <li><a href="/about">About</a></li>
+          <li><a href="/posts">Posts</a></li>
         
       
         
-          <li><a href="/showcase">Showcase</a></li>
+          <li><a href="https://aelmosalamy.github.io">Random stuff</a></li>
         
       
       
@@ -109,11 +107,11 @@ Flask is called a microframework because it is considered low-level compared to 
   <ul class="menu__inner menu__inner--mobile">
     
       
-        <li><a href="/about">About</a></li>
+        <li><a class="lol" href="/posts">Posts</a></li>
       
     
       
-        <li><a href="/showcase">Showcase</a></li>
+        <li><a class="lol" href="https://aelmosalamy.github.io">Random stuff</a></li>
       
     
     
@@ -152,6 +150,8 @@ Flask is called a microframework because it is considered low-level compared to 
   </span>
   
 
+  
+    <img src="/images/cover-flask.png" class="post-cover" alt="Say Hello with Flask!" />
   
 
   
@@ -201,9 +201,13 @@ $ flask run
 <p>You should see a line saying that our app is running at <code>http://127.0.0.1:5000/</code>.
 <code>127.0.0.1</code> is the <code>localhost</code> which refers to my own computer - since the web server is running on my computer - and 5000 is the port on which my app is running at; Now open your browser and type in &ldquo;127.0.0.1:5000&rdquo; and you should see it, beautiful and neatly printed: Hello, world!
 Notice that Flask works with pure HTML code, so instead of returning <code>Hello, world!</code> in our index function, we can return <code>&lt;h1&gt;Hello, world!&lt;/h1&gt;</code>, now restart the server, reload the page and you should see Hello, world! as a nice HTML headline.</p>
-<blockquote>
-<!-- raw HTML omitted -->
-</blockquote>
+
+  <figure class="left" >
+    <img src="/images/flask-hello-world.png"   />
+    
+  </figure>
+
+
 <p>Additionally, Flask is serving our application at hostname <code>127.0.0.1:5000</code>, Flask works by returning different HTML pages to the viewer based on the route its on, for simplicity, let say you are visiting a webpages &ldquo;<a href="http://foo.com/bar%22,">http://foo.com/bar&quot;,</a> behind the scenes you are sending a <strong>request</strong> to the server, demanding <code>/bar</code>, the server looks at their files and returns <code>/bar</code> to you, Flask - client-side framework - does the same, it executes Python functions based on whatever route you are visiting, then it returns a pure static HTML document to the user.</p>
 <p>To further illustrate the idea of routes, try to open <code>127.0.0.1:5000/blah</code> and you will be stopped by a <strong>Not Found</strong> error message, this is because Flask returns Hello, world! only at route &ldquo;/&rdquo; not &ldquo;/blah&rdquo;.</p>
 <p>Let&rsquo;s create another route to clarify that concept. In your <code>my-app.py</code> file add the following code:</p>

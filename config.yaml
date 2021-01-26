@@ -1,7 +1,7 @@
 baseUrl: /
 languageCode: en-us
 theme: terminal
-paginate: 5
+paginate: 12
 
 # EXTRA START
 defaultContentLanguage: en
@@ -36,7 +36,7 @@ params:
 languages:
   en:
     languageName: English
-    title: elmosalamy - a web developement blog.
+    title: "elmosalamy | Dev Blog"
     subtitle: elmosalamy
     keywords: ''
     menuMore: Show more
@@ -50,9 +50,19 @@ languages:
 
     menu:
       main:
-      - identifier: about
-        name: About
-        url: /about
-      - identifier: showcase
-        name: Showcase
-        url: /showcase
+      - identifier: posts
+        name: Posts
+        url: /posts
+      - identifier: random
+        name: "🔗 Random stuff"
+        params:
+    #     custom param I added to terminal theme
+          target: "_blank"
+        url: "https://aelmosalamy.github.io"
+    # - identifier: unique-identifier
+    #   name: text of the link    
+    #   params:
+    #       target: _blank
+    #   pre: html before link
+    #   post: html after link
+    #   url: url

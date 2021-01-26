@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>javascript on elmosalamy - a web developement blog.</title>
+    <title>javascript on elmosalamy: web dev blog</title>
     <link>/tags/javascript/</link>
-    <description>Recent content in javascript on elmosalamy - a web developement blog.</description>
+    <description>Recent content in javascript on elmosalamy: web dev blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 13 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
