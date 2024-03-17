@@ -74,8 +74,6 @@ We won't jump into application logic straight away, instead we will try to form 
 
 It is part of having a good methodology: get a high-level overview first, then view your options, eliminate unlikely ones, and expand on promising ones, keep repeating... eventually you will get somewhere.
 
-Correct methodology increases your chances of finding vulnerabilities. It might be painful, but with experience and practice you will find yourself effectively expanding on promising routes while effectively dismissing unlikely ones.
-
 ### Directory Structure
 Applying the above, let's start with exploring the directory structure of our app:
 ```
@@ -111,11 +109,7 @@ Applying the above, let's start with exploring the directory structure of our ap
 
 Upon inspection, there is so many files, so many routes and so many things going on compared to your typical web challenge.
 
-This might be overwhelming, and many people would just decide to not continue at this point - it is rated *Insane* after all - but it should not deter us. In fact, a complex application indicates a bigger attack surface and a bigger room for mistakes.
-
-If we stick to our methodology, we will be able to systematically comb the application, identify different vulnerabilities throughout and build an effective attack path based on our findings.
-
-> With the right methodology we will be able to see through complexity, eliminate distraction and gain clarity on what truly matters.
+If we stick to our methodology, we will be able to systematically comb the application and build an effective, exploitable attack chain.
 
 ### Dockerfile
 Let's start with the `Dockerfile`. It gives us a high-level overview of the application and how it is set up. In fact, with experience, you can somewhat predict entire attack chains by just looking at the `Dockerfile`.
@@ -281,9 +275,7 @@ Let's jump into `/app/`, the directory served by `uwsgi`, and explore what is ac
 ## Chapter 3: Digging into Flask
 With our newfound understanding of user flow and system components, lets dig into the actual app logic, we will try to look for hidden features and perhaps find ways to disrupt the user flow explored in the previous step.
 
-This process requires patience, we need to carefully scan the codebase, noting how each part of the code could serve us as attackers. We might need to draw diagrams, take notes, speak our thought process out loud.
-
-We also want to research ambiguous functions and read the docs of every library being used carefully. Make sure that the libraries employed adhere to best practices and security warnings mentioned in docs.
+This process requires patience, we need to carefully scan the codebase, noting how each part of the code could serve us as attackers. We might need to draw diagrams, take notes or even speak our thought process out loud.
 
 ### Route Structure
 Let's jump right in.
@@ -367,7 +359,7 @@ def sanitizeInput(f):
     return decorator
 ```
 
-Notice that **cookies** and **headers** are not sanitized, so if we find a cookie/header DOM sink we can bypass sanitization.
+Notice that **cookies** and **headers** are not sanitized, so if we find a cookie/header DOM sink we might use it to bypass sanitization.
 
 The whitelist itself is interesting:
 ```python
@@ -377,14 +369,14 @@ allowedTags = [
         'li', 'br', 'sub', 'sup', 'hr', 'style', 'span'
 ]
 ```
-Most notably, we have access to a `style` tag, and we have access to a bunch of attributes within an `id` tag. Let's keep these in mind.
+Most notably, we have access to a `style` tag, and we have access to a bunch of attributes within an `a` tag. Let's keep these in mind.
 
 ### Evaluating Our Privileges
 Based on our understanding of the middleware used to enforce security controls, we can see that after logging in and email verification we have access to all routes except those protected by `@isInternal` and `@IsAdmin`.
 
 Understanding what we can and cannot access in an application helps us narrow down our attack surface.
 
-Let's evaluate our privileges in more detail. Looking at our routes, we currently can access the following functionality:
+Let's evaluate our privileges in more detail. Looking at our routes, we currently can access these endpoints:
 ```python
 # ~~~~~~~~~~~~~~~~~~~~
 # blueprints/routes.py
@@ -503,21 +495,22 @@ def addContract(decodedToken):
 	...
 ```
 
-In summary, we can register an account and log on to it, we can then view our profile, trigger email verification and verify ourselves, and once verified, we can report items displayed on the store to the "team".
+To summarize our results thus far: we can register an account and log on to it, we can then view our profile, trigger email verification and verify ourselves, and once verified, we can report items displayed on the store to the "team".
 
 Meanwhile, we **cannot** add new products to the store, nor upload a contract because the former requires `@isInternal` while the latter requires both `@IsInternal` and `@isAdmin`.
 
-Our next step is to try using what we have to obtain what we do not have with the grand goal of achieving **Remote Code Execution**.
+Our next step is to try using what we have to obtain what we do not have with the ultimate goal of achieving **Remote Code Execution**.
 
 ## Chapter 4: Attempts down the Road
-In the previous chapter, we enumerated our building blocks - the things within our control - let us see what an we do with these.
+In the previous chapter, we enumerated our building blocks - the things within our control - let us see what can we do with these.
 
-We have to generate a stream of ideas on how our building blocks can be combined to produce a working exploit, reason about these ideas and experimentally test them until we form a working attack.
+An invaluable skill to develop as a researcher, is what I call "the hypothesis generator". It's a mental habit that provides you with an endless stream of theories and ideas to explore. You must be always trying something, reasoning about what you see or looking for new ways to leverage your current findings.
 
+The cycles goes as follows:
 1. Identify building blocks (Done)
 2. Hypothesize an attack
 3. Test hypothesis
-4. Repeat until attack works
+4. Repeat till success
 
 > In this chapter, I will briefly list some of the hypotheses I tested. You can skip to the next chapter for the main solution path; although I think it is equally important to know the many failed attempts, especially why they failed and under what conditions would they succeed.
 

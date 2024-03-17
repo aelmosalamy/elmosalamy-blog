@@ -270,7 +270,6 @@ If you just want the solution, here is the final attack chain." />
 <p>After scoping user flow and functionality, it is time to dig into the internals of the application.</p>
 <p>We won&rsquo;t jump into application logic straight away, instead we will try to form a high-level understanding of the technologies used and how everything is glued together. Understanding the role of different components in our app, their relationship and how they talk to each other is critical when analyzing any system.</p>
 <p>It is part of having a good methodology: get a high-level overview first, then view your options, eliminate unlikely ones, and expand on promising ones, keep repeating&hellip; eventually you will get somewhere.</p>
-<p>Correct methodology increases your chances of finding vulnerabilities. It might be painful, but with experience and practice you will find yourself effectively expanding on promising routes while effectively dismissing unlikely ones.</p>
 <h3 id="directory-structure">Directory Structure<a href="#directory-structure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Applying the above, let&rsquo;s start with exploring the directory structure of our app:</p>
 <pre tabindex="0"><code>.
@@ -302,11 +301,7 @@ If you just want the solution, here is the final attack chain." />
 │       supervisord.conf
 └───email-app+
 </code></pre><p>Upon inspection, there is so many files, so many routes and so many things going on compared to your typical web challenge.</p>
-<p>This might be overwhelming, and many people would just decide to not continue at this point - it is rated <em>Insane</em> after all - but it should not deter us. In fact, a complex application indicates a bigger attack surface and a bigger room for mistakes.</p>
-<p>If we stick to our methodology, we will be able to systematically comb the application, identify different vulnerabilities throughout and build an effective attack path based on our findings.</p>
-<blockquote>
-<p>With the right methodology we will be able to see through complexity, eliminate distraction and gain clarity on what truly matters.</p>
-</blockquote>
+<p>If we stick to our methodology, we will be able to systematically comb the application and build an effective, exploitable attack chain.</p>
 <h3 id="dockerfile">Dockerfile<a href="#dockerfile" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Let&rsquo;s start with the <code>Dockerfile</code>. It gives us a high-level overview of the application and how it is set up. In fact, with experience, you can somewhat predict entire attack chains by just looking at the <code>Dockerfile</code>.</p>
 <p>Let&rsquo;s highlight our primary takeaways:</p>
@@ -459,8 +454,7 @@ processes = 4
 <p>Let&rsquo;s jump into <code>/app/</code>, the directory served by <code>uwsgi</code>, and explore what is actually going on under the hood.</p>
 <h2 id="chapter-3-digging-into-flask">Chapter 3: Digging into Flask<a href="#chapter-3-digging-into-flask" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>With our newfound understanding of user flow and system components, lets dig into the actual app logic, we will try to look for hidden features and perhaps find ways to disrupt the user flow explored in the previous step.</p>
-<p>This process requires patience, we need to carefully scan the codebase, noting how each part of the code could serve us as attackers. We might need to draw diagrams, take notes, speak our thought process out loud.</p>
-<p>We also want to research ambiguous functions and read the docs of every library being used carefully. Make sure that the libraries employed adhere to best practices and security warnings mentioned in docs.</p>
+<p>This process requires patience, we need to carefully scan the codebase, noting how each part of the code could serve us as attackers. We might need to draw diagrams, take notes or even speak our thought process out loud.</p>
 <h3 id="route-structure">Route Structure<a href="#route-structure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Let&rsquo;s jump right in.</p>
 <p><code>application/main.py</code> is our Flask application&rsquo;s entry point.</p>
@@ -533,18 +527,18 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> f(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs)
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> decorator
-</span></span></code></pre></div><p>Notice that <strong>cookies</strong> and <strong>headers</strong> are not sanitized, so if we find a cookie/header DOM sink we can bypass sanitization.</p>
+</span></span></code></pre></div><p>Notice that <strong>cookies</strong> and <strong>headers</strong> are not sanitized, so if we find a cookie/header DOM sink we might use it to bypass sanitization.</p>
 <p>The whitelist itself is interesting:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>allowedAttributes <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;a&#39;</span>: (<span style="color:#e6db74">&#39;href&#39;</span>, <span style="color:#e6db74">&#39;name&#39;</span>, <span style="color:#e6db74">&#39;target&#39;</span>, <span style="color:#e6db74">&#39;title&#39;</span>, <span style="color:#e6db74">&#39;id&#39;</span>, <span style="color:#e6db74">&#39;rel&#39;</span>)}
 </span></span><span style="display:flex;"><span>allowedTags <span style="color:#f92672">=</span> [
 </span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;a&#39;</span>, <span style="color:#e6db74">&#39;h1&#39;</span>, <span style="color:#e6db74">&#39;h2&#39;</span>, <span style="color:#e6db74">&#39;h3&#39;</span>, <span style="color:#e6db74">&#39;strong&#39;</span>, <span style="color:#e6db74">&#39;em&#39;</span>, <span style="color:#e6db74">&#39;p&#39;</span>, <span style="color:#e6db74">&#39;ul&#39;</span>, <span style="color:#e6db74">&#39;ol&#39;</span>,
 </span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;li&#39;</span>, <span style="color:#e6db74">&#39;br&#39;</span>, <span style="color:#e6db74">&#39;sub&#39;</span>, <span style="color:#e6db74">&#39;sup&#39;</span>, <span style="color:#e6db74">&#39;hr&#39;</span>, <span style="color:#e6db74">&#39;style&#39;</span>, <span style="color:#e6db74">&#39;span&#39;</span>
 </span></span><span style="display:flex;"><span>]
-</span></span></code></pre></div><p>Most notably, we have access to a <code>style</code> tag, and we have access to a bunch of attributes within an <code>id</code> tag. Let&rsquo;s keep these in mind.</p>
+</span></span></code></pre></div><p>Most notably, we have access to a <code>style</code> tag, and we have access to a bunch of attributes within an <code>a</code> tag. Let&rsquo;s keep these in mind.</p>
 <h3 id="evaluating-our-privileges">Evaluating Our Privileges<a href="#evaluating-our-privileges" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Based on our understanding of the middleware used to enforce security controls, we can see that after logging in and email verification we have access to all routes except those protected by <code>@isInternal</code> and <code>@IsAdmin</code>.</p>
 <p>Understanding what we can and cannot access in an application helps us narrow down our attack surface.</p>
-<p>Let&rsquo;s evaluate our privileges in more detail. Looking at our routes, we currently can access the following functionality:</p>
+<p>Let&rsquo;s evaluate our privileges in more detail. Looking at our routes, we currently can access these endpoints:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~~~~</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># blueprints/routes.py</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~~~~</span>
@@ -657,17 +651,18 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">addContract</span>(decodedToken):
 </span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
-</span></span></code></pre></div><p>In summary, we can register an account and log on to it, we can then view our profile, trigger email verification and verify ourselves, and once verified, we can report items displayed on the store to the &ldquo;team&rdquo;.</p>
+</span></span></code></pre></div><p>To summarize our results thus far: we can register an account and log on to it, we can then view our profile, trigger email verification and verify ourselves, and once verified, we can report items displayed on the store to the &ldquo;team&rdquo;.</p>
 <p>Meanwhile, we <strong>cannot</strong> add new products to the store, nor upload a contract because the former requires <code>@isInternal</code> while the latter requires both <code>@IsInternal</code> and <code>@isAdmin</code>.</p>
-<p>Our next step is to try using what we have to obtain what we do not have with the grand goal of achieving <strong>Remote Code Execution</strong>.</p>
+<p>Our next step is to try using what we have to obtain what we do not have with the ultimate goal of achieving <strong>Remote Code Execution</strong>.</p>
 <h2 id="chapter-4-attempts-down-the-road">Chapter 4: Attempts down the Road<a href="#chapter-4-attempts-down-the-road" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>In the previous chapter, we enumerated our building blocks - the things within our control - let us see what an we do with these.</p>
-<p>We have to generate a stream of ideas on how our building blocks can be combined to produce a working exploit, reason about these ideas and experimentally test them until we form a working attack.</p>
+<p>In the previous chapter, we enumerated our building blocks - the things within our control - let us see what can we do with these.</p>
+<p>An invaluable skill to develop as a researcher, is what I call &ldquo;the hypothesis generator&rdquo;. It&rsquo;s a mental habit that provides you with an endless stream of theories and ideas to explore. You must be always trying something, reasoning about what you see or looking for new ways to leverage your current findings.</p>
+<p>The cycles goes as follows:</p>
 <ol>
 <li>Identify building blocks (Done)</li>
 <li>Hypothesize an attack</li>
 <li>Test hypothesis</li>
-<li>Repeat until attack works</li>
+<li>Repeat till success</li>
 </ol>
 <blockquote>
 <p>In this chapter, I will briefly list some of the hypotheses I tested. You can skip to the next chapter for the main solution path; although I think it is equally important to know the many failed attempts, especially why they failed and under what conditions would they succeed.</p>
