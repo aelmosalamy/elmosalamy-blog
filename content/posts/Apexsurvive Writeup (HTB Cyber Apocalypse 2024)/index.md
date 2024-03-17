@@ -1,7 +1,7 @@
 ---
 title: Apexsurvive Writeup (HTB Cyber Apocalypse 2024)
 author: aelmosalamy
-date: 2024-03-16
+date: 2024-03-17
 cover: 
 tags:
   - ctf
@@ -1323,7 +1323,7 @@ For that, we will just overwrite any file say `/app/application/database.py`. We
 ## Chapter 7: Conclusion
 This challenge became an instant favorite. It is the most challenging and, by extension, rewarding, web challenge I've ever solved.
 
-Indeed, the steps seem pretty straightforward now, but the "uncertainty management" aspect we discussed is what make security research a time consuming exercise. You don't know what you are expecting until you find it, and you need lots of grit and confidence to get there.
+Indeed, the steps seem pretty straightforward now, but the "uncertainty management" aspect we discussed is what makes security research a time consuming exercise. You don't know what you are expecting until you find it, and you need lots of grit and confidence to get there.
 
 Another major part of why I found this challenge extremely interesting is the fact that I have never exploited a race condition before. I genuinely did not know that's a *thing* you could do.
 
