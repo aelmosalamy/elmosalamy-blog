@@ -1,83 +1,82 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on elmosalamy: web dev blog</title>
-    <link>/tags/</link>
-    <description>Recent content in Tags on elmosalamy: web dev blog</description>
+    <title>Tags on elmosalamy | blog</title>
+    <link>//localhost:1313/tags/</link>
+    <description>Recent content in Tags on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Mon, 13 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <lastBuildDate>Sat, 16 Mar 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>javascript</title>
-      <link>/tags/javascript/</link>
+      <title>Ctf</title>
+      <link>//localhost:1313/tags/ctf/</link>
+      <pubDate>Sat, 16 Mar 2024 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/ctf/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cybersecurity</title>
+      <link>//localhost:1313/tags/cybersecurity/</link>
+      <pubDate>Mon, 26 Jun 2023 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/cybersecurity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Javascript</title>
+      <link>//localhost:1313/tags/javascript/</link>
       <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/javascript/</guid>
+      <guid>//localhost:1313/tags/javascript/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>experience</title>
-      <link>/tags/experience/</link>
+      <title>Experience</title>
+      <link>//localhost:1313/tags/experience/</link>
       <pubDate>Mon, 06 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/experience/</guid>
+      <guid>//localhost:1313/tags/experience/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>back-end</title>
-      <link>/tags/back-end/</link>
+      <title>Back-End</title>
+      <link>//localhost:1313/tags/back-end/</link>
       <pubDate>Fri, 01 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/back-end/</guid>
+      <guid>//localhost:1313/tags/back-end/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>flask</title>
-      <link>/tags/flask/</link>
+      <title>Flask</title>
+      <link>//localhost:1313/tags/flask/</link>
       <pubDate>Fri, 01 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/flask/</guid>
+      <guid>//localhost:1313/tags/flask/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>python</title>
-      <link>/tags/python/</link>
+      <title>Python</title>
+      <link>//localhost:1313/tags/python/</link>
       <pubDate>Fri, 01 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/python/</guid>
+      <guid>//localhost:1313/tags/python/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>foss</title>
-      <link>/tags/foss/</link>
+      <title>Foss</title>
+      <link>//localhost:1313/tags/foss/</link>
       <pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/foss/</guid>
+      <guid>//localhost:1313/tags/foss/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>linux</title>
-      <link>/tags/linux/</link>
+      <title>Linux</title>
+      <link>//localhost:1313/tags/linux/</link>
       <pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/linux/</guid>
+      <guid>//localhost:1313/tags/linux/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>ubuntu</title>
-      <link>/tags/ubuntu/</link>
+      <title>Ubuntu</title>
+      <link>//localhost:1313/tags/ubuntu/</link>
       <pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/ubuntu/</guid>
+      <guid>//localhost:1313/tags/ubuntu/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

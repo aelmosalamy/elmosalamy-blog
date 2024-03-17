@@ -1,11 +1,9 @@
 ---
 date: "2017-06-26T18:27:58+01:00"
 title: "Home"
+framed: true
 ---
 
-Hey:wave:, It's a pleasure seeing you here! My name is **aelmosalamy**, I am a Full Stack Developer 👨‍💻, and you've just stumbled upon my blog! I write on:
+Hey:wave:, It's a pleasure seeing you here!
 
-- Full Stack Web Development
-- Freelancing *- from a web developer perspective.*
-- UI and UX Design
-- And much more!
+I am **Adham Elmosalamy** (@aelmo), an engineer who *loves* everything cybersecurity. I write about technology, cybersecurity and CTFs.

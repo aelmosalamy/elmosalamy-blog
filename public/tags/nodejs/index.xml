@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nodejs on elmosalamy | Dev Blog</title>
+    <link>/tags/nodejs/</link>
+    <description>Recent content in nodejs on elmosalamy | Dev Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 01 Jan 2030 00:00:00 +0000</lastBuildDate><atom:link href="/tags/nodejs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How I got and built my first REAL Full Stack project</title>
+      <link>/posts/how-i-built-a-mini-social-network-from-start-to-finish-in-3-months/</link>
+      <pubDate>Tue, 01 Jan 2030 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/how-i-built-a-mini-social-network-from-start-to-finish-in-3-months/</guid>
+      <description>In this post I will be going over how I got my first real project, the challenges it entailed and how I approached them, I will also include some of the development decisions I took over the course of the project, the mistakes, and the things I&amp;rsquo;ve ultimately learnt.
+On a side note: I have always cherished transparency, and I hold great respect to those who offer their own personal experiences for everyone to read and learn from, because this is how I learnt, it&amp;rsquo;s a never ending cycle of giving that nourishes everybody, a cycle that gets extinguished when one refuses to pass on the baton he was entrusted with.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -7,13 +7,13 @@ tags: [javascript]
 
 Hey:wave: there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more! Stay tuned!
 
-I highly advise you to follow along, Javascript is a browser language, and you can follow along right here! In your browser! To do that: Right click anywhere on this page, then click "Inspect", on the side panel that appears, find the ">>" arrow icon, then click "Console", this is where you can type Javascript code!
+> I highly advise you to follow along, Javascript is a browser language, and you can follow along right here! In your browser! To do that: Right click anywhere on this page, then click "Inspect", on the side panel that appears, find the ">>" arrow icon, then click "Console", this is where you can type Javascript code!
 
 For starters, let's see what is an array.
 
 In Javascript an array is a collection of many things, Arrays allow you to group elements together and provide you with some cool features such as iteration and mapping!
 
-Right in your console, *see the note above if you haven't seen it already*, copy and paste the following code snippet then press *Enter*:
+Right in your console, **see note above**, copy and paste the following code snippet then press *Enter*:
 
 ```javascript
 let basket = [":apple:", ":pear:", ":banana:", ":cherries:", ":watermelon:", ":grapes:"];

@@ -1,7 +1,7 @@
 baseUrl: /
 languageCode: en-us
 theme: terminal
-paginate: 12
+paginate: 5
 
 # EXTRA START
 defaultContentLanguage: en
@@ -36,7 +36,7 @@ params:
 languages:
   en:
     languageName: English
-    title: "elmosalamy | Dev Blog"
+    title: "elmosalamy | blog"
     subtitle: elmosalamy
     keywords: ''
     menuMore: Show more
@@ -53,6 +53,13 @@ languages:
       - identifier: posts
         name: "📝 Posts"
         url: /posts
+        weight: -1
+
+      - identifier: tags
+        name: "🏷️ Tags"
+        url: /tags
+        weight: 2
+        
       - identifier: random
         name: "🔗 Random stuff"
         params:
@@ -66,3 +73,4 @@ languages:
     #   pre: html before link
     #   post: html after link
     #   url: url
+    #   weight: high = sink, low = float

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Google CTF 2023 And How It Almost Backfired :: elmosalamy | blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="I wanted to introduce a group of students to cybersecurity. They showed passion and willingness to learn.
+I thought there would be no better introduction than inviting them to a Capture the Flag (CTF) competition. That way they would get exposed to the field while having a fun experience.
+CTFs require teamwork, showcase the diverse requirements (and goals) of cybersecurity, offer hands-on practice, and demand a security research mindset. In fact, many professionals jumpstarted their security careers via CTFs." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/" />
+
+
+
+
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
+
+
+
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Google CTF 2023 And How It Almost Backfired">
+<meta property="og:description" content="I wanted to introduce a group of students to cybersecurity. They showed passion and willingness to learn.
+I thought there would be no better introduction than inviting them to a Capture the Flag (CTF) competition. That way they would get exposed to the field while having a fun experience.
+CTFs require teamwork, showcase the diverse requirements (and goals) of cybersecurity, offer hands-on practice, and demand a security research mindset. In fact, many professionals jumpstarted their security careers via CTFs." />
+<meta property="og:url" content="//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/" />
+<meta property="og:site_name" content="elmosalamy | blog" />
+
+  <meta property="og:image" content="//localhost:1313/images/google-ctf2.png">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2023-06-26 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="green">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    elmosalamy
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a target="" href="/posts">📝 Posts</a></li>
+        
+      
+        
+          <li><a target="" href="/tags">🏷️ Tags</a></li>
+        
+      
+        
+          <li><a target="_blank" href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/posts">📝 Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">🏷️ Tags</a></li>
+      
+    
+      
+        <li><a href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/">Google CTF 2023 And How It Almost Backfired</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2023-06-26 
+      </span>
+    
+    
+    <span class="post-author">:: aelmosalamy</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="//localhost:1313/tags/cybersecurity/">cybersecurity</a>&nbsp;
+    
+    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+    
+  </span>
+  
+
+  
+    <img src="//localhost:1313/images/google-ctf2.png" class="post-cover" alt="Google CTF 2023 And How It Almost Backfired" />
+  
+
+  
+
+  <div class="post-content"><div>
+        <p>I wanted to introduce a group of students to cybersecurity. They showed passion and willingness to learn.</p>
+<p>I thought there would be no better introduction than inviting them to a Capture the Flag (CTF) competition. That way they would get exposed to the field while having a fun experience.</p>
+<p>CTFs require teamwork, showcase the diverse requirements (and goals) of cybersecurity, offer hands-on practice, and demand a security research mindset. In fact, many professionals jumpstarted their security careers via CTFs. It can not get any better.</p>
+<p>So I went on and registered my team for the very first CTF I saw on CTFtime, one that happened to be run by Google. I thought this is some annual CTF which Google hosts for fun and games. It must be a perfect introductory event for a team of beginners. I registered and invited everyone to join the team.</p>
+<p>As I prepared for the event, read writeups and blogposts, I felt that past challenges erred a bit on the difficult side, maybe more than just a bit. I quickly realized this event is not for beginners at all; to the contrary, I realized Google CTF actually was an elite tier competition, hand-crafted annually by Google&rsquo;s Security team to find cream-of-the-crop security professionals.</p>
+<p>To put in context, DEF CON 2022 quals, a prestigious, top-tier CTF, weighs 77.83 on CTFtime; meanwhile, Google CTF of the same year weighed 97.84! This is going to be a disaster.</p>
+<p>I was very worried that this experience might discourage the newcomers&rsquo; from cybersecurity, perhaps affirm their stereotypical picture of cybersecurity as a complex field, exclusively reserved for a select-few genetically-gifted ultrahumans. I did not want the event to backfire and end up turning them away from the field.</p>
+<p>So to avoid the shock, I tried to keep them clear on expectations and objectives of our participation. I told them our primary goal is exposure. We are not in this event to fight for ranks, far from that, I actually do not expect us to be able to solve any challenge. We are in this competition to explore the craziness out there, see what&rsquo;s up, perhaps learn about new technologies, and pick a skill or two.</p>
+<p>The competition ended and results were not unexpected. Our team, over 48 hours, and out of 35 security challenges, managed to solve: one challenge! One that took us almost 8 hours to solve!</p>
+<p>As for our fresh members, they actually ended up enjoying the competition. They enjoyed collaborating on different technical problems and it triggered their curiosity to learn more about cybersecurity. They said they enjoyed the CTF format and would like to participate in future, hopefully more friendly, events.</p>
+<p>Personally, I attempted over 20 challenges, had a close call with a few, but ultimately reached a dead end in every single one of them. Going through the challenges, I couldn&rsquo;t help but smile as each challenge&rsquo;s simplicity sank in: it is clear what the goal is, and I know what I am looking at, yet no matter what I try, nothing works! That is a sign of well-designed CTF; no obfuscation, execution is all what matters. Everything I thought of flew off at a hopeless, rather educational, tangent.</p>
+<p>Overall, I think the Google Security team did a spectacular job in this CTF: every single challenge was extremely well-designed, thought-provoking and captivatingly unique. There was no throwaway challenges as in other CTFs; every single challenge was purposefully crafted to look flawless at a distance and barely falter under scrutiny. I can not imagine the time, effort, skillsets and thought process that went into designing some of these challenges. It really was a work of art.</p>
+<p>With that said, and I can not emphasize this enough, my advice to all fellow students, whether in cybersecurity or any other field is: Compete. Find a highly-regarded competition in your area of interest and participate in it. Perform poorly, once, twice&hellip; Perform poorly as many times as you can until you do not. You will learn so much. Competing is inherently rough and disheartening; but it is how you build grit, fortitude and eliminate biases. It also helps you stay grounded and accelerate your technical and mental maturing.</p>
+<p>Setting yourself against other talented, ruthless professionals saves you from the comfy bubble of &ldquo;lone wolf studying&rdquo;. A deceiving bubble that can lift you really high, inflate your confidence, before bursting and leaving you broken. Throw yourself out there, and just like our little team, start competing!</p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/js-basics-arrays/">
+                <span class="button__text">Javascript Basics: Arrays!</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "elmosalamy" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2024 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

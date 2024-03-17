@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>javascript on elmosalamy: web dev blog</title>
-    <link>/tags/javascript/</link>
-    <description>Recent content in javascript on elmosalamy: web dev blog</description>
+    <title>Javascript on elmosalamy | blog</title>
+    <link>//localhost:1313/tags/javascript/</link>
+    <description>Recent content in Javascript on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Mon, 13 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <lastBuildDate>Mon, 13 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Javascript Basics: Arrays!</title>
-      <link>/posts/js-basics-arrays/</link>
+      <link>//localhost:1313/posts/js-basics-arrays/</link>
       <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/posts/js-basics-arrays/</guid>
-      <description>Hey👋 there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more! Stay tuned!
-I highly advise you to follow along, Javascript is a browser language, and you can follow along right here! In your browser! To do that: Right click anywhere on this page, then click &amp;ldquo;Inspect&amp;rdquo;, on the side panel that appears, find the &amp;ldquo;&amp;raquo;&amp;rdquo; arrow icon, then click &amp;ldquo;Console&amp;rdquo;, this is where you can type Javascript code!</description>
+      <guid>//localhost:1313/posts/js-basics-arrays/</guid>
+      <description>Hey&amp;#x1f44b; there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more! Stay tuned!&#xA;I highly advise you to follow along, Javascript is a browser language, and you can follow along right here! In your browser! To do that: Right click anywhere on this page, then click &amp;ldquo;Inspect&amp;rdquo;, on the side panel that appears, find the &amp;ldquo;&amp;raquo;&amp;rdquo; arrow icon, then click &amp;ldquo;Console&amp;rdquo;, this is where you can type Javascript code!</description>
     </item>
-    
   </channel>
 </rss>

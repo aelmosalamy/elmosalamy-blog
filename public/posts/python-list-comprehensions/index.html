@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   
-    <title>Python List Comprehensions! :: elmosalamy: web dev blog</title>
+    <title>Python List Comprehensions! :: elmosalamy | blog</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="What&amp;rsquo;s up everybody! In this post I am going to show you an interesting tip which I rarely see young Pythonistas use, it&amp;rsquo;s List Comprehensions. If you dabbled a little with Python you probably had some problems where you had to iterate over a list and perform functions to its elements on-the-run, I know. I make no sense. To clear things up let me start with a simple task. Given a list of numbers, return a list containing the squares of the original list&amp;rsquo;s numbers, You might think: &amp;ldquo;Well, That&amp;rsquo;s easy!" />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="/posts/python-list-comprehensions/" />
+<link rel="canonical" href="//localhost:1313/posts/python-list-comprehensions/" />
 
 
 
 
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
 
-  <link rel="stylesheet" href="/assets/green.css">
-
-
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
 
 
 
+<link rel="stylesheet" href="//localhost:1313/style.css">
 
-<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
 
-  <link rel="shortcut icon" href="/img/favicon/green.png">
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
 
 
 
@@ -37,11 +37,11 @@
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Python List Comprehensions!">
 <meta property="og:description" content="What&amp;rsquo;s up everybody! In this post I am going to show you an interesting tip which I rarely see young Pythonistas use, it&amp;rsquo;s List Comprehensions. If you dabbled a little with Python you probably had some problems where you had to iterate over a list and perform functions to its elements on-the-run, I know. I make no sense. To clear things up let me start with a simple task. Given a list of numbers, return a list containing the squares of the original list&amp;rsquo;s numbers, You might think: &amp;ldquo;Well, That&amp;rsquo;s easy!" />
-<meta property="og:url" content="/posts/python-list-comprehensions/" />
-<meta property="og:site_name" content="elmosalamy: web dev blog" />
+<meta property="og:url" content="//localhost:1313/posts/python-list-comprehensions/" />
+<meta property="og:site_name" content="elmosalamy | blog" />
 
   
-    <meta property="og:image" content="/img/favicon/green.png">
+    <meta property="og:image" content="//localhost:1313/img/favicon/green.png">
   
 
 <meta property="og:image:width" content="2048">
@@ -87,11 +87,15 @@
     
       
         
-          <li><a href="/posts">Posts</a></li>
+          <li><a target="" href="/posts">📝 Posts</a></li>
         
       
         
-          <li><a href="https://aelmosalamy.github.io">Random stuff</a></li>
+          <li><a target="" href="/tags">🏷️ Tags</a></li>
+        
+      
+        
+          <li><a target="_blank" href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
         
       
       
@@ -103,11 +107,15 @@
   <ul class="menu__inner menu__inner--mobile">
     
       
-        <li><a class="lol" href="/posts">Posts</a></li>
+        <li><a href="/posts">📝 Posts</a></li>
       
     
       
-        <li><a class="lol" href="https://aelmosalamy.github.io">Random stuff</a></li>
+        <li><a href="/tags">🏷️ Tags</a></li>
+      
+    
+      
+        <li><a href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
       
     
     
@@ -122,7 +130,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="/posts/python-list-comprehensions/">Python List Comprehensions!</a></h1>
+    <a href="//localhost:1313/posts/python-list-comprehensions/">Python List Comprehensions!</a></h1>
   <div class="post-meta">
     
       <span class="post-date">
@@ -137,7 +145,7 @@
   
   <span class="post-tags">
     
-    #<a href="/tags/python/">python</a>&nbsp;
+    #<a href="//localhost:1313/tags/python/">python</a>&nbsp;
     
   </span>
   
@@ -147,34 +155,34 @@
   
 
   <div class="post-content"><div>
-        <p>What&rsquo;s up everybody! In this post I am going to show you an interesting tip which I rarely see young Pythonistas use, it&rsquo;s <strong>List Comprehensions</strong>. If you dabbled a little with Python you probably had some problems where you had to iterate over a list and perform functions to its elements on-the-run, I know. I make no sense. To clear things up let me start with a simple task. Given a list of numbers, return a list containing the squares of the original list&rsquo;s numbers, You might think: <em>&ldquo;Well, That&rsquo;s easy!&quot;</em> and write something as the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">square</span>(numbers):
-    output <span style="color:#f92672">=</span> []              <span style="color:#75715e"># Empty list for storing numbers </span>
-    <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> numbers:        <span style="color:#75715e"># Iterate over all numbers</span>
-        output<span style="color:#f92672">.</span>append(n <span style="color:#f92672">*</span> n) <span style="color:#75715e"># Self-explanatory</span>
-    <span style="color:#66d9ef">return</span> output            <span style="color:#75715e"># Look previous comment</span>
-</code></pre></div><p>Now if we run it..</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">numbers <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>]
-square(numbers)
-<span style="color:#75715e"># Output: [1, 4, 9, 16, 25, 36, 49]</span>
-</code></pre></div><p>It works as expected; however, It took around 7 lines to implement and execute, and since Python is built for simplicity, we&rsquo;ve got a more <em>Pythonic</em> way to do this.</p>
+        <p>What&rsquo;s up everybody! In this post I am going to show you an interesting tip which I rarely see young Pythonistas use, it&rsquo;s <strong>List Comprehensions</strong>. If you dabbled a little with Python you probably had some problems where you had to iterate over a list and perform functions to its elements on-the-run, I know. I make no sense. To clear things up let me start with a simple task. Given a list of numbers, return a list containing the squares of the original list&rsquo;s numbers, You might think: <em>&ldquo;Well, That&rsquo;s easy!&rdquo;</em> and write something as the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">square</span>(numbers):
+</span></span><span style="display:flex;"><span>    output <span style="color:#f92672">=</span> []              <span style="color:#75715e"># Empty list for storing numbers </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> numbers:        <span style="color:#75715e"># Iterate over all numbers</span>
+</span></span><span style="display:flex;"><span>        output<span style="color:#f92672">.</span>append(n <span style="color:#f92672">*</span> n) <span style="color:#75715e"># Self-explanatory</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> output            <span style="color:#75715e"># Look previous comment</span>
+</span></span></code></pre></div><p>Now if we run it..</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>numbers <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>]
+</span></span><span style="display:flex;"><span>square(numbers)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Output: [1, 4, 9, 16, 25, 36, 49]</span>
+</span></span></code></pre></div><p>It works as expected; however, It took around 7 lines to implement and execute, and since Python is built for simplicity, we&rsquo;ve got a more <em>Pythonic</em> way to do this.</p>
 <h2 id="the-one-liner">The One Liner<a href="#the-one-liner" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">[x <span style="color:#f92672">*</span> x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> numbers]
-<span style="color:#75715e"># Output: [1, 4, 9, 16, 25, 36, 49]</span>
-</code></pre></div><p>Magnificent, right? This is one of the simplest forms of a Python list comprehension, we iterate over each element in the list: <code>for x in numbers</code>, then apply some operations on element <code>x</code> and in our case we used <code>x * x</code> to get the square and finally we placed the whole expression inside square brackets <code>[]</code> to indicate that we want the final output in the form of a <em>List</em>. and all of this in just one line.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>[x <span style="color:#f92672">*</span> x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> numbers]
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Output: [1, 4, 9, 16, 25, 36, 49]</span>
+</span></span></code></pre></div><p>Magnificent, right? This is one of the simplest forms of a Python list comprehension, we iterate over each element in the list: <code>for x in numbers</code>, then apply some operations on element <code>x</code> and in our case we used <code>x * x</code> to get the square and finally we placed the whole expression inside square brackets <code>[]</code> to indicate that we want the final output in the form of a <em>List</em>. and all of this in just one line.</p>
 <p>Let&rsquo;s get a bit more advanced, we can apply our comprehension selectively, ignoring all even numbers for example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> [x <span style="color:#f92672">*</span> x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> numbers <span style="color:#66d9ef">if</span> x <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>]
-[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">9</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">49</span>]
-</code></pre></div><p>This one is exactly like the previous one except for a little addition. We iterated over the elements in a list: <code>for x in numbers</code> and we applied a specific operation to that <code>x</code> every iteration which is <code>x * x</code>; however, we told Python to do that only if a specific condition is met which is <code>x % 2 != 0</code> which translate to <em>if x is not even</em> in simple English, What I like most about this is how natural it is written, You don&rsquo;t need much to get used to it, since it is written in logical order. That last sentence can be translated like this: <em>Give me the square of &ldquo;x&rdquo; for every &ldquo;x&rdquo; in this list of numbers only if that &ldquo;x&rdquo; is not even.</em> How much closer to English can this get? Finally, I would like to show you a 2 more examples of Python comprehensions.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span> [x <span style="color:#f92672">*</span> x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> numbers <span style="color:#66d9ef">if</span> x <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">9</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">49</span>]
+</span></span></code></pre></div><p>This one is exactly like the previous one except for a little addition. We iterated over the elements in a list: <code>for x in numbers</code> and we applied a specific operation to that <code>x</code> every iteration which is <code>x * x</code>; however, we told Python to do that only if a specific condition is met which is <code>x % 2 != 0</code> which translate to <em>if x is not even</em> in simple English, What I like most about this is how natural it is written, You don&rsquo;t need much to get used to it, since it is written in logical order. That last sentence can be translated like this: <em>Give me the square of &ldquo;x&rdquo; for every &ldquo;x&rdquo; in this list of numbers only if that &ldquo;x&rdquo; is not even.</em> How much closer to English can this get? Finally, I would like to show you a 2 more examples of Python comprehensions.</p>
 <p>You can use the exact same syntax as so:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">prices <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;apple&#39;</span>: <span style="color:#ae81ff">5</span>, <span style="color:#e6db74">&#39;sandwich&#39;</span>: <span style="color:#ae81ff">15</span>, <span style="color:#e6db74">&#39;almond&#39;</span>: <span style="color:#ae81ff">3</span>}
-shopping_cart <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;apple&#39;</span>, <span style="color:#e6db74">&#39;almond&#39;</span>, <span style="color:#e6db74">&#39;apple&#39;</span>, <span style="color:#e6db74">&#39;sandwich&#39;</span>]
-total_cost <span style="color:#f92672">=</span> sum([prices[item] <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> shopping_cart])
-<span style="color:#75715e"># Output: 28</span>
-</code></pre></div><p>We can even apply the exact same syntax with dictionaries, with <code>key:value</code> pairs as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">{x: x <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span> <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">6</span>)}
-{<span style="color:#ae81ff">1</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">15</span>, <span style="color:#ae81ff">4</span>: <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">25</span>}
-</code></pre></div><p>and there we go, we&rsquo;ve created a <em>Dictionary Comprehension!</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>prices <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;apple&#39;</span>: <span style="color:#ae81ff">5</span>, <span style="color:#e6db74">&#39;sandwich&#39;</span>: <span style="color:#ae81ff">15</span>, <span style="color:#e6db74">&#39;almond&#39;</span>: <span style="color:#ae81ff">3</span>}
+</span></span><span style="display:flex;"><span>shopping_cart <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;apple&#39;</span>, <span style="color:#e6db74">&#39;almond&#39;</span>, <span style="color:#e6db74">&#39;apple&#39;</span>, <span style="color:#e6db74">&#39;sandwich&#39;</span>]
+</span></span><span style="display:flex;"><span>total_cost <span style="color:#f92672">=</span> sum([prices[item] <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> shopping_cart])
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Output: 28</span>
+</span></span></code></pre></div><p>We can even apply the exact same syntax with dictionaries, with <code>key:value</code> pairs as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>{x: x <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span> <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">6</span>)}
+</span></span><span style="display:flex;"><span>{<span style="color:#ae81ff">1</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">15</span>, <span style="color:#ae81ff">4</span>: <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">25</span>}
+</span></span></code></pre></div><p>and there we go, we&rsquo;ve created a <em>Dictionary Comprehension!</em></p>
 <h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Python Comprehensions are extremely powerful tool, easy to read syntax and I find myself using it alot, one practical example is scanning a list of employees, and updating the salary of each employee in a specific team by a percentage of his current salary, in just one line.</p>
 <p>That&rsquo;s it for this post, hopefully you found it useful, just keep practicing and whenever you are solving any problem, think if there is a possibility that your problem can be solved using list comprehensions, that way you can adopt it and integrate into your current Python weapons. Peace.</p>
@@ -191,7 +199,7 @@ total_cost <span style="color:#f92672">=</span> sum([prices[item] <span style="c
     <div class="pagination__buttons">
         
         <span class="button previous">
-            <a href="/posts/say-hello-with-flask/">
+            <a href="//localhost:1313/posts/say-hello-with-flask/">
                 <span class="button__icon">←</span>
                 <span class="button__text">Say Hello with Flask!</span>
             </a>
@@ -199,7 +207,7 @@ total_cost <span style="color:#f92672">=</span> sum([prices[item] <span style="c
         
         
         <span class="button next">
-            <a href="/posts/linux-into-the-scene/">
+            <a href="//localhost:1313/posts/linux-into-the-scene/">
                 <span class="button__text">Linux into the scene!</span>
                 <span class="button__icon">→</span>
             </a>
@@ -211,8 +219,8 @@ total_cost <span style="color:#f92672">=</span> sum([prices[item] <span style="c
   
 
   <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
+<script>
+    window.disqus_config = function () {
     
     
     
@@ -239,15 +247,15 @@ total_cost <span style="color:#f92672">=</span> sum([prices[item] <span style="c
   <div class="footer__inner">
     
       <div class="copyright">
-        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+        <span>© 2024 Powered by <a href="http://gohugo.io">Hugo</a></span>
     
         <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
       </div>
   </div>
 </footer>
 
-<script src="/assets/main.js"></script>
-<script src="/assets/prism.js"></script>
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
 
 
 
