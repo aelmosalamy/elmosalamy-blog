@@ -107,7 +107,7 @@ Applying the above, let's start with exploring the directory structure of our ap
 └───email-app+
 ```
 
-Upon inspection, there is so many files, so many routes and so many things going on compared to your typical web challenge.
+Upon inspection, there are so many files, so many routes and so many things going on compared to your typical web challenge.
 
 This might be overwhelming, and many people would just decide to not continue at this point, but that should not deter us. In fact, a complex application indicates a bigger attack surface → higher chance of finding a vulnerability.
 
@@ -126,7 +126,7 @@ Let's highlight our primary takeaways:
 - Python3
 - MariaDB
 - There is a `bot` user, Chromium and Selenium installed
-	- We saw there is a report functionality from the previous step
+	- We saw there was a report functionality from the previous step
 	- These all translate to one word: XSS
 - `nginx` as a reverse proxy
 - `uwsgi`
@@ -137,7 +137,7 @@ Let's highlight our primary takeaways:
 
 Let's look at `entrypoint.sh`, a script used to initialize the container after all dependencies and packages are brought in.
 
-The script configures the database, creating two tables `users` and `products`
+The script configures the database, creating two tables: `users` and `products`
 ```mysql
 CREATE TABLE apexsurvive.users (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -275,7 +275,7 @@ We can see that `uwsgi` is set to use `python3`, is running from `/app/` and is 
 Let's jump into `/app/`, the directory served by `uwsgi`, and explore what is actually going on under the hood.
 
 ## Chapter 3: Digging into Flask
-With our newfound understanding of user flow and system components, lets dig into the actual app logic, we will try to look for hidden features and perhaps find ways to disrupt the user flow explored in the previous step.
+With our newfound understanding of user flow and system components, lets dig into the actual app logic. We will try to look for hidden features and perhaps find ways to disrupt the user flow explored in the previous step.
 
 This process requires patience, we need to carefully scan the codebase, noting how each part of the code could serve us as attackers. We might need to draw diagrams, take notes or even speak our thought process out loud.
 
