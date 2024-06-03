@@ -8,9 +8,11 @@ tags:
   - unicode
 draft: false
 ---
-In this post I will show you a very interesting challenge that came up in GPN 2024 CTF.
+In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.
 
-We are provided with an extremely short source (exactly 16 lines!), yet that did not make our job any easier. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.
+The challenge is called Secure Notes and is authored by **@13x1**.
+
+We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.
 
 Other than the source code, we were given access to an admin bot and were told that this is an XSS challenge. We need to trigger XSS.
 

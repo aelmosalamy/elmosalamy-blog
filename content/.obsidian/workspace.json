@@ -48,7 +48,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:unicode",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -65,8 +65,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -149,9 +148,10 @@
   },
   "active": "321016213707f2d4",
   "lastOpenFiles": [
+    "posts/nand2tetris/index.md",
+    "posts/BOM Sniffing to XSS/index.md",
     "posts/BOM Sniffing to XSS/flag.png",
     "posts/BOM Sniffing to XSS/bom-xss.png",
-    "posts/BOM Sniffing to XSS/index.md",
     "posts/BOM Sniffing to XSS/cyberchef-be.png",
     "posts/BOM Sniffing to XSS/cyberchef-le.png",
     "posts/BOM Sniffing to XSS/cyberchef-target.png",
@@ -160,7 +160,6 @@
     "posts/BOM Sniffing to XSS/cyberchef-le.png",
     "posts/BOM Sniffing to XSS/bom-sniffing.png",
     "posts/BOM Sniffing to XSS/whatwg-bom.png",
-    "posts/nand2tetris/index.md",
     "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
     "posts/BOM Sniffing to XSS",
     "posts/N0P CTF - Jojo Website 2/index.md",
