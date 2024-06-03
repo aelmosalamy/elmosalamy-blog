@@ -8,16 +8,13 @@ tags:
   - unicode
 draft: false
 cover: /images/encoding-cjk.png
+toc: true
 ---
-In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.
+In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.
 
-The challenge is called Secure Notes and is authored by **@13x1**.
+For those interested, this post is based on an interesting challenge called **Secure Notes** which was authored by **@13x1** and have appeared in the recent GPN 2024 CTF.
 
-We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.
-
-Other than the source code, we were given access to an admin bot and were told that this is an XSS challenge. We need to trigger XSS.
-
-> Trigger XSS and 16 lines? How hard could it be?
+We are given 16 lines of source code and access to an admin bot. 
 
 Let's see:
 ```js
@@ -63,11 +60,9 @@ In summary, this is a barebone Node `http` server that has three routes:
 - `/submit?<content>`: saves `<content>` under `notes/` 
 - `/notes/<id>`: returns `notes/<id>.html` contents
 
-I suggest attempting to solve this on your own, `npm i dompurify jsdom`, then `node app.js` and you are set.
+You can attempt this before moving on, just `npm i dompurify jsdom`, then `node app.js` and you are set.
 
-If you managed to solve it, good job, kudos to you; otherwise, read through the solution and explanation below.
-
-## Solution (Spoilers ahead!)
+## Getting Started
 I hope you gave it a go, now with the solution.
 
 I will be providing a walkthrough-like explanation of the ideas required to solve this challenge as we go so we can maximize learning.
@@ -94,6 +89,7 @@ console.log("saved:", Buffer.from(DOMPurify.sanitize(content), "utf-16le"));
 
 We need the `note_id` since that is what we provide to the admin bot in case of successful XSS.
 
+## Endianness
 Let's start by seeing how the server behaves with different payloads:
 ```python
 payload = '<img src onerror=alert(1)>'
@@ -173,17 +169,18 @@ Data received, sanitized and saved by the server is exactly the same as it's lit
 The exact reason is irrelevant since regardless of where exactly was the leading null byte stripped, the result will be the same, we are getting a string of null byte delimited ASCII characters that is completely benign and produces the same result:
 ![](html-literal.png)
 
-This will not work.
-
+## More Than Just Text
 What if we flip the bytes?
+
+The Unicode codepoint `\u003c` when interpreted as big endian, will give us the character equivalent to `0x3c = 60 = "<"` while the *same* sequence, interpreted as little endian will give us the character equivalent to `0x3c00 = 15360 == "㰀"`. This is critical for solving this challenge.
+
+To demonstrate:
 ```python
 >>> '\u003c'
 '<'
 >>> '\u3c00'
 '㰀'
 ```
-
-The Unicode codepoint `\u003c` when interpreted as big endian, will give us the character equivalent to `0x3c = 60 = "<"` while the *same* sequence, interpreted as little endian will give us the character equivalent to `0x3c00 = 15360 == "㰀"`. This is critical for solving this challenge.
 
 | ![](unicode-less-than.png) | ![](unicode-chinese.png) |
 | -------------------------- | ---------------------------------------- |
@@ -218,15 +215,17 @@ When this string goes through DOMPurify, it will mostly be a passthrough as it i
 
 We need to do better. Hmm...
 
-Let's stop and recap what we have done. So far, we are able to disguise our payload by swapping each two bytes using our little `.encode('utf-16-le').decode('utf-16-be')` trick. This allowed our payload to go through DOMPurify since it really is just an innocent string at that point.
+Let's stop and recap what we have done. So far, we are able to disguise our payload by swapping each byte pair using our little `.encode('utf-16-le').decode('utf-16-be')` trick. This method allowed our payload to go through DOMPurify since it really is just an innocent string at that point.
 
-However, can we get this innocuous string to do something malicious? If you look closely, what we passed through is not just a random string. It actually has double meaning based on the way you choose to interpret it, one way being less innocent than the other.
+However, can we get this innocuous string to do something malicious on the client side?
+
+Looking closely, what we managed to pass through is not just any random string. It is unique as it actually holds double meaning based on the way you choose to interpret it, one way being less innocent than the other.
 
 What does that mean?
 
-As we know, the server responds with `Content-Type: application/html; charset=utf-8` which instructs the browser to treat the response as little endian, this causes our manipulated, swapped bytes like `\x00\x3c` to be decoded to 㰀 instead of the malicious form that we want.
+As we know, the server responds with `Content-Type: application/html; charset=utf-8` which instructs the browser to treat the response as little endian, this in turn causes our manipulated, swapped bytes like `\x00\x3c` to be decoded to correctly to 㰀 instead of being rendered as the malicious form that we intend.
 
-We can see this better with CyberChef:
+We can illustrate this better in CyberChef:
 ![](cyberchef-le.png)
 - Blue is us swapping the payload bytes into a harmless string
 - Red is the server as it encodes and saves the DOMPurify output to disk
@@ -235,13 +234,12 @@ We can see this better with CyberChef:
 Let's see what happens if we change the orange part to interpret the string as UTF-16BE:
 ![](cyberchef-be.png)
 
-Wow! That's impressive.
+The illustration above means that if we could, somehow, instruct the browser to ignore that `charset=utf-16le` in the response and use `utf-16be` instead, we will be able to achieve XSS.
 
-This means that if we could, somehow, instruct the browser to ignore that `charset=utf-16le` in the response and use `utf-16be` instead, we will be able to achieve XSS.
+## BOM... BOM... BOM...
+Our findings above, lead us to one question: how does our browser determine content encoding or endianness of its content to start with? 
 
-Let's reframe it into a question: how does our browser determine content encoding or endianness of its content to start with? 
-
-I chose to ask the most authoritative source possible on the matter, the WHATWG HTML specification itself.
+I chose to ask the most authoritative source on the matter, the WHATWG HTML specification itself.
 
 Within the [WHATWG HTML Standard](https://html.spec.whatwg.org/multipage/parsing.html#determining-the-character-encoding) we can search for "encoding" or "charset" and eventually we can find a section that reads "Determining the character encoding" :
 ![](whatwg-bom.png)
@@ -290,10 +288,9 @@ b'\xfe\x00\xff\x00'
 
 Play around with encoding and decoding, try different combinations until you get the hang of it, it is useful to wrap your head around this important concept and be able to write code that deals with encodings comfortably.
 
-You can also use [util.unicode.org](https://util.unicode.org/UnicodeJsps/character.jsp?a=FEFF&B1=Show) to explore  different codepoints and their representations.
+As a side note, you can use [util.unicode.org](https://util.unicode.org/UnicodeJsps/character.jsp?a=FEFF&B1=Show) to explore  different codepoints and their representations.
 
-Alright, let's get to work.
-
+## Assembling the Pieces
 Based on everything we have discussed so far, we know that to coerce the browser into using `UTF-16BE` encoding, we need to provide the *Byte order mark* `0xfe 0xff` before our payload. we also know how to send the BOM correctly:
 ```python
 # --- attacker side ---

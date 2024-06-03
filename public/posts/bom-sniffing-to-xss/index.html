@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   
     <title>BOM Sniffing to XSS :: elmosalamy | blog</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.
-The challenge is called Secure Notes and is authored by @13x1.
-We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it." />
+<meta name="description" content="In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.
+For those interested, this post is based on an interesting challenge called Secure Notes which was authored by @13x1 and have appeared in the recent GPN 2024 CTF.
+We are given 16 lines of source code and access to an admin bot." />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="/posts/bom-sniffing-to-xss/" />
+<link rel="canonical" href="//localhost:1313/posts/bom-sniffing-to-xss/" />
 
 
 
 
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
 
-  <link rel="stylesheet" href="/assets/green.css">
-
-
-
-<link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
 
 
-<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
 
-  <link rel="shortcut icon" href="/img/favicon/green.png">
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
 
 
 
@@ -38,13 +38,13 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="BOM Sniffing to XSS">
-<meta property="og:description" content="In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.
-The challenge is called Secure Notes and is authored by @13x1.
-We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it." />
-<meta property="og:url" content="/posts/bom-sniffing-to-xss/" />
+<meta property="og:description" content="In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.
+For those interested, this post is based on an interesting challenge called Secure Notes which was authored by @13x1 and have appeared in the recent GPN 2024 CTF.
+We are given 16 lines of source code and access to an admin bot." />
+<meta property="og:url" content="//localhost:1313/posts/bom-sniffing-to-xss/" />
 <meta property="og:site_name" content="elmosalamy | blog" />
 
-  <meta property="og:image" content="/images/encoding-cjk.png">
+  <meta property="og:image" content="//localhost:1313/images/encoding-cjk.png">
 
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
@@ -143,7 +143,7 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
     
 <div class="post">
   <h1 class="post-title">
-    <a href="/posts/bom-sniffing-to-xss/">BOM Sniffing to XSS</a></h1>
+    <a href="//localhost:1313/posts/bom-sniffing-to-xss/">BOM Sniffing to XSS</a></h1>
   <div class="post-meta">
     
       <span class="post-date">
@@ -158,29 +158,42 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
   
   <span class="post-tags">
     
-    #<a href="/tags/ctf/">ctf</a>&nbsp;
+    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
     
-    #<a href="/tags/xss/">xss</a>&nbsp;
+    #<a href="//localhost:1313/tags/xss/">xss</a>&nbsp;
     
-    #<a href="/tags/unicode/">unicode</a>&nbsp;
+    #<a href="//localhost:1313/tags/unicode/">unicode</a>&nbsp;
     
   </span>
   
 
   
-    <img src="/images/encoding-cjk.png" class="post-cover" alt="BOM Sniffing to XSS" />
+    <img src="//localhost:1313/images/encoding-cjk.png" class="post-cover" alt="BOM Sniffing to XSS" />
   
 
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#endianness">Endianness</a></li>
+    <li><a href="#more-than-just-text">More Than Just Text</a></li>
+    <li><a href="#bom-bom-bom">BOM&hellip; BOM&hellip; BOM&hellip;</a></li>
+    <li><a href="#assembling-the-pieces">Assembling the Pieces</a></li>
+  </ul>
+</nav>
+    </div>
   
 
   <div class="post-content"><div>
-        <p>In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.</p>
-<p>The challenge is called Secure Notes and is authored by <strong>@13x1</strong>.</p>
-<p>We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.</p>
-<p>Other than the source code, we were given access to an admin bot and were told that this is an XSS challenge. We need to trigger XSS.</p>
-<blockquote>
-<p>Trigger XSS and 16 lines? How hard could it be?</p>
-</blockquote>
+        <p>In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.</p>
+<p>For those interested, this post is based on an interesting challenge called <strong>Secure Notes</strong> which was authored by <strong>@13x1</strong> and have appeared in the recent GPN 2024 CTF.</p>
+<p>We are given 16 lines of source code and access to an admin bot.</p>
 <p>Let&rsquo;s see:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">DOMPurify</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;dompurify&#34;</span>)(<span style="color:#66d9ef">new</span> (<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;jsdom&#34;</span>).<span style="color:#a6e22e">JSDOM</span>)(<span style="color:#e6db74">&#34;&#34;</span>).window); <span style="color:#75715e">// the only dependency!
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
@@ -223,9 +236,8 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
 <li><code>/submit?&lt;content&gt;</code>: saves <code>&lt;content&gt;</code> under <code>notes/</code></li>
 <li><code>/notes/&lt;id&gt;</code>: returns <code>notes/&lt;id&gt;.html</code> contents</li>
 </ul>
-<p>I suggest attempting to solve this on your own, <code>npm i dompurify jsdom</code>, then <code>node app.js</code> and you are set.</p>
-<p>If you managed to solve it, good job, kudos to you; otherwise, read through the solution and explanation below.</p>
-<h2 id="solution-spoilers-ahead">Solution (Spoilers ahead!)<a href="#solution-spoilers-ahead" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>You can attempt this before moving on, just <code>npm i dompurify jsdom</code>, then <code>node app.js</code> and you are set.</p>
+<h2 id="getting-started">Getting Started<a href="#getting-started" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>I hope you gave it a go, now with the solution.</p>
 <p>I will be providing a walkthrough-like explanation of the ideas required to solve this challenge as we go so we can maximize learning.</p>
 <p>First, let&rsquo;s patch our server so we can have better clarity on how&rsquo;s our input looking like internally at various stages:</p>
@@ -245,6 +257,7 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
 </span></span><span style="display:flex;"><span>print(note_id)
 </span></span></code></pre></div></blockquote>
 <p>We need the <code>note_id</code> since that is what we provide to the admin bot in case of successful XSS.</p>
+<h2 id="endianness">Endianness<a href="#endianness" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Let&rsquo;s start by seeing how the server behaves with different payloads:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;img src onerror=alert(1)&gt;&#39;</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># sent: &#39;&lt;img src onerror=alert(1)&gt;&#39;</span>
@@ -305,14 +318,15 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
 </span></span></code></pre></div><p>Data received, sanitized and saved by the server is exactly the same as it&rsquo;s little endian counterpart, perhaps the leading null byte is stripped at some point either by <code>DOMPurify</code> or by the <code>http</code> server, not sure.</p>
 <p>The exact reason is irrelevant since regardless of where exactly was the leading null byte stripped, the result will be the same, we are getting a string of null byte delimited ASCII characters that is completely benign and produces the same result:
 <img src="/posts/bom-sniffing-to-xss/html-literal.png"></p>
-<p>This will not work.</p>
+<h2 id="more-than-just-text">More Than Just Text<a href="#more-than-just-text" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>What if we flip the bytes?</p>
+<p>The Unicode codepoint <code>\u003c</code> when interpreted as big endian, will give us the character equivalent to <code>0x3c = 60 = &quot;&lt;&quot;</code> while the <em>same</em> sequence, interpreted as little endian will give us the character equivalent to <code>0x3c00 = 15360 == &quot;㰀&quot;</code>. This is critical for solving this challenge.</p>
+<p>To demonstrate:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u003c</span><span style="color:#e6db74">&#39;</span>
 </span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&lt;&#39;</span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u3c00</span><span style="color:#e6db74">&#39;</span>
 </span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;㰀&#39;</span>
-</span></span></code></pre></div><p>The Unicode codepoint <code>\u003c</code> when interpreted as big endian, will give us the character equivalent to <code>0x3c = 60 = &quot;&lt;&quot;</code> while the <em>same</em> sequence, interpreted as little endian will give us the character equivalent to <code>0x3c00 = 15360 == &quot;㰀&quot;</code>. This is critical for solving this challenge.</p>
-<table>
+</span></span></code></pre></div><table>
 <thead>
 <tr>
 <th><img src="/posts/bom-sniffing-to-xss/unicode-less-than.png"></th>
@@ -342,11 +356,12 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
 <p>When this string goes through DOMPurify, it will mostly be a passthrough as it is just a pure CJK string with no HTML meta characters, it is then saved in little endian and decoded by the browser also as little endian, the user ends up seeing the same CJK string:</p>
 <p><img src="/posts/bom-sniffing-to-xss/html-chinese.png"></p>
 <p>We need to do better. Hmm&hellip;</p>
-<p>Let&rsquo;s stop and recap what we have done. So far, we are able to disguise our payload by swapping each two bytes using our little <code>.encode('utf-16-le').decode('utf-16-be')</code> trick. This allowed our payload to go through DOMPurify since it really is just an innocent string at that point.</p>
-<p>However, can we get this innocuous string to do something malicious? If you look closely, what we passed through is not just a random string. It actually has double meaning based on the way you choose to interpret it, one way being less innocent than the other.</p>
+<p>Let&rsquo;s stop and recap what we have done. So far, we are able to disguise our payload by swapping each byte pair using our little <code>.encode('utf-16-le').decode('utf-16-be')</code> trick. This method allowed our payload to go through DOMPurify since it really is just an innocent string at that point.</p>
+<p>However, can we get this innocuous string to do something malicious on the client side?</p>
+<p>Looking closely, what we managed to pass through is not just any random string. It is unique as it actually holds double meaning based on the way you choose to interpret it, one way being less innocent than the other.</p>
 <p>What does that mean?</p>
-<p>As we know, the server responds with <code>Content-Type: application/html; charset=utf-8</code> which instructs the browser to treat the response as little endian, this causes our manipulated, swapped bytes like <code>\x00\x3c</code> to be decoded to 㰀 instead of the malicious form that we want.</p>
-<p>We can see this better with CyberChef:
+<p>As we know, the server responds with <code>Content-Type: application/html; charset=utf-8</code> which instructs the browser to treat the response as little endian, this in turn causes our manipulated, swapped bytes like <code>\x00\x3c</code> to be decoded to correctly to 㰀 instead of being rendered as the malicious form that we intend.</p>
+<p>We can illustrate this better in CyberChef:
 <img src="/posts/bom-sniffing-to-xss/cyberchef-le.png"></p>
 <ul>
 <li>Blue is us swapping the payload bytes into a harmless string</li>
@@ -355,10 +370,10 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
 </ul>
 <p>Let&rsquo;s see what happens if we change the orange part to interpret the string as UTF-16BE:
 <img src="/posts/bom-sniffing-to-xss/cyberchef-be.png"></p>
-<p>Wow! That&rsquo;s impressive.</p>
-<p>This means that if we could, somehow, instruct the browser to ignore that <code>charset=utf-16le</code> in the response and use <code>utf-16be</code> instead, we will be able to achieve XSS.</p>
-<p>Let&rsquo;s reframe it into a question: how does our browser determine content encoding or endianness of its content to start with?</p>
-<p>I chose to ask the most authoritative source possible on the matter, the WHATWG HTML specification itself.</p>
+<p>The illustration above means that if we could, somehow, instruct the browser to ignore that <code>charset=utf-16le</code> in the response and use <code>utf-16be</code> instead, we will be able to achieve XSS.</p>
+<h2 id="bom-bom-bom">BOM&hellip; BOM&hellip; BOM&hellip;<a href="#bom-bom-bom" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Our findings above, lead us to one question: how does our browser determine content encoding or endianness of its content to start with?</p>
+<p>I chose to ask the most authoritative source on the matter, the WHATWG HTML specification itself.</p>
 <p>Within the <a href="https://html.spec.whatwg.org/multipage/parsing.html#determining-the-character-encoding">WHATWG HTML Standard</a> we can search for &ldquo;encoding&rdquo; or &ldquo;charset&rdquo; and eventually we can find a section that reads &ldquo;Determining the character encoding&rdquo; :
 <img src="/posts/bom-sniffing-to-xss/whatwg-bom.png"></p>
 <p>The section lists 9 different <em>algorithms</em> for determining a document&rsquo;s character encoding, ordered by precedence, primarily:</p>
@@ -415,8 +430,8 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
 </span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)
 </span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\x00\xff\x00</span><span style="color:#e6db74">&#39;</span>
 </span></span></code></pre></div><p>Play around with encoding and decoding, try different combinations until you get the hang of it, it is useful to wrap your head around this important concept and be able to write code that deals with encodings comfortably.</p>
-<p>You can also use <a href="https://util.unicode.org/UnicodeJsps/character.jsp?a=FEFF&B1=Show">util.unicode.org</a> to explore  different codepoints and their representations.</p>
-<p>Alright, let&rsquo;s get to work.</p>
+<p>As a side note, you can use <a href="https://util.unicode.org/UnicodeJsps/character.jsp?a=FEFF&B1=Show">util.unicode.org</a> to explore  different codepoints and their representations.</p>
+<h2 id="assembling-the-pieces">Assembling the Pieces<a href="#assembling-the-pieces" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Based on everything we have discussed so far, we know that to coerce the browser into using <code>UTF-16BE</code> encoding, we need to provide the <em>Byte order mark</em> <code>0xfe 0xff</code> before our payload. we also know how to send the BOM correctly:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># --- attacker side ---</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># what payload looks like after swapping</span>
@@ -491,7 +506,7 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
         
         
         <span class="button next">
-            <a href="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">
+            <a href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">
                 <span class="button__text">Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</span>
                 <span class="button__icon">→</span>
             </a>
@@ -538,8 +553,8 @@ We are provided with an extremely short source (exactly 16 lines!), but before y
   </div>
 </footer>
 
-<script src="/assets/main.js"></script>
-<script src="/assets/prism.js"></script>
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
 
 
 

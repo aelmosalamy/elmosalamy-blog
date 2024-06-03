@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Xss on elmosalamy | blog</title>
-    <link>/tags/xss/</link>
+    <link>//localhost:1313/tags/xss/</link>
     <description>Recent content in Xss on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sat, 01 Jun 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="/tags/xss/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/tags/xss/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>BOM Sniffing to XSS</title>
-      <link>/posts/bom-sniffing-to-xss/</link>
+      <link>//localhost:1313/posts/bom-sniffing-to-xss/</link>
       <pubDate>Sat, 01 Jun 2024 00:00:00 +0000</pubDate>
-      <guid>/posts/bom-sniffing-to-xss/</guid>
-      <description>In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.&#xA;The challenge is called Secure Notes and is authored by @13x1.&#xA;We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it.</description>
+      <guid>//localhost:1313/posts/bom-sniffing-to-xss/</guid>
+      <description>In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.&#xA;For those interested, this post is based on an interesting CTF challenge called Secure Notes which was authored by @13x1 and appeared in the recent GPN 2024 CTF.&#xA;We are given 16 lines of source code and access to an admin bot.</description>
     </item>
   </channel>
 </rss>
