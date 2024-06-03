@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   
-    <title>Secure Notes Writeup (GPN 2024 CTF) :: elmosalamy | blog</title>
+    <title>BOM Sniffing to XSS :: elmosalamy | blog</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="In this post I will show you a very interesting challenge that came up in GPN 2024 CTF.
-We are provided with an extremely short source (exactly 16 lines!), yet that did not make our job any easier. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.
-Other than the source code, we were given access to an admin bot and were told that this is an XSS challenge." />
+<meta name="description" content="In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.
+The challenge is called Secure Notes and is authored by @13x1.
+We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it." />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="/posts/bom-sniffing-to-xss/" />
+<link rel="canonical" href="//localhost:1313/posts/bom-sniffing-to-xss/" />
 
 
 
 
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
 
-  <link rel="stylesheet" href="/assets/green.css">
-
-
-
-<link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
 
 
-<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
 
-  <link rel="shortcut icon" href="/img/favicon/green.png">
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
 
 
 
@@ -37,16 +37,14 @@ Other than the source code, we were given access to an admin bot and were told t
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="Secure Notes Writeup (GPN 2024 CTF)">
-<meta property="og:description" content="In this post I will show you a very interesting challenge that came up in GPN 2024 CTF.
-We are provided with an extremely short source (exactly 16 lines!), yet that did not make our job any easier. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.
-Other than the source code, we were given access to an admin bot and were told that this is an XSS challenge." />
-<meta property="og:url" content="/posts/bom-sniffing-to-xss/" />
+<meta property="og:title" content="BOM Sniffing to XSS">
+<meta property="og:description" content="In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.
+The challenge is called Secure Notes and is authored by @13x1.
+We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it." />
+<meta property="og:url" content="//localhost:1313/posts/bom-sniffing-to-xss/" />
 <meta property="og:site_name" content="elmosalamy | blog" />
 
-  
-    <meta property="og:image" content="/img/favicon/green.png">
-  
+  <meta property="og:image" content="//localhost:1313/images/encoding-cjk.png">
 
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
@@ -145,7 +143,7 @@ Other than the source code, we were given access to an admin bot and were told t
     
 <div class="post">
   <h1 class="post-title">
-    <a href="/posts/bom-sniffing-to-xss/">Secure Notes Writeup (GPN 2024 CTF)</a></h1>
+    <a href="//localhost:1313/posts/bom-sniffing-to-xss/">BOM Sniffing to XSS</a></h1>
   <div class="post-meta">
     
       <span class="post-date">
@@ -160,22 +158,25 @@ Other than the source code, we were given access to an admin bot and were told t
   
   <span class="post-tags">
     
-    #<a href="/tags/ctf/">ctf</a>&nbsp;
+    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
     
-    #<a href="/tags/xss/">xss</a>&nbsp;
+    #<a href="//localhost:1313/tags/xss/">xss</a>&nbsp;
     
-    #<a href="/tags/unicode/">unicode</a>&nbsp;
+    #<a href="//localhost:1313/tags/unicode/">unicode</a>&nbsp;
     
   </span>
   
 
   
+    <img src="//localhost:1313/images/encoding-cjk.png" class="post-cover" alt="BOM Sniffing to XSS" />
+  
 
   
 
   <div class="post-content"><div>
-        <p>In this post I will show you a very interesting challenge that came up in GPN 2024 CTF.</p>
-<p>We are provided with an extremely short source (exactly 16 lines!), yet that did not make our job any easier. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.</p>
+        <p>In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.</p>
+<p>The challenge is called Secure Notes and is authored by <strong>@13x1</strong>.</p>
+<p>We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it. I personally could not solve it without help.</p>
 <p>Other than the source code, we were given access to an admin bot and were told that this is an XSS challenge. We need to trigger XSS.</p>
 <blockquote>
 <p>Trigger XSS and 16 lines? How hard could it be?</p>
@@ -468,7 +469,14 @@ Other than the source code, we were given access to an admin bot and were told t
 <p>A neat vector indeed.</p>
 <p>Well, that was fun and educational. Generally, I find encoding and Unicode fascinating and would like to learn more about them, I don&rsquo;t know why actually, I used to think of encoding as a dull topic, but as I explored it more, the challenge it tries to solve, how different encodings are more suitable for certain applications, parsing logic, etc, I realized it actually is very interesting.</p>
 <p>Also now that I know that encoding can be abused to perform various web attacks like WAF bypasses and even the XSS we have done here, I am more interested than ever :)</p>
-<p>Hope you enjoyed and learnt something new, see in the next one 👋</p>
+<p>References:</p>
+<ul>
+<li><a href="https://docs.python.org/3/howto/unicode.html">https://docs.python.org/3/howto/unicode.html</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Unicode">https://en.wikipedia.org/wiki/Unicode</a></li>
+<li><a href="https://en.wikipedia.org/wiki/UTF-8">https://en.wikipedia.org/wiki/UTF-8</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Unicode_Consortium">https://en.wikipedia.org/wiki/Unicode_Consortium</a></li>
+</ul>
+<p>Anyways, hope you enjoyed - I did - and learnt something new - I also did - and see you in the next one! 👋</p>
 
       </div></div>
 
@@ -483,7 +491,7 @@ Other than the source code, we were given access to an admin bot and were told t
         
         
         <span class="button next">
-            <a href="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">
+            <a href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">
                 <span class="button__text">Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</span>
                 <span class="button__icon">→</span>
             </a>
@@ -530,8 +538,8 @@ Other than the source code, we were given access to an admin bot and were told t
   </div>
 </footer>
 
-<script src="/assets/main.js"></script>
-<script src="/assets/prism.js"></script>
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
 
 
 

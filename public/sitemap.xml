@@ -2,73 +2,73 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>/posts/</loc>
+    <loc>//localhost:1313/posts/</loc>
     <lastmod>2030-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/ctf/</loc>
+    <loc>//localhost:1313/posts/bom-sniffing-to-xss/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/bom-sniffing-to-xss/</loc>
+    <loc>//localhost:1313/tags/ctf/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/</loc>
+    <loc>//localhost:1313/tags/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/unicode/</loc>
+    <loc>//localhost:1313/tags/unicode/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/xss/</loc>
+    <loc>//localhost:1313/tags/xss/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</loc>
+    <loc>//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</loc>
     <lastmod>2024-03-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/cybersecurity/</loc>
+    <loc>//localhost:1313/tags/cybersecurity/</loc>
     <lastmod>2023-06-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/a-team-of-beginners-face-an-elite-ctf/</loc>
+    <loc>//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/</loc>
     <lastmod>2023-06-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/javascript/</loc>
+    <loc>//localhost:1313/tags/javascript/</loc>
     <lastmod>2020-07-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/js-basics-arrays/</loc>
+    <loc>//localhost:1313/posts/js-basics-arrays/</loc>
     <lastmod>2020-07-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/experience/</loc>
+    <loc>//localhost:1313/tags/experience/</loc>
     <lastmod>2020-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/tribute-for-freecodecamp/</loc>
+    <loc>//localhost:1313/posts/tribute-for-freecodecamp/</loc>
     <lastmod>2020-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/back-end/</loc>
+    <loc>//localhost:1313/tags/back-end/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/flask/</loc>
+    <loc>//localhost:1313/tags/flask/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/python/</loc>
+    <loc>//localhost:1313/tags/python/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/say-hello-with-flask/</loc>
+    <loc>//localhost:1313/posts/say-hello-with-flask/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/python-list-comprehensions/</loc>
+    <loc>//localhost:1313/posts/python-list-comprehensions/</loc>
     <lastmod>2019-01-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/foss/</loc>
+    <loc>//localhost:1313/tags/foss/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/linux/</loc>
+    <loc>//localhost:1313/tags/linux/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/linux-into-the-scene/</loc>
+    <loc>//localhost:1313/posts/linux-into-the-scene/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/tags/ubuntu/</loc>
+    <loc>//localhost:1313/tags/ubuntu/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/</loc>
+    <loc>//localhost:1313/</loc>
     <lastmod>2017-06-26T18:27:58+01:00</lastmod>
   </url>
 </urlset>

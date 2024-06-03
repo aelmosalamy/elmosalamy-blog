@@ -1,5 +1,5 @@
 ---
-title: Secure Notes Writeup (GPN 2024 CTF)
+title: BOM Sniffing to XSS
 author: aelmosalamy
 date: 2024-06-01
 tags:
@@ -7,6 +7,7 @@ tags:
   - xss
   - unicode
 draft: false
+cover: /images/encoding-cjk.png
 ---
 In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.
 
@@ -363,4 +364,10 @@ Well, that was fun and educational. Generally, I find encoding and Unicode fasci
 
 Also now that I know that encoding can be abused to perform various web attacks like WAF bypasses and even the XSS we have done here, I am more interested than ever :)
 
-Hope you enjoyed and learnt something new, see in the next one 👋
+References:
+- https://docs.python.org/3/howto/unicode.html
+- https://en.wikipedia.org/wiki/Unicode
+- https://en.wikipedia.org/wiki/UTF-8
+- https://en.wikipedia.org/wiki/Unicode_Consortium
+
+Anyways, hope you enjoyed - I did - and learnt something new - I also did - and see you in the next one! 👋
