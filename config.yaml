@@ -18,6 +18,18 @@ permalinks:
   post: /:filename/
 
 # EXTRA END
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        delimiters:
+          block:
+            - - "$$"
+              - "$$"
+          inline:
+            - - "$"
+              - "$"
+        enable: true
 
 params:
   # dir name of your blog content (default is `content/posts`)
@@ -32,13 +44,15 @@ params:
   fullWidthTheme: false
   # center theme with default width
   centerTheme: true
+  # enable math
+  math: true
 
 languages:
   en:
     languageName: English
     title: "elmosalamy | blog"
     subtitle: elmosalamy
-    keywords: ''
+    keywords: ""
     menuMore: Show more
     readMore: Read more
     readOtherPosts: Read other posts
@@ -50,24 +64,24 @@ languages:
 
     menu:
       main:
-      - identifier: posts
-        name: "📝 Posts"
-        url: /posts
-        weight: -1
+        - identifier: posts
+          name: "📝 Posts"
+          url: /posts
+          weight: -1
 
-      - identifier: tags
-        name: "🏷️ Tags"
-        url: /tags
-        weight: 2
-        
-      - identifier: random
-        name: "🔗 Random stuff"
-        params:
-    #     custom param I added to terminal theme
-          target: "_blank"
-        url: "https://aelmosalamy.github.io"
+        - identifier: tags
+          name: "🏷️ Tags"
+          url: /tags
+          weight: 2
+
+        - identifier: random
+          name: "🔗 Random stuff"
+          params:
+            #     custom param I added to terminal theme
+            target: "_blank"
+          url: "https://aelmosalamy.github.io"
     # - identifier: unique-identifier
-    #   name: text of the link    
+    #   name: text of the link
     #   params:
     #       target: _blank
     #   pre: html before link

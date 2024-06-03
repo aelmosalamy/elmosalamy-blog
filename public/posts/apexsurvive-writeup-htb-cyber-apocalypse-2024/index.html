@@ -50,7 +50,7 @@ If you just want the solution, here is the final attack chain." />
 <meta property="og:image:height" content="1024">
 
 
-  <meta property="article:published_time" content="2024-03-16 00:00:00 &#43;0000 UTC" />
+  <meta property="article:published_time" content="2024-03-17 00:00:00 &#43;0000 UTC" />
 
 
 
@@ -63,6 +63,17 @@ If you just want the solution, here is the final attack chain." />
 
 
 
+   <script id="mathjax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['$$', '$$']],  
+      inlineMath: [['$', '$']]      
+    }
+  };
+</script>
+
+ 
 </head>
 <body class="green">
 
@@ -136,7 +147,7 @@ If you just want the solution, here is the final attack chain." />
   <div class="post-meta">
     
       <span class="post-date">
-        2024-03-16 
+        2024-03-17 
       </span>
     
     
@@ -300,7 +311,7 @@ If you just want the solution, here is the final attack chain." />
 │       readflag.c
 │       supervisord.conf
 └───email-app+
-</code></pre><p>Upon inspection, there is so many files, so many routes and so many things going on compared to your typical web challenge.</p>
+</code></pre><p>Upon inspection, there are so many files, so many routes and so many things going on compared to your typical web challenge.</p>
 <p>This might be overwhelming, and many people would just decide to not continue at this point, but that should not deter us. In fact, a complex application indicates a bigger attack surface → higher chance of finding a vulnerability.</p>
 <p>Plus, we have a methodology, right? If we stick to our methodology, we will be able to systematically comb the application, find vulnerabilities, and build an attack chain.</p>
 <h3 id="dockerfile">Dockerfile<a href="#dockerfile" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
@@ -323,7 +334,7 @@ If you just want the solution, here is the final attack chain." />
 <li>MariaDB</li>
 <li>There is a <code>bot</code> user, Chromium and Selenium installed
 <ul>
-<li>We saw there is a report functionality from the previous step</li>
+<li>We saw there was a report functionality from the previous step</li>
 <li>These all translate to one word: XSS</li>
 </ul>
 </li>
@@ -341,7 +352,7 @@ If you just want the solution, here is the final attack chain." />
 </li>
 </ul>
 <p>Let&rsquo;s look at <code>entrypoint.sh</code>, a script used to initialize the container after all dependencies and packages are brought in.</p>
-<p>The script configures the database, creating two tables <code>users</code> and <code>products</code></p>
+<p>The script configures the database, creating two tables: <code>users</code> and <code>products</code></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> apexsurvive.<span style="color:#a6e22e">users</span> (
 </span></span><span style="display:flex;"><span>    id <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> <span style="color:#66d9ef">AUTO_INCREMENT</span>,
 </span></span><span style="display:flex;"><span>    email <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>),
@@ -454,7 +465,7 @@ processes = 4
 </code></pre><p>We can see that <code>uwsgi</code> is set to use <code>python3</code>, is running from <code>/app/</code> and is listening at <code>0.0.0.0:5000</code> which is the same port <code>nginx</code> mounts to <code>/</code>.</p>
 <p>Let&rsquo;s jump into <code>/app/</code>, the directory served by <code>uwsgi</code>, and explore what is actually going on under the hood.</p>
 <h2 id="chapter-3-digging-into-flask">Chapter 3: Digging into Flask<a href="#chapter-3-digging-into-flask" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>With our newfound understanding of user flow and system components, lets dig into the actual app logic, we will try to look for hidden features and perhaps find ways to disrupt the user flow explored in the previous step.</p>
+<p>With our newfound understanding of user flow and system components, lets dig into the actual app logic. We will try to look for hidden features and perhaps find ways to disrupt the user flow explored in the previous step.</p>
 <p>This process requires patience, we need to carefully scan the codebase, noting how each part of the code could serve us as attackers. We might need to draw diagrams, take notes or even speak our thought process out loud.</p>
 <h3 id="route-structure">Route Structure<a href="#route-structure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Let&rsquo;s jump right in.</p>
@@ -1306,12 +1317,12 @@ Also notice our new, admin username: <code>Xclow3n</code>.</p>
 <p>To trigger the command, we must reload <code>uwsgi</code> by modifying a python source file within the application, this is a debug feature enabled in the currently loaded <code>uwsgi.ini</code> through:</p>
 <pre tabindex="0"><code>py-autoreload = 3
 </code></pre><p>For that, we will just overwrite any file say <code>/app/application/database.py</code>. We send our request and&hellip;
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/flag.png"></p>
+<img src="posts/Apexsurvive%20Writeup%20(HTB%20Cyber%20Apocalypse%202024)/flag.png"></p>
 <p><code>HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}</code>
 <img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-complete.png"></p>
 <h2 id="chapter-7-conclusion">Chapter 7: Conclusion<a href="#chapter-7-conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This challenge became an instant favorite. It is the most challenging and, by extension, rewarding, web challenge I&rsquo;ve ever solved.</p>
-<p>Indeed, the steps seem pretty straightforward now, but the &ldquo;uncertainty management&rdquo; aspect we discussed is what make security research a time consuming exercise. You don&rsquo;t know what you are expecting until you find it, and you need lots of grit and confidence to get there.</p>
+<p>Indeed, the steps seem pretty straightforward now, but the &ldquo;uncertainty management&rdquo; aspect we discussed is what makes security research a time consuming exercise. You don&rsquo;t know what you are expecting until you find it, and you need lots of grit and confidence to get there.</p>
 <p>Another major part of why I found this challenge extremely interesting is the fact that I have never exploited a race condition before. I genuinely did not know that&rsquo;s a <em>thing</em> you could do.</p>
 <p>It was a mental game more than anything else, me versus a piece of logic.</p>
 <p>At some point, and through a game of elimination, I reached a strong conviction that the only route has to be through <code>isInternal</code>.</p>
@@ -1333,6 +1344,13 @@ Also notice our new, admin username: <code>Xclow3n</code>.</p>
         <hr />
     </div>
     <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/bom-sniffing-to-xss/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Secure Notes Writeup (GPN 2024 CTF)</span>
+            </a>
+        </span>
         
         
         <span class="button next">

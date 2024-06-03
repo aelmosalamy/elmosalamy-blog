@@ -1315,7 +1315,7 @@ py-autoreload = 3
 ```
 
 For that, we will just overwrite any file say `/app/application/database.py`. We send our request and...
-![](flag.png)
+![](posts/Apexsurvive%20Writeup%20(HTB%20Cyber%20Apocalypse%202024)/flag.png)
 
 `HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}`
 ![](attack-chain-complete.png)

@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+                "file": "posts/BOM Sniffing to XSS/index.md",
                 "mode": "source",
                 "source": false
               }
@@ -48,7 +48,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:unicode",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -65,7 +65,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -85,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+                "file": "posts/BOM Sniffing to XSS/index.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -114,7 +115,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md"
+                "file": "posts/BOM Sniffing to XSS/index.md"
               }
             }
           },
@@ -134,7 +135,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 299.5
+    "width": 316.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -148,29 +149,36 @@
   },
   "active": "321016213707f2d4",
   "lastOpenFiles": [
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/discord.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/attack-chain-complete.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/repeater-pdf-rce.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/repeater-pdf-rce.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/pdf-payload.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/flag.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/repeater-pdf-rce.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/gen-pdf.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/listener-setup.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/admin-contract.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/webhook-admin-cookie.png",
+    "posts/BOM Sniffing to XSS/flag.png",
+    "posts/BOM Sniffing to XSS/bom-xss.png",
+    "posts/BOM Sniffing to XSS/index.md",
+    "posts/BOM Sniffing to XSS/cyberchef-be.png",
+    "posts/BOM Sniffing to XSS/cyberchef-le.png",
+    "posts/BOM Sniffing to XSS/cyberchef-target.png",
+    "posts/BOM Sniffing to XSS/cyberchef-be.png",
+    "posts/BOM Sniffing to XSS/cyberchef-browser.png",
+    "posts/BOM Sniffing to XSS/cyberchef-le.png",
+    "posts/BOM Sniffing to XSS/bom-sniffing.png",
+    "posts/BOM Sniffing to XSS/whatwg-bom.png",
+    "posts/nand2tetris/index.md",
     "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
-    "_index.md",
+    "posts/BOM Sniffing to XSS",
+    "posts/N0P CTF - Jojo Website 2/index.md",
+    "posts/N0P CTF - Jojo Website 2",
+    "posts/__copyme.md",
+    "posts/recipe-to-industry.md",
+    "posts/Cybersecurity.md",
+    "posts/nand2tetris",
     "posts/A Team of Beginners Face an Elite CTF.md",
-    "posts/How I built a mini social network from start to finish in 3 months.md",
-    "posts/JS Basics Arrays!.md",
+    "posts/Tribute for freeCodeCamp!.md",
+    "posts/_index.md",
     "posts/Linux into the scene!.md",
+    "posts/JS Basics Arrays!.md",
+    "posts/How I built a mini social network from start to finish in 3 months.md",
+    "posts/DRAFT210930179.md",
+    "_index.md",
     "posts/Say Hello with Flask!.md",
     "posts/Python List Comprehensions.md",
-    "posts/Tribute for freeCodeCamp!.md",
-    "posts/__copyme.md",
-    "posts/DRAFT210930179.md",
-    "posts/_index.md",
     "posts/Apexsurvive Writeup - HTB Cyber Apocalypse 2024/_index.html",
     "Pasted.md",
     "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)"

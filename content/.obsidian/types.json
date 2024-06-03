@@ -4,6 +4,7 @@
     "cssclasses": "multitext",
     "tags": "tags",
     "date": "date",
-    "toc": "checkbox"
+    "toc": "checkbox",
+    "math": "checkbox"
   }
 }
