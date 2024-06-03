@@ -265,7 +265,7 @@ The sequence used as a BOM is the *U+FEFF ZERO WIDTH NO-BREAK SPACE* [codepoint]
 | 0xFE 0xFF       | UTF-16BE |
 | 0xFF 0xFE       | UTF-16LE |
 
-Notice that if we are to use Python to send this sequence, we should use `\ufeff` escape literal or the `b'\xef\xbb\xbf\` byte sequence since Python uses UTF-8 strings. In Python, `\ufeff` is not equivalent to `\xfe\xff` as the former would be UTF-16BE decoded to `fe ff` as a single codepoint, while the latter would be UTF-16BE decoded to `00 fe 00 ff` as two codepoints.
+Notice that if we are to use Python to send this sequence, we should use the `\ufeff` escape literal or the `b'\xef\xbb\xbf\` byte sequence since Python uses UTF-8 strings. In Python, `\ufeff` is not equivalent to `\xfe\xff` as the former would be UTF-16BE decoded to `fe ff` as a single codepoint, while the latter would be UTF-16BE decoded to `00 fe 00 ff` as two codepoints.
 
 The example below illustrates that the two are indeed different using three encodings:
 ```python

@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ctf on elmosalamy | blog</title>
-    <link>//localhost:1313/tags/ctf/</link>
+    <link>/tags/ctf/</link>
     <description>Recent content in Ctf on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sat, 01 Jun 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>BOM Sniffing to XSS</title>
-      <link>//localhost:1313/posts/bom-sniffing-to-xss/</link>
+      <link>/posts/bom-sniffing-to-xss/</link>
       <pubDate>Sat, 01 Jun 2024 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/posts/bom-sniffing-to-xss/</guid>
+      <guid>/posts/bom-sniffing-to-xss/</guid>
       <description>In this post I will show you a very interesting challenge that came up in the recent GPN 2024 CTF.&#xA;The challenge is called Secure Notes and is authored by @13x1.&#xA;We are provided with an extremely short source (exactly 16 lines!), but before you get excited, this challenge had the least solves by a margin despite its conciseness. In fact, for over 36 hours, only five teams were able to solve it.</description>
     </item>
     <item>
       <title>Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</title>
-      <link>//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</link>
+      <link>/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</link>
       <pubDate>Sun, 17 Mar 2024 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</guid>
+      <guid>/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</guid>
       <description>Chapter 0: Introduction Hey there👋. I am Adham Elmosalamy, a Computer Engineering student, and in this post I will walk you through my solution of Apexsurvive, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.&#xA;This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research.&#xA;If you just want the solution, here is the final attack chain.</description>
     </item>
     <item>
       <title>Google CTF 2023 And How It Almost Backfired</title>
-      <link>//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/</link>
+      <link>/posts/a-team-of-beginners-face-an-elite-ctf/</link>
       <pubDate>Mon, 26 Jun 2023 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/</guid>
+      <guid>/posts/a-team-of-beginners-face-an-elite-ctf/</guid>
       <description>I wanted to introduce a group of students to cybersecurity. They showed passion and willingness to learn.&#xA;I thought there would be no better introduction than inviting them to a Capture the Flag (CTF) competition. That way they would get exposed to the field while having a fun experience.&#xA;CTFs require teamwork, showcase the diverse requirements (and goals) of cybersecurity, offer hands-on practice, and demand a security research mindset. In fact, many professionals jumpstarted their security careers via CTFs.</description>
     </item>
   </channel>
