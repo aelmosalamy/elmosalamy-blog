@@ -998,7 +998,7 @@ And while a shot in the dark could work sometime, we do not want to rely on chan
 
 This *illumination* can be done through modelling and experimentation or via secondary research.
 
-I started to read about race conditions.
+So I started to read about race conditions.
 
 From [Hack Tricks](https://book.hacktricks.xyz/pentesting-web/race-condition):
 > "The main hurdle in taking advantage of race conditions is making sure that multiple requests are handled at the same time, with very little difference in their processing times—ideally, less than 1ms."
@@ -1015,7 +1015,7 @@ Reading through the predictors of a collision, our problem seems to check all th
 - [x] We are editing a record, rather than appending.
 - [x] The two racing operations are keyed on a fixed column, `id`!
 
-I think I devoured that entire article, it is very concise, on-point and a total masterpiece if I am being honest. Not only was it extremely relevant for our app, it was also to provide a framework for discovering, reasoning about and approaching race conditions and any time-sensitive vulnerability in general.
+I devoured that entire article, it is very concise, on-point and a total masterpiece. Not only was it extremely relevant for our app, it also provided a framework for discovering, reasoning about and approaching race conditions and any time-sensitive vulnerability in general.
 
 A very important section explained Kettle's race condition finding in Devise, a popular authentication framework in the Ruby ecosystem:
 ![](devise-rc.png)
@@ -1036,7 +1036,7 @@ def sendVerification(decodedToken):
 # ...
 ```
 
-Let's also added debug points to all critical functions to see the precise execution timeline of our race condition.
+We have added debug points to all critical functions to see the precise execution timeline of our race condition.
 
 I then attempted to manually trigger the race condition, setting initial state to use `test@email.htb`, triggering `sendVerification`, then updating email to `hacker@apexsurvive.htb` within the sleep duration, before the email is sent.
 
@@ -1315,7 +1315,7 @@ py-autoreload = 3
 ```
 
 For that, we will just overwrite any file say `/app/application/database.py`. We send our request and...
-![](posts/Apexsurvive%20Writeup%20(HTB%20Cyber%20Apocalypse%202024)/flag.png)
+![](flag.png)
 
 `HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}`
 ![](attack-chain-complete.png)
