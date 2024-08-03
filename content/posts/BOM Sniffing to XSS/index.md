@@ -351,7 +351,7 @@ payload = '\ufeff<script>document.write(document.cookie)</script>'
 ```
 
 Running this on the challenge instance, and sending the saved `note_id` to the admin bot gives us:
-![](flag.png)
+![](posts/BOM%20Sniffing%20to%20XSS/flag.png)
 
 `GPNCTF{UN1C0D3_15_4_N34T_4TT4CK_V3CT0R}`
 

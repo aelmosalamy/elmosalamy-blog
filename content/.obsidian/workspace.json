@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+                "file": "posts/bad-challenge-arab-security-war-games-2024/index.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+                "file": "posts/bad-challenge-arab-security-war-games-2024/index.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -114,7 +114,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md"
+                "file": "posts/bad-challenge-arab-security-war-games-2024/index.md"
               }
             }
           },
@@ -146,37 +146,39 @@
       "templates:Insert template": false
     }
   },
-  "active": "321016213707f2d4",
+  "active": "cda986b1ca8e0484",
   "lastOpenFiles": [
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/flag.png",
+    "posts/bad-challenge-arab-security-war-games-2024/forward-slash-body.png",
+    "posts/bad-challenge-arab-security-war-games-2024/browser-line-sep.png",
+    "posts/bad-challenge-arab-security-war-games-2024/js-line-terminators.png",
+    "posts/bad-challenge-arab-security-war-games-2024/index.md",
+    "posts/bad-challenge-arab-security-war-games-2024/bad-challenge-cover.png",
     "posts/BOM Sniffing to XSS/index.md",
+    "posts/BOM Sniffing to XSS/cyberchef-be.png",
+    "posts/bad-challenge-arab-security-war-games-2024/cover.png",
+    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+    "posts/__copyme.md",
+    "posts/How I built a mini social network from start to finish in 3 months.md",
+    "posts/_index.md",
+    "posts/Linux into the scene!.md",
+    "_index.md",
+    "posts/bad-challenge-arab-security-war-games-2024",
+    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/flag.png",
     "posts/nand2tetris/index.md",
     "posts/BOM Sniffing to XSS/flag.png",
     "posts/BOM Sniffing to XSS/bom-xss.png",
-    "posts/BOM Sniffing to XSS/cyberchef-be.png",
     "posts/BOM Sniffing to XSS/cyberchef-le.png",
     "posts/BOM Sniffing to XSS/cyberchef-target.png",
-    "posts/BOM Sniffing to XSS/cyberchef-be.png",
-    "posts/BOM Sniffing to XSS/cyberchef-browser.png",
-    "posts/BOM Sniffing to XSS/cyberchef-le.png",
-    "posts/BOM Sniffing to XSS/bom-sniffing.png",
-    "posts/BOM Sniffing to XSS/whatwg-bom.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
     "posts/BOM Sniffing to XSS",
     "posts/N0P CTF - Jojo Website 2/index.md",
     "posts/N0P CTF - Jojo Website 2",
-    "posts/__copyme.md",
     "posts/recipe-to-industry.md",
     "posts/Cybersecurity.md",
     "posts/nand2tetris",
     "posts/A Team of Beginners Face an Elite CTF.md",
     "posts/Tribute for freeCodeCamp!.md",
-    "posts/_index.md",
-    "posts/Linux into the scene!.md",
     "posts/JS Basics Arrays!.md",
-    "posts/How I built a mini social network from start to finish in 3 months.md",
     "posts/DRAFT210930179.md",
-    "_index.md",
     "posts/Say Hello with Flask!.md",
     "posts/Python List Comprehensions.md",
     "posts/Apexsurvive Writeup - HTB Cyber Apocalypse 2024/_index.html",

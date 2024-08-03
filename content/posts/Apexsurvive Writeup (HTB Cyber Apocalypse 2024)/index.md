@@ -8,7 +8,7 @@ tags:
 toc: true
 ---
 ## Chapter 0: Introduction
-Hey there👋. I am **Adham Elmosalamy**, a Computer Engineering student, and in this post I will walk you through my solution of **Apexsurvive**, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.
+Hey there👋. I am **Adham Elmosalamy**, a Computer Engineering student, and in this post I will walk you through my solution of **Apexsurvive** from Hack The Box 2024 Cyber Apocalypse CTF, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.
 
 This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research.
 
@@ -1315,7 +1315,7 @@ py-autoreload = 3
 ```
 
 For that, we will just overwrite any file say `/app/application/database.py`. We send our request and...
-![](flag.png)
+![](posts/Apexsurvive%20Writeup%20(HTB%20Cyber%20Apocalypse%202024)/flag.png)
 
 `HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}`
 ![](attack-chain-complete.png)

