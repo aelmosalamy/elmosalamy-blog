@@ -8,6 +8,6 @@ Hey:wave:, It's a pleasure seeing you here!
 
 I am **Adham Elmosalamy (aelmo)**, an engineer who loves *everything* cybersecurity. I write about technology, cybersecurity and CTFs.
 
-![tryhackme](https://tryhackme-badges.s3.amazonaws.com/aelmo.png)
+![tryhackme](/images/tryhackme-badge.png)
 
 ![codewars](https://www.codewars.com/users/aelmo/badges/large)
