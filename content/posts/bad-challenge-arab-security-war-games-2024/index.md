@@ -1,5 +1,5 @@
 ---
-title: "Solving Web: Bad Challenge from Arab Security War Games 2024"
+title: '"Bad" - Arab Security War Games 2024'
 author: aelmosalamy
 date: 2024-08-03
 tags:
@@ -7,6 +7,7 @@ tags:
 draft: false
 cover: /images/bad-challenge-cover.png
 ---
+
 In this writeup, I will explain how I solved Bad, an interesting web challenge written by the amazing *Abdelhamid Ghazy* as part of the recent Arab Security Conference War Games (ASCWG) 2024.
 
 ASCWG had four web challenges. I cleared the first three early in the competition before spending the next 16 hours on **Bad**, submitting only 30 minutes before the end of the CTF.

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Web on elmosalamy | blog</title>
-    <link>/tags/web/</link>
+    <link>//localhost:1313/tags/web/</link>
     <description>Recent content in Web on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 16 Aug 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="/tags/web/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/tags/web/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Google CTF 2024 Grand Prix Heaven</title>
-      <link>/posts/google-ctf-2024-grand-prix-heaven/</link>
+      <link>//localhost:1313/posts/google-ctf-2024-grand-prix-heaven/</link>
       <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
-      <guid>/posts/google-ctf-2024-grand-prix-heaven/</guid>
+      <guid>//localhost:1313/posts/google-ctf-2024-grand-prix-heaven/</guid>
       <description>This is my solution for Grand Prix Heaven from Google 2024 CTF. I particularly enjoyed this challenge because of its detail level; multiple little vulnerabilities had to be chained together to achieve XSS on the target.&#xA;I will start with the exploit, then follow up with the notes which may help explain why the exploit does what it does.&#xA;Exploit import requests import json import re import exif import warnings warnings.</description>
     </item>
   </channel>

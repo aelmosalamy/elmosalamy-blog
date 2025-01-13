@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Cybersecurity on elmosalamy | blog</title>
-    <link>/tags/cybersecurity/</link>
+    <link>//localhost:1313/tags/cybersecurity/</link>
     <description>Recent content in Cybersecurity on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Mon, 26 Jun 2023 00:00:00 +0000</lastBuildDate>
-    <atom:link href="/tags/cybersecurity/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/tags/cybersecurity/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Google CTF 2023 And How It Almost Backfired</title>
-      <link>/posts/a-team-of-beginners-face-an-elite-ctf/</link>
+      <link>//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/</link>
       <pubDate>Mon, 26 Jun 2023 00:00:00 +0000</pubDate>
-      <guid>/posts/a-team-of-beginners-face-an-elite-ctf/</guid>
+      <guid>//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/</guid>
       <description>I wanted to introduce a group of students to cybersecurity. They showed passion and willingness to learn.&#xA;I thought there would be no better introduction than inviting them to a Capture the Flag (CTF) competition. That way they would get exposed to the field while having a fun experience.&#xA;CTFs require teamwork, showcase the diverse requirements (and goals) of cybersecurity, offer hands-on practice, and demand a security research mindset. In fact, many professionals jumpstarted their security careers via CTFs.</description>
     </item>
   </channel>
