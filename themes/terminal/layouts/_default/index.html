@@ -38,11 +38,11 @@
           </span>
         {{ end }}
 
-        <!-- {{ if .Params.Cover }}
+        {{ if .Params.Cover }}
           <img src="{{ .Params.Cover | absURL }}" class="post-cover" alt="{{ .Title | plainify | default " " }}" />
-        {{ end }} -->
+        {{ end }}
 
-        <!-- <div class="post-content">
+         <div class="post-content">
           {{ if .Params.showFullContent }}
           {{ .Content | markdownify }}
           {{ else if .Description }}
@@ -59,7 +59,7 @@
           <a class="read-more button"
             href="{{.RelPermalink}}">{{ $.Site.Params.ReadMore }} →</a>
         </div>
-        {{ end }} -->
+        {{ end }}
       </div>
     {{ end }}
     {{ partial "pagination.html" . }}

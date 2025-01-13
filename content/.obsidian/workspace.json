@@ -27,7 +27,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/UofT 2025 CTF/index.md",
+                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
                 "mode": "source",
                 "source": false
               },
@@ -141,7 +141,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/UofT 2025 CTF/index.md"
+                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md"
               },
               "icon": "lucide-list",
               "title": "Outline of index"
@@ -179,9 +179,14 @@
   },
   "active": "554fc636539be415",
   "lastOpenFiles": [
+    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/linkedin_james_kettle.png",
+    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/discord_prize_announcement.png",
+    "_index.md",
+    "posts/_index.md",
+    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+    "posts/UofT 2025 CTF/index.md",
     "posts/UofT 2025 CTF/timeless_flasksession.png",
     "posts/bad-challenge-arab-security-war-games-2024/index.md",
-    "posts/UofT 2025 CTF/index.md",
     "posts/UofT 2025 CTF/timeless_blog.png",
     "posts/UofT 2025 CTF/codedb_regex.png",
     "posts/UofT 2025 CTF/codedb_samples.png",
@@ -195,14 +200,9 @@
     "posts/Google CTF 2024 Grand Prix Heaven/csp-evaluation.png",
     "posts/Google CTF 2024 Grand Prix Heaven/webhook-flag.png",
     "posts/__copyme.md",
-    "posts/Google CTF 2024 Grand Prix Heaven/grand-prix-heaven.png",
     "posts/Google CTF 2024 Grand Prix Heaven",
-    "posts/bad-challenge-arab-security-war-games-2024/forward-slash-body.png",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
     "posts/How I built a mini social network from start to finish in 3 months.md",
-    "posts/_index.md",
     "posts/Linux into the scene!.md",
-    "_index.md",
     "posts/bad-challenge-arab-security-war-games-2024",
     "posts/BOM Sniffing to XSS",
     "posts/N0P CTF - Jojo Website 2/index.md",
