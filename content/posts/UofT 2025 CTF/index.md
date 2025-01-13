@@ -7,6 +7,10 @@ tags:
 draft: false
 cover:
 ---
+UofT CTF 2025 hosted by University of Toronto was a blast. I played with my team PwnSec and we ranked 33 despite missing out three categories.
+
+As usual, I focused on web; so let's get started 😉
+
 # CodeDB
 A pretty cool website that allows you to search a database of files like GitHub.
 
