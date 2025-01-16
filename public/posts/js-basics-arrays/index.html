@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Javascript Basics: Arrays! :: elmosalamy | blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Hey&amp;#x1f44b; there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more!" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="//localhost:1313/posts/js-basics-arrays/" />
+
+
+
+
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
+
+
+
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Javascript Basics: Arrays!">
+<meta property="og:description" content="Hey&amp;#x1f44b; there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more!" />
+<meta property="og:url" content="//localhost:1313/posts/js-basics-arrays/" />
+<meta property="og:site_name" content="elmosalamy | blog" />
+
+  
+    <meta property="og:image" content="//localhost:1313/img/favicon/green.png">
+  
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2020-07-13 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+   <script id="mathjax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['$$', '$$']],  
+      inlineMath: [['$', '$']]      
+    }
+  };
+</script>
+
+ 
+</head>
+<body class="green">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    elmosalamy
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a target="" href="/posts">📝 Posts</a></li>
+        
+      
+        
+          <li><a target="" href="/tags">🏷️ Tags</a></li>
+        
+      
+        
+          <li><a target="_blank" href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/posts">📝 Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">🏷️ Tags</a></li>
+      
+    
+      
+        <li><a href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/js-basics-arrays/">Javascript Basics: Arrays!</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2020-07-13 
+      </span>
+    
+    
+    <span class="post-author">:: aelmosalamy</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="//localhost:1313/tags/javascript/">javascript</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  
+
+  <div class="post-content"><div>
+        <p>Hey&#x1f44b; there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more! Stay tuned!</p>
+<blockquote>
+<p>I highly advise you to follow along, Javascript is a browser language, and you can follow along right here! In your browser! To do that: Right click anywhere on this page, then click &ldquo;Inspect&rdquo;, on the side panel that appears, find the &ldquo;&raquo;&rdquo; arrow icon, then click &ldquo;Console&rdquo;, this is where you can type Javascript code!</p>
+</blockquote>
+<p>For starters, let&rsquo;s see what is an array.</p>
+<p>In Javascript an array is a collection of many things, Arrays allow you to group elements together and provide you with some cool features such as iteration and mapping!</p>
+<p>Right in your console, <strong>see note above</strong>, copy and paste the following code snippet then press <em>Enter</em>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">basket</span> <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;:apple:&#34;</span>, <span style="color:#e6db74">&#34;:pear:&#34;</span>, <span style="color:#e6db74">&#34;:banana:&#34;</span>, <span style="color:#e6db74">&#34;:cherries:&#34;</span>, <span style="color:#e6db74">&#34;:watermelon:&#34;</span>, <span style="color:#e6db74">&#34;:grapes:&#34;</span>];
+</span></span></code></pre></div><p>Whoa! we just created our first array; Opss! It&rsquo;s a fruit basket!</p>
+<p>We used the keyword <code>let</code> to make a variable with the name <code>basket</code>, a variable is simply a name we give to something, in this case we gave the name <code>basket</code> to the value after the <code>=</code> sign, that value is, you guessed it right, our array!</p>
+<p>If you take a closer look you will see that our array is enclosed by two square <code>[</code> brackets <code>]</code> and that, no&hellip; not the fruits, the elements inside the array are separated by commas &ldquo;,&rdquo;</p>
+<p>Now it&rsquo;s your turn, from the box below, copy paste your favorite fruits, assemble them in your own array and name the array <code>myFruits</code>, we will need your fruits for the next exercise!</p>
+<pre tabindex="0"><code> :apple: :cherries: :peach: :pineapple: :lemon: :strawberry: :pear: :tangerine: :watermelon: :banana: :green_apple: :grapes: :melon:
+</code></pre><p>Remember to place two quotes around each fruit, apparently these are not real fruits, they are emoji fruits, emojis are text and text in Javascript must be enclosed in quotes like this &ldquo;&#x1f34e;&rdquo; or &lsquo;&#x1f349;&rsquo;.</p>
+<p>You probably made your fruit list by now, here is mine:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">myFruits</span> <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;:pineapple:&#34;</span>, <span style="color:#e6db74">&#34;:strawberry:&#34;</span>, <span style="color:#e6db74">&#34;:grapes:&#34;</span>]
+</span></span></code></pre></div><p>If everything goes right I should be able to type in <code>console.log(myFruits)</code> and see my fruits array in the console! <code>console.log</code> is the way to ask Javascript: &ldquo;What&rsquo;s in there?&rdquo;.</p>
+<p>Now let&rsquo;s see how can we get the number of elements inside, type in:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">myFruits</span>.<span style="color:#a6e22e">length</span>)
+</span></span></code></pre></div><p>Voila! You are getting the number of fruits in your array printed out in the console!</p>
+<p>Now let&rsquo;s see how can we grab a fruit from our array, to grab the first fruit, pineapple in my case, I will do:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">pineapple</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">myFruits</span>[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">pineapple</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Expected output: :pineapple:
+</span></span></span></code></pre></div><p>In Javascript, you can access elements inside an array using square brackets and a number inside, that number is called the <strong>index</strong>, an index refers to the position of an element. The max index can never be bigger than the <code>.length</code> of the array, because Javascript, like most programming languages, feature a zero-based index, that simply means arrays start from 0; accordingly, the first element is referred to as <code>coolArray[0]</code>, up in our example, we made a variable, we called it <code>pineapple</code> for convenience and we gave it the value of whatever lies in <code>myFruits[0]</code>, which happens to be a sweet pineapple when we console.log it!</p>
+<p>Now I want you to combine this knowledge with your knowledge of <code>.length</code> from the previous exercise and print the last element in <code>myFruits</code> to the console, <strong>Hint:</strong> An array with 3 items will have a <code>.length</code> of 3; additionally, the last element will have an index of 2 due to the zero-based indexing of JS; I want you to find a solution that no matter what is the length of the array, it will always give the last element. Go ahead and try it yourself!</p>
+<p>Congrats to those who solved it! In case you didn&rsquo;t, I am sure that you would&rsquo;ve written something along these lines:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">lastElement</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">myFruits</span>[<span style="color:#a6e22e">myFruits</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">lastElement</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Expected output: :grapes:
+</span></span></span></code></pre></div><p>The trick here, is that you can feed in the value of <code>myFruits.length - 1</code> into the square brackets of <code>myFruits</code>, JS automatically evaluated the expression <code>myFruits.length - 1</code> to <code>3 - 1</code> then to <code>2</code>, so the expression really evaluates to <code>let lastElement = myFruits[2];</code>; however, what is unique here is the versatility of the solutioon, regardless of the size of our array, whether we decide to add or remove elements, this solution is <em>always</em> going to givee the last element, this is a bit of an advanced concept, but whenever you write code you want it to be versatile; ideally, you never want to carve a solution exactly around a specific problem, why so? because you won&rsquo;t always know what you dealing with, so you should anticipate every single possibility and write a general solution that works with them all, anyone can find a solution, but not everyone can come up with <strong>the solution</strong>, I know&hellip; it sounds lame; however, most of your time coding will be spent on trying to come up with the <strong>optimal</strong> solution, nowadays, I might see a problem overhead, maybe have 2-3 solutions for it at the top of my head, but still, I would be stuck thinking for hours and hours, coding my way very cautiously, stirring the possibilities in my head, until I come with something I am content with.</p>
+<p>Now let&rsquo;s add a fruit to our array, we can do this using <code>push</code>, you will understand <code>push</code> more later on when talk about objects and methods; anyways, to add a new element we type:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">myFruits</span>.<span style="color:#a6e22e">push</span>(<span style="color:#e6db74">&#34;:green_apple:&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">myFruits</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Expected output: [&#34;:pineapple:&#34;, &#34;:strawberry:&#34;, &#34;:grapes:&#34;, &#34;:green_apple:&#34;]
+</span></span></span></code></pre></div><p>Whoa! My fruits array got an extra apple added to it at the end. Again, try it yourself, feel free to copy any fruit and push it to your <code>myFruits</code> array.</p>
+<p>One good place to read about properties of arrays is the MDN Docs, which is a great place to find information about Javascript and the web, the site is maintained by the folks at Mozilla - yup, the ones behind behind Firefox, take a look on their <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push">reference of push</a>, they provide a demo, syntax, example and more to make sure you can understand how to use each specific feature in the language.</p>
+<p>With that being said, I want you to learn how to fish, there is a method called <code>splice</code> which you can use to remove elements from an array, I want you to read its MDN Docs, and use it to remove 2 fruits from your <code>myFruits</code> array. <strong>Hint:</strong> Try googling <code>&quot;mdn array splice&quot;</code>.</p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Google CTF 2023 And How It Almost Backfired</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/tribute-for-freecodecamp/">
+                <span class="button__text">Tribute to freeCodeCamp!</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "elmosalamy" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

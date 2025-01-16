@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ubuntu on elmosalamy | blog</title>
+    <link>//localhost:1313/tags/ubuntu/</link>
+    <description>Recent content in Ubuntu on elmosalamy | blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 30 Nov 2018 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/ubuntu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux into the scene!</title>
+      <link>//localhost:1313/posts/linux-into-the-scene/</link>
+      <pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/linux-into-the-scene/</guid>
+      <description>Hello everyone,&#xA;Recently, while watching a video, I came across a guy using Linux on his machine, It looked really clean and neat and I wanted to try it!</description>
+    </item>
+  </channel>
+</rss>

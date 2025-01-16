@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Unicode on elmosalamy | blog</title>
+    <link>//localhost:1313/tags/unicode/</link>
+    <description>Recent content in Unicode on elmosalamy | blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 01 Jun 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/unicode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>BOM Sniffing to XSS</title>
+      <link>//localhost:1313/posts/bom-sniffing-to-xss/</link>
+      <pubDate>Sat, 01 Jun 2024 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/bom-sniffing-to-xss/</guid>
+      <description>In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.</description>
+    </item>
+  </channel>
+</rss>
