@@ -766,4 +766,7 @@ Let's illustrate that in code:
 })();
 ```
 
-And that's pretty much it yet!
+Running it, and if everything is correct, we get a callback with our lovely flag:
+![](posts/hack-my-bot-pwnme-2025-ctf/flag.png)
+
+Thank you for reading, hope you learnt something new, and see you in the next one 👋
