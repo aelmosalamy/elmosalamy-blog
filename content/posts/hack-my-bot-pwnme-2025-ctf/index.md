@@ -138,7 +138,7 @@ const { format } = require('date-fns');
 Nothing fancy, just an Express app. We can also see that `puppeteer` is brought in, which explains why we saw Google Chrome downloaded in the Dockerfile earlier.
 
 As with any web application, let's check out its routes as these are often our only entrance  to the application:
-```sh
+```js
 app.get('/', (req, res) => {
     res.render('index');
 });
