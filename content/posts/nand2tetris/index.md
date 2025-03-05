@@ -126,3 +126,10 @@ This is where an interpreter or agent, external to our HDL comes into play; such
 - Verilog
 
 We will be using a minimal, custom HDL that is loosely similar to the two above. Our HDL will be interpreted by a custom hardware simulator provided within the course material.
+
+```verilog
+input a, b;
+output c;
+
+and g1(a, b, c);
+```

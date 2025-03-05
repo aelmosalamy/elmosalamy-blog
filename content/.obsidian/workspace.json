@@ -27,7 +27,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+                "file": "posts/hack-my-bot-pwnme-2025-ctf/index.md",
                 "mode": "source",
                 "source": false
               },
@@ -55,7 +55,8 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "byCreatedTime"
+                "sortOrder": "byModifiedTimeReverse",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -92,7 +93,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 279.5
   },
   "right": {
     "id": "4033c3e8fe1182a8",
@@ -141,7 +142,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md"
+                "file": "posts/hack-my-bot-pwnme-2025-ctf/index.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-list",
               "title": "Outline of index"
@@ -179,26 +183,31 @@
   },
   "active": "554fc636539be415",
   "lastOpenFiles": [
+    "posts/hack-my-bot-pwnme-2025-ctf/cdp-browser-getversion.png",
+    "posts/hack-my-bot-pwnme-2025-ctf/flag1.png",
+    "posts/hack-my-bot-pwnme-2025-ctf/hackmybot_alert1.png",
+    "posts/hack-my-bot-pwnme-2025-ctf/hackmybot_xss_fail.png",
+    "posts/hack-my-bot-pwnme-2025-ctf/hackmybot_index.png",
+    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
+    "posts/hack-my-bot-pwnme-2025-ctf/index.md",
+    "posts/UofT 2025 CTF/index.md",
+    "posts/Hack My Bot Writeup (PwnMe CTF 2025)/index.md",
+    "posts/hack-my-bot-pwnme-2025-ctf",
+    "posts/Google CTF 2024 Grand Prix Heaven/index.md",
+    "posts/bad-challenge-arab-security-war-games-2024/index.md",
+    "posts/BOM Sniffing to XSS/index.md",
+    "posts/recipe-to-industry.md",
+    "posts/nand2tetris/index.md",
+    "posts/Hack My Bot Writeup (PwnMe CTF 2025)",
+    "posts/UofT 2025 CTF/codedb_regex.png",
     "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/linkedin_james_kettle.png",
     "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/discord_prize_announcement.png",
     "_index.md",
     "posts/_index.md",
-    "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
-    "posts/UofT 2025 CTF/index.md",
     "posts/UofT 2025 CTF/timeless_flasksession.png",
-    "posts/bad-challenge-arab-security-war-games-2024/index.md",
     "posts/UofT 2025 CTF/timeless_blog.png",
-    "posts/UofT 2025 CTF/codedb_regex.png",
     "posts/UofT 2025 CTF/codedb_samples.png",
-    "posts/UofT 2025 CTF/codedb_search.png",
     "posts/UofT 2025 CTF",
-    "posts/nand2tetris/index.md",
-    "posts/Google CTF 2024 Grand Prix Heaven/index.md",
-    "posts/BOM Sniffing to XSS/index.md",
-    "posts/Google CTF 2024 Grand Prix Heaven/needle-source.png",
-    "posts/Google CTF 2024 Grand Prix Heaven/sink-hunting.png",
-    "posts/Google CTF 2024 Grand Prix Heaven/csp-evaluation.png",
-    "posts/Google CTF 2024 Grand Prix Heaven/webhook-flag.png",
     "posts/__copyme.md",
     "posts/Google CTF 2024 Grand Prix Heaven",
     "posts/How I built a mini social network from start to finish in 3 months.md",
@@ -207,7 +216,6 @@
     "posts/BOM Sniffing to XSS",
     "posts/N0P CTF - Jojo Website 2/index.md",
     "posts/N0P CTF - Jojo Website 2",
-    "posts/recipe-to-industry.md",
     "posts/Cybersecurity.md",
     "posts/nand2tetris",
     "posts/A Team of Beginners Face an Elite CTF.md",

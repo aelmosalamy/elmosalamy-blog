@@ -3,5 +3,6 @@
   "useMarkdownLinks": true,
   "autoConvertHtml": false,
   "showInlineTitle": false,
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "readableLineLength": true
 }
