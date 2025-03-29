@@ -9,11 +9,11 @@
     <lastBuildDate>Fri, 28 Mar 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="//localhost:1313/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>HTB Cyber Apocalypse 2025 Writeup - Web, Blockchain &amp; AI</title>
+      <title>HTB Cyber Apocalypse 2025 Writeup - All Web</title>
       <link>//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/</link>
       <pubDate>Fri, 28 Mar 2025 00:00:00 +0000</pubDate>
       <guid>//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/</guid>
-      <description>This year saw a significant&#xA;Web: Trial By Fire - Very Easy import httpx url = &amp;#39;http://83.136.249.101:33732&amp;#39; with httpx.Client(base_url=url) as client: r = client.</description>
+      <description>This year saw a significant improvement to PwnSec&amp;rsquo;s performance. We moved from 77th last year to achieving 15th this year.</description>
     </item>
     <item>
       <title>Hack My Bot Writeup for Beginners (PwnMe 2025 CTF)</title>
