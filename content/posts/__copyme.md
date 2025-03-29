@@ -1,6 +1,6 @@
 ---
 title: your-title-here
-author: aelmosalamy
+author: aelmo
 date: 2030-01-01
 tags:
   - tag1

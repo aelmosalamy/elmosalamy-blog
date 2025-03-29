@@ -1,6 +1,6 @@
 ---
 title: '"Bad" - Arab Security War Games 2024'
-author: aelmosalamy
+author: aelmo
 date: 2024-08-03
 tags:
   - ctf

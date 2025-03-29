@@ -1,6 +1,6 @@
 ---
 title: BOM Sniffing to XSS
-author: aelmosalamy
+author: aelmo
 date: 2024-06-01
 tags:
   - ctf

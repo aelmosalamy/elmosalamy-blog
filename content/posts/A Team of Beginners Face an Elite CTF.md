@@ -1,6 +1,6 @@
 ---
 title: Google CTF 2023 And How It Almost Backfired
-author: aelmosalamy
+author: aelmo
 date: 2023-06-26
 tags:
   - cybersecurity

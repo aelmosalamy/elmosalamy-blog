@@ -1,6 +1,6 @@
 ---
 title: UofT 2025 CTF (Web)
-author: aelmosalamy
+author: aelmo
 date: 2025-01-13
 tags:
   - ctf

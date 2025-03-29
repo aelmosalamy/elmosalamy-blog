@@ -1,8 +1,9 @@
-﻿---
+---
 title: Python List Comprehensions!
-author: aelmosalamy
+author: aelmo
 date: 2019-01-07
-tags: [python]
+tags:
+  - python
 slug: python-list-comprehensions
 ---
 

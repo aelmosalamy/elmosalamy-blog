@@ -1,6 +1,6 @@
 ---
 title: nand2tetris
-author: aelmosalamy
+author: aelmo
 date: 2024-05-27
 tags:
   - tag1

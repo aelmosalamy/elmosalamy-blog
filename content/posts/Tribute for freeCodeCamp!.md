@@ -1,8 +1,9 @@
 ---
 title: Tribute to freeCodeCamp!
-author: aelmosalamy
+author: aelmo
 date: 2020-07-06
-tags: [experience]
+tags:
+  - experience
 cover: /images/fcc-logo.png
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: How I got and built my first REAL Full Stack project
-author: aelmosalamy
+author: aelmo
 date: 2021-01-26
 tags:
   - fullstack

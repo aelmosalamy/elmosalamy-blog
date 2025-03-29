@@ -1,8 +1,11 @@
 ---
 title: Say Hello with Flask!
-author: aelmosalamy
+author: aelmo
 date: 2019-03-01
-tags: [python, flask, back-end]
+tags:
+  - python
+  - flask
+  - back-end
 cover: /images/cover-flask.png
 ---
 

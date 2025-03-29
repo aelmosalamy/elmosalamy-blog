@@ -1,6 +1,6 @@
 ---
-title: Hack The Bot Writeup for Beginners (PwnMe 2025 CTF)
-author: aelmosalamy
+title: Hack My Bot Writeup for Beginners (PwnMe 2025 CTF)
+author: aelmo
 date: 2025-03-04
 tags:
   - ctf
@@ -9,7 +9,7 @@ draft: false
 cover: /images/hackmybot_index.png
 toc: true
 ---
-Hey! Today we will be exploring **Hack The Bot 1 and 2** together, a lovely 2-part web challenge that came up in the recent **PwnMe 2025 CTF** and had ~11 solves towards the end of the competition. I solved it with my teammate **@qlashx**.
+Hey! Today we will be exploring **Hack My Bot 1 and 2** together, a lovely 2-part web challenge that came up in the recent **PwnMe 2025 CTF** and had ~11 solves towards the end of the competition. I solved it with my teammate **@qlashx**.
 
 I will be covering some of the methodology to approach similar challenges while discussing topics such as Cross-Site Scripting (XSS), Same-origin Policy (SOP), WebSockets and more, trying to be beginner-friendly throughout.
 

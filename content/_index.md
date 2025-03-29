@@ -6,7 +6,7 @@ framed: true
 
 Hey:wave:, It's a pleasure seeing you here!
 
-**aelmo** here, someone who loves *everything* cybersecurity with a little knack for web security. I write about CTFs, cyber and computer science.
+**aelmo** here, someone who loves *everything* cybersecurity with a knack for web security. I write about CTFs, cyber and computer science.
 
 ![tryhackme](/images/tryhackme-badge.png)
 

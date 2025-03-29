@@ -1,6 +1,6 @@
 ---
 title: Google CTF 2024 Grand Prix Heaven
-author: aelmosalamy
+author: aelmo
 date: 2024-08-16
 tags:
   - ctf

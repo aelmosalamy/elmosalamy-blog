@@ -1,9 +1,9 @@
 ---
 title: Apexsurvive Writeup (HTB Cyber Apocalypse 2024)
 description: "In this post I will walk you through my solution of **Apexsurvive** from Hack The Box 2024 Cyber Apocalypse CTF, a beautiful challenge that costed me three days of research, experimentation and sweat to take down. This is a beginner-friendly writeup where I explain how web challenges like this could be approached: going over methodology, mindset and research."
-author: aelmosalamy
+author: aelmo
 date: 2024-03-17
-cover:
+cover: 
 tags:
   - ctf
 toc: true

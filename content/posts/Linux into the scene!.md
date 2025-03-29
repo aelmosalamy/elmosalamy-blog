@@ -1,9 +1,11 @@
 ---
 title: Linux into the scene!
-author: aelmosalamy
+author: aelmo
 date: 2018-11-30
-author: aelmosalamy
-tags: [linux, ubuntu, foss]
+tags:
+  - linux
+  - ubuntu
+  - foss
 ---
 
 Hello everyone,

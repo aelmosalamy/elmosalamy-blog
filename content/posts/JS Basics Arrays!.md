@@ -1,8 +1,9 @@
 ---
 title: "Javascript Basics: Arrays!"
-author: aelmosalamy
+author: aelmo
 date: 2020-07-13
-tags: [javascript]
+tags:
+  - javascript
 ---
 
 Hey:wave: there, in this mini-tutorial we are going to go through what is an array, how to create one, learn how to grab items from it, learn how to add items to it and much more! Stay tuned!
