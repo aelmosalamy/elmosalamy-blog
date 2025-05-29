@@ -17,7 +17,7 @@ The final chain had around 10 vulnerabilities that must be chained together to r
 
 In summary, the challenge starts with an access control bypass, followed by a buffer overflow (yes, you heard it right) in a custom keystore implementation, followed by a CSP bypass via an HTML injection to trigger three different DOM clobbering vectors that utilized a diagnostic endpoint to deliver and execute an XSS payload. From there, a file upload bypass combined with an arbitrary file write was used to place a polyglot TAR/ELF payload that we could execute to get RCE; and finally the flag.
 
-This will be a beginner-friendly writeup, I will be breaking down the challenge, walking you through my mindset, before wrapping it up with a nice 0-to-flag script.
+This is a beginner-friendly write-up. I'll break down the challenge, walking you through my mindset, before wrapping it up with a nice 0-to-flag script.
 
 Let's dig in.
 
@@ -1314,7 +1314,7 @@ def plugin_run():
 	return render_template("plugins.html", title="Plugins", session_data=session, plugin_files=final_files, plugin_results=plugin_results)
 ```
 
-One writes to `/app/applications/datasets` while the other executes from `/app/applications/plugins`. An inconvenience, indeed.
+One writes to `/app/application/datasets` while the other executes from `/app/application/plugins`. That gap complicates things.
 
 Inspecting the dataset endpoint, we can see this operation performed at the end:
 ```python
@@ -1352,7 +1352,7 @@ def is_tar_file(file_path):
 	return file_path.lower().endswith(".tar")
 ```
 
-That will do for us. It allows us to upload to any location by setting our uploaded filename to an absolute path with a `.tar` ending a la `/app/applications/plugins/aaaaaa.tar`.
+That will do for us. It allows us to upload to any location by setting our uploaded filename to an absolute path with a `.tar` ending a la `/app/application/plugins/aaaaaa.tar`.
 
 What about the file's contents? Do we have any restrictions regarding those? Yes, we do:
 ```python
