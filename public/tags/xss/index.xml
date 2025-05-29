@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Xss on elmosalamy | blog</title>
-    <link>/tags/xss/</link>
+    <link>//localhost:1313/tags/xss/</link>
     <description>Recent content in Xss on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sat, 01 Jun 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="/tags/xss/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/tags/xss/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>BOM Sniffing to XSS</title>
-      <link>/posts/bom-sniffing-to-xss/</link>
+      <link>//localhost:1313/posts/bom-sniffing-to-xss/</link>
       <pubDate>Sat, 01 Jun 2024 00:00:00 +0000</pubDate>
-      <guid>/posts/bom-sniffing-to-xss/</guid>
+      <guid>//localhost:1313/posts/bom-sniffing-to-xss/</guid>
       <description>In this post, we will learn about text encoding, how browsers determine content encoding, talk about BOM and finally how we can bypass DOM sanitizers by just playing around with input encoding.</description>
     </item>
   </channel>

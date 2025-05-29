@@ -6,7 +6,7 @@ tags:
   - ctf
   - web
 description: A beautiful web chain with many twists and turns with ultimate goal of RCE.
-cover: /images/novacore_home.png
+cover: /images/novacore_writeup.png
 toc: true
 ---
 Novacore was an extremely well-designed web security challenge that appeared in **Hack the Box's Global Cyber Skills Benchmark CTF 2025** where companies like Microsoft, Cisco, Intel, Deloitte and KPMG showcased their cybersecurity talents in a one-of-a-kind business CTF. I competed with [CTFAE](https://ctf.ae) securing 7th versus 750 companies.
