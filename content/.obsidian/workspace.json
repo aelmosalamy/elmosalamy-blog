@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "ef62203d96c45aed",
+        "id": "2069b83bed6cb739",
         "type": "tabs",
         "children": [
           {
-            "id": "554fc636539be415",
+            "id": "b743ac2a2f146e98",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/HTB Cyber Apocalypse 2025 Writeup/index.md",
+                "file": "posts/Novacore A Never-ending chain/index.md",
                 "mode": "source",
                 "source": false
               },
@@ -127,7 +127,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "posts/HTB Cyber Apocalypse 2025 Writeup/index.md",
+                "file": "posts/Novacore A Never-ending chain/index.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -166,22 +166,29 @@
       "templates:Insert template": false
     }
   },
-  "active": "554fc636539be415",
+  "active": "cda986b1ca8e0484",
   "lastOpenFiles": [
-    "posts/HTB Cyber Apocalypse 2025 Writeup/blockchain_infinite_eth.png",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/intended_aurors.png",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/aurors_flag.png",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/lo_import.png",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/submission_xss.png",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/gopher_received.png",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/grpc_htb.png",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/whispers_htb.png",
+    "posts/Novacore A Never-ending chain/novacore_solver.gif",
+    "posts/Novacore A Never-ending chain/xss_data_flow.png",
+    "posts/Novacore A Never-ending chain/js_data_flow.png",
+    "posts/Novacore A Never-ending chain/js_file_data_flow.png",
+    "posts/Novacore A Never-ending chain/index.md",
+    "posts/Novacore A Never-ending chain/docker_local_bo.png",
+    "posts/Novacore A Never-ending chain/admin_trade_copied.png",
+    "posts/Novacore A Never-ending chain/admin_copy_signal.png",
+    "posts/Novacore A Never-ending chain/empty_trades.png",
+    "posts/Novacore A Never-ending chain/Pasted image 20250528234133.png",
+    "posts/Novacore A Never-ending chain/traefik_github_advisory.png",
+    "posts/Novacore A Never-ending chain/traefik_github_cves.png",
+    "posts/nand2tetris/index.md",
+    "posts/_index.md",
+    "posts/HTB Cyber Apocalypse 2025 Writeup/index.md",
+    "posts/Novacore A Never-ending chain",
     "posts/HTB Cyber Apocalypse 2025 Writeup/attachments",
     "posts/JS Basics Arrays!.md",
     "posts/Cybersecurity.md",
     "posts/recipe-to-industry.md",
     "_index.md",
-    "posts/HTB Cyber Apocalypse 2025 Writeup/index.md",
     "posts/DRAFT210930179.md",
     "posts/__copyme.md",
     "posts/How I built a mini social network from start to finish in 3 months.md",
@@ -190,18 +197,13 @@
     "posts/Python List Comprehensions.md",
     "posts/Tribute for freeCodeCamp!.md",
     "posts/Say Hello with Flask!.md",
-    "posts/_index.md",
     "posts/UofT 2025 CTF/index.md",
-    "posts/nand2tetris/index.md",
     "posts/hack-my-bot-pwnme-2025-ctf/index.md",
     "posts/Google CTF 2024 Grand Prix Heaven/index.md",
     "posts/BOM Sniffing to XSS/index.md",
     "posts/bad-challenge-arab-security-war-games-2024/index.md",
     "posts/Apexsurvive Writeup (HTB Cyber Apocalypse 2024)/index.md",
     "posts/HTB Cyber Apocalypse 2025 Writeup",
-    "posts/hack-my-bot-pwnme-2025-ctf/flag.png",
-    "posts/hack-my-bot-pwnme-2025-ctf/cdp-browser-getversion.png",
-    "posts/hack-my-bot-pwnme-2025-ctf/flag1.png",
     "posts/Hack My Bot Writeup (PwnMe CTF 2025)/index.md",
     "posts/hack-my-bot-pwnme-2025-ctf",
     "posts/Hack My Bot Writeup (PwnMe CTF 2025)",
@@ -211,7 +213,6 @@
     "posts/BOM Sniffing to XSS",
     "posts/N0P CTF - Jojo Website 2/index.md",
     "posts/N0P CTF - Jojo Website 2",
-    "posts/nand2tetris",
     "Pasted.md"
   ]
 }

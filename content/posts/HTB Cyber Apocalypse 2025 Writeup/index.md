@@ -32,7 +32,7 @@ with httpx.Client(base_url=url) as client:
 ## Web: Whispers of The Moonbeam - Very Easy
 
 Simple command injection in the `gossip` command, some initial attempts:
-![](whispers_htb.png)
+![](posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/whispers_htb.png)
 
 We notice `gossip` displays an `ls`-like output. Command injection:
 ```
@@ -75,7 +75,7 @@ grpcui -proto .\challenge\live_data.proto  -plaintext 127.0.0.1:50051
 ```
 
 It looks like this:
-![grpc_htb](grpc_htb.png)
+![grpc_htb](posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/grpc_htb.png)
 
 I set up Wireshark and filtered for messages on `tcp/50051`, as per the gRPC reference's tip:
 > If you don’t see packets in HTTP2 protocol, click “Analyze” -> “Decode As…”. Then, add TCP port X with HTTP2 protocol, where X is port of gRPC server (e.g. 8083).
@@ -85,7 +85,7 @@ I set up Wireshark and filtered for messages on `tcp/50051`, as per the gRPC ref
 3. We use `gopher://`, a legacy protocol supported by `curl` because it allows us to send raw TCP packets over the wire.
 
 You can see me here doing some debugging with `sleep` statements. It seemed like the HTTP/2 packet was getting corrupted: 
-![](gopher_received.png)
+![](posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/gopher_received.png)
 
 We should have `PRI` not `50RI` in the output above.
 
@@ -201,7 +201,7 @@ Anyways, we can escape by submitting a bid with the following payload, using sin
 '></div><img src onerror=alert(1)><div a='
 ```
 
-![](submission_xss.png)
+![](posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/submission_xss.png)
 
 The XSS reflected in `/my-submissions`, which made it difficult to deliver to admin. I played around with different CSRF techniques to get the admin to poison his own page before visiting it, but all attempts ultimately failed due to `SameSite=Lax`.
 ```html
@@ -444,12 +444,12 @@ sqli("CAST((SELECT pg_reload_conf()) AS text)")
 ```
 
 On the next SQL query, we get a hit:
-![](aurors_flag.png)
+![](posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/aurors_flag.png)
 
 `HTB{l00k_0ut_f0r_0auth_155u35}`
 
 > Note: I later confirmed with an HTB admin and he said:
-![](intended_aurors.png)
+![](posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/intended_aurors.png)
 
 ## Blockchain: Eldorion - Very Easy
 This was my first time ever working with smart contracts or blockchain challenges. ChatGPT did ease the transition and I realize how similar it is to traditional "Web 2.0" tasks.
@@ -693,7 +693,7 @@ cast send $attack_contract "attack()" \
 done
 ```
 
-![](blockchain_infinite_eth.png)
+![](posts/HTB%20Cyber%20Apocalypse%202025%20Writeup/blockchain_infinite_eth.png)
 
 We can see our profits coming while our DHS store remaining untouched:
 ```bash

@@ -2,91 +2,94 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>//localhost:1313/posts/</loc>
+    <loc>/posts/</loc>
     <lastmod>2030-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ctf/</loc>
+    <loc>/posts/novacore-a-never-ending-chain/</loc>
+    <lastmod>2025-05-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/ctf/</loc>
+    <lastmod>2025-05-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2025-05-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/web/</loc>
+    <lastmod>2025-05-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/posts/htb-cyber-apocalypse-2025-writeup/</loc>
     <lastmod>2025-03-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/</loc>
-    <lastmod>2025-03-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>//localhost:1313/tags/</loc>
-    <lastmod>2025-03-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/</loc>
+    <loc>/posts/hack-my-bot-pwnme-2025-ctf/</loc>
     <lastmod>2025-03-04T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/web/</loc>
-    <lastmod>2025-03-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>//localhost:1313/posts/uoft-2025-ctf/</loc>
+    <loc>/posts/uoft-2025-ctf/</loc>
     <lastmod>2025-01-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/google-ctf-2024-grand-prix-heaven/</loc>
+    <loc>/posts/google-ctf-2024-grand-prix-heaven/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/bad-challenge-arab-security-war-games-2024/</loc>
+    <loc>/posts/bad-challenge-arab-security-war-games-2024/</loc>
     <lastmod>2024-08-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/bom-sniffing-to-xss/</loc>
+    <loc>/posts/bom-sniffing-to-xss/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/unicode/</loc>
+    <loc>/tags/unicode/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/xss/</loc>
+    <loc>/tags/xss/</loc>
     <lastmod>2024-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</loc>
+    <loc>/posts/apexsurvive-writeup-htb-cyber-apocalypse-2024/</loc>
     <lastmod>2024-03-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/cybersecurity/</loc>
+    <loc>/tags/cybersecurity/</loc>
     <lastmod>2023-06-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/a-team-of-beginners-face-an-elite-ctf/</loc>
+    <loc>/posts/a-team-of-beginners-face-an-elite-ctf/</loc>
     <lastmod>2023-06-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/javascript/</loc>
+    <loc>/tags/javascript/</loc>
     <lastmod>2020-07-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/js-basics-arrays/</loc>
+    <loc>/posts/js-basics-arrays/</loc>
     <lastmod>2020-07-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/experience/</loc>
+    <loc>/tags/experience/</loc>
     <lastmod>2020-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/tribute-for-freecodecamp/</loc>
+    <loc>/posts/tribute-for-freecodecamp/</loc>
     <lastmod>2020-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/back-end/</loc>
+    <loc>/tags/back-end/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/flask/</loc>
+    <loc>/tags/flask/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/python/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/say-hello-with-flask/</loc>
+    <loc>/posts/say-hello-with-flask/</loc>
     <lastmod>2019-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/python-list-comprehensions/</loc>
+    <loc>/posts/python-list-comprehensions/</loc>
     <lastmod>2019-01-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/foss/</loc>
+    <loc>/tags/foss/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/linux/</loc>
+    <loc>/tags/linux/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/linux-into-the-scene/</loc>
+    <loc>/posts/linux-into-the-scene/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ubuntu/</loc>
+    <loc>/tags/ubuntu/</loc>
     <lastmod>2018-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/</loc>
+    <loc>/</loc>
     <lastmod>2017-06-26T18:27:58+01:00</lastmod>
   </url>
 </urlset>
